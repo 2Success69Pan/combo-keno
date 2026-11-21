@@ -4,32 +4,118 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-
-
+<meta name="app-build" content="a87e7f202611">
+<link rel="manifest" href="manifest.webmanifest?v=a87e7f202611">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="xray-v1.css?v=a87e7f202611">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
-*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(circle at top,#0b2842 0,#04111e 38%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}button,input,select{font:inherit}.app{max-width:650px;margin:auto;padding:10px 10px 82px}.top{display:grid;grid-template-columns:52px 1fr;gap:9px;align-items:center}.logo{width:52px;height:52px;border-radius:15px;border:1px solid #3d6686}.title{font-weight:950;font-size:21px;letter-spacing:.3px}.dbline{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topmeta{display:flex;align-items:center;gap:7px;margin-top:5px}.version{font-size:11px;font-weight:900;color:#7fd8ff;background:#071b2d;border:1px solid #274863;border-radius:8px;padding:4px 7px;white-space:nowrap}.refresh{margin-left:auto;padding:5px 8px;border-radius:9px;font-size:11px;background:#0a2135;border-color:#315b7d;color:#eef7ff;white-space:nowrap}.refresh:disabled{opacity:.55}.card{background:linear-gradient(180deg,rgba(15,39,62,.98),rgba(7,24,39,.98));border:1px solid var(--line);border-radius:15px;padding:11px;margin:9px 0;box-shadow:0 9px 28px rgba(0,0,0,.18)}h2{font-size:18px;margin:0 0 8px}h3{font-size:14px;margin:9px 0 6px}.muted{font-size:12px;color:var(--muted)}.hidden{display:none!important}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(circle at top,#0b2842 0,#04111e 38%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}button,input,select{font:inherit}.app{max-width:650px;margin:auto;padding:10px 10px calc(165px + env(safe-area-inset-bottom))}.top{display:grid;grid-template-columns:52px 1fr;gap:9px;align-items:center}.logo{width:52px;height:52px;border-radius:15px;border:1px solid #3d6686}.title{font-weight:950;font-size:21px;letter-spacing:.3px}.dbline{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topmeta{display:flex;align-items:center;gap:7px;margin-top:5px}.version{font-size:11px;font-weight:900;color:#7fd8ff;background:#071b2d;border:1px solid #274863;border-radius:8px;padding:4px 7px;white-space:nowrap}.refresh{margin-left:auto;padding:5px 8px;border-radius:9px;font-size:11px;background:#0a2135;border-color:#315b7d;color:#eef7ff;white-space:nowrap}.refresh:disabled{opacity:.55}.card{background:linear-gradient(180deg,rgba(15,39,62,.98),rgba(7,24,39,.98));border:1px solid var(--line);border-radius:15px;padding:11px;margin:9px 0;box-shadow:0 9px 28px rgba(0,0,0,.18)}h2{font-size:18px;margin:0 0 8px}h3{font-size:14px;margin:9px 0 6px}.muted{font-size:12px;color:var(--muted)}.hidden{display:none!important}
 button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff;font-weight:850;padding:10px;cursor:pointer}.primary{background:linear-gradient(180deg,#58c62b,#319020);border-color:#66dd38}.ghost{background:#0a1c2d}.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876}.big{width:100%;font-size:16px;padding:13px}.groups{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;overflow:auto}.groups button{font-size:10.5px;padding:8px 3px;white-space:nowrap}.comboList{display:grid;gap:6px}.comboBtn{display:grid;grid-template-columns:75px 1fr auto;gap:6px;align-items:center;text-align:left}.comboBtn .cid{font-weight:950;color:var(--gold)}.comboBtn .nums{font-size:12px}.comboBtn .ncount{font-size:10px;color:var(--muted)}
 .pickgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}.pick{aspect-ratio:1/1;border-radius:50%;padding:0;font-size:12px;background:#0b1d2d}.pick.on{background:linear-gradient(180deg,#6fd33f,#2f9626);border-color:#8ff75f}.selectedbar{display:flex;gap:5px;flex-wrap:wrap;min-height:31px;margin-top:7px}.sel{padding:5px 7px;border-radius:8px;background:#26752d;border:1px solid #67c93f;font-weight:900;font-size:12px}
 .acc{padding:0;overflow:hidden}.accHead{display:grid;grid-template-columns:1fr auto;align-items:center;padding:12px;cursor:pointer}.accHead b{font-size:15px}.accBody{padding:0 10px 10px;border-top:1px solid #23425d}.modegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}.modegrid button{font-size:10.5px;padding:9px 4px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.fields label{font-size:11px;color:var(--muted)}.fields input{width:100%;margin-top:4px;background:#061421;color:#fff;border:1px solid #2e526d;border-radius:9px;padding:8px}.wide{grid-column:1/-1}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.stat{border:1px solid #294b66;background:#081827;border-radius:11px;padding:8px;text-align:center}.stat b{display:block;font-size:21px;color:var(--green)}.stat span{font-size:10px;color:var(--muted)}.stat.fire b{color:var(--gold)}.financeStats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:5px}.financeStat{border:1px solid #294b66;background:#081827;border-radius:11px;padding:9px 6px;text-align:center;min-height:95px;display:flex;flex-direction:column;justify-content:center}.financeStat .flabel{font-size:9px;line-height:1.15;color:#b9c9d8;font-weight:900;text-transform:uppercase;letter-spacing:.25px}.financeStat b{display:block;font-size:18px;line-height:1.15;color:var(--green);margin-top:7px}.financeStat b.loss{color:var(--red)}.financeStat b.winCount{color:var(--gold)}.financeStat .fsub{font-size:9px;line-height:1.25;color:var(--muted);margin-top:5px}@media(max-width:380px){.financeStat{padding:8px 4px;min-height:92px}.financeStat .flabel{font-size:8px}.financeStat b{font-size:16px}.financeStat .fsub{font-size:8px}}
-.resultTop{display:flex;gap:5px;flex-wrap:wrap}.resultTop .sel{font-size:14px}.historyTitle{font-weight:950;font-size:16px;margin:12px 0 7px}.historyTools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 7px}.historyTools button{padding:8px 6px;border-radius:9px;font-size:11px;background:#0a1c2d;color:#c9d9e7}.historyTools button.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876;color:#fff}.hist{border:1px solid var(--line);border-radius:13px;overflow:hidden}.hrow{display:grid;grid-template-columns:28% 16% 56%;align-items:stretch;border-top:1px solid #203c54;min-height:70px}.hrow:first-child{border-top:0}.hrow.head{min-height:auto;background:#102a43;color:#bcd0e0;font-size:10px;font-weight:800}.hcell{padding:7px 5px;border-left:1px solid #203c54;min-width:0}.hcell:first-child{border-left:0}.hdraw{font-size:12px;font-weight:900}.hsub{font-size:11px;color:var(--gold);font-weight:800;margin-top:2px}.hdate{font-size:10px;color:#b4c3d0;margin-top:4px}.hitbox{display:flex;align-items:center;justify-content:center;min-height:54px;flex-direction:column;gap:4px}.hits{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:950}.hits.z{color:var(--red)}.hits.o{color:var(--green)}.hits.h{color:var(--gold)}.hits.fire{color:var(--gold);line-height:1}.flame{font-size:19px;margin-right:3px}.prize{font-size:10px;line-height:1.05;border:1px solid #7b5a17;background:#132233;color:var(--gold);border-radius:7px;padding:4px 5px;text-align:center;font-weight:900;white-space:nowrap}.drawnums{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:2px;align-content:center;padding:6px 3px}.dn{text-align:center;font-size:10px;line-height:18px;border-radius:5px;font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;touch-action:manipulation;transition:background .12s,box-shadow .12s,transform .08s}.dn:active{transform:scale(.92)}.dn.hit{background:linear-gradient(180deg,#4a9e26,#236d22);color:#fff;font-weight:950}.dn.mark{background:linear-gradient(180deg,#35a9ff,#126da8);color:#fff;font-weight:950;box-shadow:0 0 0 1px #80dcff inset,0 0 8px rgba(53,169,255,.45)}.dn.hit.mark{background:linear-gradient(180deg,#35a9ff,#126da8);box-shadow:0 0 0 2px #6fd33f inset,0 0 8px rgba(53,169,255,.55)}.markHelp{margin:7px 0 6px;padding:7px 8px;border:1px solid #274863;border-radius:9px;background:#081a2b;color:#a9bfd0;font-size:10.5px}.markBar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 7px}.markBar .markChip{padding:4px 6px;border-radius:7px;background:#126da8;border:1px solid #80dcff;color:#fff;font-weight:950;font-size:11px}.markClear{padding:4px 7px;border-radius:7px;background:#0a1c2d;color:#bcd0e0;font-size:10px}.more{width:100%;border:0;border-top:1px solid #294b66;border-radius:0;background:#0b2032;color:#bcd0e0}
-.msg{font-size:12px;padding:8px;border:1px solid #294b66;border-radius:9px;color:#c7d7e6}.msg.err{border-color:#743c42;color:#ffb6b6}.footer{position:fixed;left:0;right:0;bottom:0;background:rgba(4,17,30,.97);border-top:1px solid #274863;padding:6px 7px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);z-index:20}.footin{max-width:650px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.nav{padding:7px 2px;background:transparent;border:0;color:#9db0c2;font-size:10px}.nav b{display:block;font-size:20px}.nav.on{color:#7be34c}.section{display:none}.section.on{display:block}
+.resultTop{display:flex;gap:5px;flex-wrap:wrap}.resultTop .sel{font-size:14px}.anyTools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}.anyTools button{padding:10px 8px}.savedWrap{display:grid;gap:7px;margin-top:8px}.savedEmpty{font-size:12px;color:var(--muted);padding:8px;border:1px dashed #294b66;border-radius:10px}.savedItem{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:7px;border:1px solid #294b66;background:#081827;border-radius:11px}.savedMain{display:block;text-align:left;padding:9px 10px;background:#0a1c2d}.savedNums{font-size:13px;font-weight:900;line-height:1.35}.savedMeta{font-size:10px;color:var(--muted);margin-top:3px}.savedDel{padding:10px 10px;background:#281520;border-color:#6d3343;color:#ffd2d7}.historyTitle{font-weight:950;font-size:16px;margin:12px 0 7px}.historyTools{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 7px}.historyTools button{padding:8px 6px;border-radius:9px;font-size:11px;background:#0a1c2d;color:#c9d9e7}.historyTools button.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876;color:#fff}.hist{border:1px solid var(--line);border-radius:13px;overflow:hidden}.hrow{display:grid;grid-template-columns:28% 16% 56%;align-items:stretch;border-top:1px solid #203c54;min-height:70px}.hrow:first-child{border-top:0}.hrow.head{min-height:auto;background:#102a43;color:#bcd0e0;font-size:10px;font-weight:800}.hcell{padding:7px 5px;border-left:1px solid #203c54;min-width:0}.hcell:first-child{border-left:0}.hdraw{font-size:12px;font-weight:900}.hsub{font-size:11px;color:var(--gold);font-weight:800;margin-top:2px}.hdate{font-size:10px;color:#b4c3d0;margin-top:4px}.hitbox{display:flex;align-items:center;justify-content:center;min-height:54px;flex-direction:column;gap:4px}.hits{display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:950}.hits.z{color:var(--red)}.hits.o{color:var(--green)}.hits.h{color:var(--gold)}.hits.fire{color:var(--gold);line-height:1}.flame{font-size:19px;margin-right:3px}.prize{font-size:10px;line-height:1.05;border:1px solid #7b5a17;background:#132233;color:var(--gold);border-radius:7px;padding:4px 5px;text-align:center;font-weight:900;white-space:nowrap}.drawnums{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:2px;align-content:center;padding:6px 3px}.dn{text-align:center;font-size:10px;line-height:18px;border-radius:5px;font-variant-numeric:tabular-nums;cursor:pointer;user-select:none;touch-action:manipulation;transition:background .12s,box-shadow .12s,transform .08s}.dn:active{transform:scale(.92)}.dn.hit{background:linear-gradient(180deg,#4a9e26,#236d22);color:#fff;font-weight:950}.dn.mark{background:linear-gradient(180deg,#35a9ff,#126da8);color:#fff;font-weight:950;box-shadow:0 0 0 1px #80dcff inset,0 0 8px rgba(53,169,255,.45)}.dn.hit.mark{background:linear-gradient(180deg,#35a9ff,#126da8);box-shadow:0 0 0 2px #6fd33f inset,0 0 8px rgba(53,169,255,.55)}.markHelp{margin:7px 0 6px;padding:7px 8px;border:1px solid #274863;border-radius:9px;background:#081a2b;color:#a9bfd0;font-size:10.5px}.markBar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 7px}.markBar .markChip{padding:4px 6px;border-radius:7px;background:#126da8;border:1px solid #80dcff;color:#fff;font-weight:950;font-size:11px}.markClear{padding:4px 7px;border-radius:7px;background:#0a1c2d;color:#bcd0e0;font-size:10px}.more{width:100%;border:0;border-top:1px solid #294b66;border-radius:0;background:#0b2032;color:#bcd0e0}
+.msg{font-size:12px;padding:8px;border:1px solid #294b66;border-radius:9px;color:#c7d7e6}.msg.err{border-color:#743c42;color:#ffb6b6}.footer{position:fixed;left:0;right:0;bottom:0;background:rgba(4,17,30,.97);border-top:1px solid #274863;padding:6px 7px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);z-index:20}.footin{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.nav{padding:7px 2px;background:transparent;border:0;color:#9db0c2;font-size:10px}.nav b{display:block;font-size:20px}.nav.on{color:#7be34c}.section{display:none}.section.on{display:block}.section.on::after{content:"";display:block;height:34px}
 @media(max-width:380px){.app{padding-left:7px;padding-right:7px}.hrow{grid-template-columns:29% 17% 54%}.dn{font-size:9px}.hdraw{font-size:11px}.hsub{font-size:10px}.hdate{font-size:9px}.groups button{font-size:9.5px}.comboBtn{grid-template-columns:68px 1fr auto}.prize{font-size:9px;padding:3px 4px}}
+
+.savedDrawer{position:fixed;left:50%;transform:translateX(-50%);bottom:122px;width:min(630px,calc(100% - 14px));max-height:58vh;overflow:auto;z-index:30;background:linear-gradient(180deg,#0e2941,#071725);border:1px solid #315b7d;border-radius:15px 15px 10px 10px;padding:10px;box-shadow:0 -12px 35px rgba(0,0,0,.45)}
+.savedDrawerHead{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin-bottom:5px}.savedDrawerHead b{font-size:18px}.savedDrawerHead button{padding:5px 10px;background:#0a1c2d}.tableDrawer{position:fixed;inset:0;left:0;top:0;right:0;bottom:0;transform:none;width:100%;height:100dvh;max-height:none;overflow-y:auto;overflow-x:hidden;z-index:9999;background:linear-gradient(180deg,#0e2941,#071725);border:0;border-radius:0;padding:10px 10px calc(22px + env(safe-area-inset-bottom));box-shadow:none}
+.cm-panel{margin:8px 0 14px;padding:8px;border:1px solid #365b78;border-radius:12px;background:#091d30}.cm-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center}.cm-toolbar button,.cm-toolbar select{background:#173550;color:#fff;border:1px solid #426480;border-radius:8px;padding:7px;font-size:12px}.cm-toolbar button.active{background:#286d45;border-color:#78d995}.cm-toolbar label{font-size:11px;color:#c1d4e4;display:flex;align-items:center;gap:4px}.cm-toolbar input[type=range]{width:76px}.cm-table .cm-history{background:#455b73;color:#f4f8fc;font-weight:700}.cm-table td.cm-history{background:#455b73!important;color:#f4f8fc!important;opacity:1!important}.cm-table td.cm-picked{background:#ffd03d!important;color:#192331!important;opacity:1!important}.cm-table .cm-parity{width:6%;font-size:10px}.cm-table .cm-date{width:19%;font-size:clamp(8px,2.15vw,11px);white-space:nowrap}.cm-table .cm-draw{width:17%!important}.cm-table .cm-num{width:7.5%!important}.cm-table .cm-trail{background:#75591f}.cm-table .cm-picked{background:#ffd03d!important;color:#192331!important}.cm-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:clamp(8px,2.45vw,12px);color:#e5f0f9}.cm-table td,.cm-table th{border:1px solid #34506b;text-align:center;padding:0;height:24px;overflow:hidden}.cm-table .cm-draw{width:17%;font-size:clamp(9px,2.7vw,12px)}.cm-table .cm-num{width:7.1%}.cm-table .cm-hit{background:#52687f;color:#fff;cursor:pointer;font-weight:800}.cm-table .cm-picked{background:#ffcb39;color:#101e2a}.cm-table .cm-trail{background:#795b21}.cm-table .cm-future{outline:2px dashed #ffa044;outline-offset:-2px}.cm-table .cm-muted{opacity:.5}.cm-table thead,.cm-table tfoot{background:#15405b}.cm-card{position:sticky;bottom:8px;background:#0b2034;border:2px solid #567d9f;border-radius:12px;padding:12px;margin-top:8px;font-size:13px;z-index:2}.cm-card button{float:right}.cm-note{font-size:11px;color:#b3c6d6;margin:6px 0}.tableFeatureControls{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:5px 0 9px}.tableFeatureControls button{padding:6px 12px;border:1px solid #406783;background:#14324b;border-radius:10px;font-weight:800;color:#fff}.tableFeatureControls button.active{background:#2b7041;border-color:#69c781}.tableFeatureControls .muted{font-size:11px}.tableDrawerHead{display:grid;grid-template-columns:1fr auto auto auto auto auto;align-items:center;gap:5px;margin-bottom:6px}.tableDrawerHead b{font-size:18px;min-width:0}.tableDrawerHead button{padding:5px 9px;background:#0a1c2d;white-space:nowrap}.tableHeadToggle.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876;color:#fff}.tableLockBtn{width:38px;min-width:38px;height:32px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;font-size:16px!important;line-height:1;border-radius:10px}.tableLockBtn.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876;box-shadow:0 0 0 1px rgba(126,236,151,.24) inset,0 0 10px rgba(61,187,96,.18)}.tcell.pinned{box-shadow:0 0 0 1px rgba(255,255,255,.62) inset}.recentDrawNum.pinned{outline:1px solid rgba(255,255,255,.46);outline-offset:0}.tableTopStats{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#cfdceb;margin-bottom:8px}.tableLegend{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 0 8px}.tableLegend .lg{padding:7px 4px;border-radius:8px;text-align:center;font-size:10px;font-weight:900;color:#fff;border-width:1px;border-style:solid;cursor:pointer;user-select:none;transition:transform .08s,box-shadow .12s,filter .12s}.tableLegend .lg:active{transform:scale(.96)}.tableLegend .lg.paintOn{box-shadow:0 0 0 3px #fff inset,0 0 0 2px rgba(255,255,255,.32);filter:brightness(1.16)}.tableGrid{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-top:6px}.tcell{padding:9px 0;border-radius:9px;background:#c6b983;color:#1c2230;border:1px solid #9e9568;font-weight:900;text-align:center;cursor:pointer;font-size:12px}.tcell.manual{background:linear-gradient(180deg,#6fd33f,#2f9626);border-color:#8ff75f;color:#fff}.tcell.c1,.tableLegend .c1,.recentDrawItem.on.c1{background:linear-gradient(180deg,#4caf50,#2e7d32);border-color:#7ce886;color:#fff}.tcell.c2,.tableLegend .c2,.recentDrawItem.on.c2{background:linear-gradient(180deg,#d8b733,#a68607);border-color:#f4d85e;color:#fff}.tcell.c3,.tableLegend .c3,.recentDrawItem.on.c3{background:linear-gradient(180deg,#cf5454,#972c2c);border-color:#ff9292;color:#fff}.tcell.c4,.tableLegend .c4,.recentDrawItem.on.c4{background:linear-gradient(180deg,#4fc3f7,#1976d2);border-color:#9be6ff;color:#fff}.tcell.c5,.tableLegend .c5,.recentDrawItem.on.c5{background:linear-gradient(180deg,#3f51b5,#24358f);border-color:#91a0ff;color:#fff}.tcell.overlap{background:linear-gradient(180deg,#8e44ad,#5e2b78);border-color:#d4a1ff;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15) inset}.tableActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.tableActions button{padding:9px 8px}.tableOverlap{margin-top:8px;padding:8px;border:1px solid #315b7d;border-radius:10px;background:#081827;font-size:11px;line-height:1.35;color:#d8e5ef}.tableOverlap b{color:#fff}.recentModes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.recentDraws{display:grid;gap:6px;margin-top:8px}.recentDrawItem{padding:8px 9px;border:1px solid #294b66;background:#081827;border-radius:11px;cursor:pointer}.recentDrawTop{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:900}.recentDrawNums{font-size:11px;color:#d9e6f2;margin-top:4px;line-height:1.65}.recentDrawNum{display:inline-block;padding:1px 3px;border-radius:5px;margin:0 1px}.recentDrawNum.sourceOn{background:linear-gradient(180deg,#54c95a,#258a37);color:#fff;font-weight:950;box-shadow:0 0 0 1px #8df49b inset,0 0 7px rgba(75,220,100,.45)}
+.recentDrawNum.tableEcho{color:#fff;font-weight:950}.recentDrawNum.tableEcho.manual{background:linear-gradient(180deg,#6fd33f,#2f9626);box-shadow:0 0 0 1px #8ff75f inset}.recentDrawNum.tableEcho.c1{background:linear-gradient(180deg,#4caf50,#2e7d32);box-shadow:0 0 0 1px #7ce886 inset}.recentDrawNum.tableEcho.c2{background:linear-gradient(180deg,#d8b733,#a68607);box-shadow:0 0 0 1px #f4d85e inset}.recentDrawNum.tableEcho.c3{background:linear-gradient(180deg,#cf5454,#972c2c);box-shadow:0 0 0 1px #ff9292 inset}.recentDrawNum.tableEcho.c4{background:linear-gradient(180deg,#4fc3f7,#1976d2);box-shadow:0 0 0 1px #9be6ff inset}.recentDrawNum.tableEcho.c5{background:linear-gradient(180deg,#3f51b5,#24358f);box-shadow:0 0 0 1px #91a0ff inset}.recentDrawNum.tableEcho.overlap{background:linear-gradient(180deg,#8e44ad,#5e2b78);box-shadow:0 0 0 1px #d4a1ff inset,0 0 0 2px rgba(255,255,255,.12)}
+.recentDrawDetails{margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,255,255,.16);font-size:11px;line-height:1.45;text-align:left}.recentDrawDetails .rdMain{display:flex;gap:9px;flex-wrap:wrap;font-weight:950}.recentDrawDetails .rdCols{margin-top:2px;color:#b8f4ca}.recentDrawDetails .rdNums{margin-top:2px;color:#ffe28a;font-weight:900}.footwrap{max-width:650px;margin:auto;display:grid;gap:5px}.footrow2{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.footrow2 .nav{padding:8px 2px;font-size:11px}.navSpacer{visibility:hidden}
+.historyPickBox{border:1px solid #315b7d;background:#071a2b;border-radius:12px;padding:8px;margin:0 0 9px}.historyPickHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.historyPickHead b{font-size:12px}.historyPickCount{font-size:11px;color:var(--muted)}.historyPickNums{display:flex;gap:5px;flex-wrap:wrap;min-height:31px;margin-top:6px}.historyPickActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}.historyPickActions button{padding:7px;font-size:10px}
+@media(max-width:430px){.tableDrawerHead{grid-template-columns:1fr auto auto auto auto;gap:3px}.tableDrawerHead button{padding:5px 7px;font-size:11px}.tableLockBtn{width:34px;min-width:34px;height:30px;padding:0!important;font-size:15px!important}.tableDrawerHead b{font-size:17px}}
+.recentDrawNum.mirrorPair{background:#29090d!important;color:#ff3535!important;border-radius:5px;box-shadow:0 0 0 1px #ff3535 inset}.recentModes:has(#tableMirrorPairs){grid-template-columns:repeat(2,minmax(0,1fr))!important}.mirrorDrawRow{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed #42627d}.mirrorLabel{font-size:15px}.mirrorNum{display:inline-block;background:#b70d16;color:white;border-radius:5px;padding:3px 6px;font-weight:800;font-size:14px}
+/* Desktop-only Table layout. Mobile rules and all application logic remain unchanged. */
+@media (min-width: 900px) and (pointer: fine) {
+  .tableDrawer {padding:14px 22px 20px;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-gutter:stable}
+  .tableDrawerHead {max-width:1480px;margin:0 auto 10px}
+  #tableDrawerBody {max-width:1480px;margin:0 auto;display:grid;grid-template-columns:minmax(380px,560px) minmax(420px,1fr);column-gap:24px;row-gap:7px;align-content:start}
+  #tableDrawerBody > * {grid-column:1;min-width:0;margin-top:0}
+  #tableDrawerBody > .tableGrid {grid-template-columns:repeat(9,minmax(0,1fr));gap:4px}
+  #tableDrawerBody .tcell {height:clamp(29px,3.65vh,39px);padding:2px 0;font-size:clamp(12px,1vw,15px);border-radius:7px}
+  #tableDrawerBody .tableLegend .lg {padding:5px 3px;font-size:11px}
+  #tableDrawerBody .recentModes {gap:6px}
+  #tableDrawerBody .recentModes button {padding:7px 8px;font-size:13px;min-height:34px}
+  #tableDrawerBody .recentModes input {padding:7px 8px!important;font-size:14px}
+  #tableDrawerBody .tableActions button {padding:7px 10px}
+  #tableDrawerBody > .recentDraws {grid-column:2;grid-row:1 / span 10;align-self:start;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;max-height:calc(100dvh - 85px);overflow-y:auto;overflow-x:hidden;padding:0 4px 10px 0}
+  #tableDrawerBody .recentDrawItem {padding:14px 16px;align-self:start}
+  #tableDrawerBody .recentDrawNums {font-size:16px;line-height:1.85;overflow-wrap:normal}
+  #tableDrawerBody .recentDrawNum {padding:2px 5px}
+  #tableDrawerBody .recentDrawDetails {font-size:14px}
+}
+@media (min-width: 900px) and (pointer: fine) and (max-width:1150px) {
+  #tableDrawerBody {grid-template-columns:minmax(340px,440px) minmax(400px,1fr);column-gap:14px}
+  #tableDrawerBody > .recentDraws {grid-template-columns:1fr}
+}
+.recentDrawTop{align-items:center;flex-wrap:wrap}.drawModeSwitch{display:inline-flex;gap:3px}.drawModeSwitch button{font-size:11px;padding:4px 8px;border-radius:7px;background:#17334c;border:1px solid #446781;color:#e9f2fa;cursor:pointer}.drawModeSwitch button.active{background:#277440;border-color:#6bdb89;color:white}.recentDrawNum.numberPicked{background:#21883e!important;color:#fff!important;box-shadow:0 0 0 1px #91f3a3 inset!important;font-weight:950}.recentDrawItem:has(.drawModeSwitch button[data-dmode="number"].active) .recentDrawNum:not([style*="visibility:hidden"]){cursor:pointer}.recentDrawItem:has(.drawModeSwitch button[data-dmode="number"].active) .recentDrawNum:not([style*="visibility:hidden"]):hover{outline:1px solid #80dd9b}
+.recentDrawItem.on{background:linear-gradient(180deg,#24783d,#15572e)!important;border:2px solid #78e99a!important;color:#fff!important;box-shadow:0 0 0 1px #b3ffc8 inset}.recentDrawItem.on .recentDrawNums{color:#fff}.recentDrawNum.numberPicked{background:#18a34a!important;color:white!important;outline:2px solid #a7ffb8!important;outline-offset:1px;box-shadow:0 0 0 1px #effff0 inset!important}.drawModeSwitch button.active{background:#1d9b48!important;border-color:#b5ffbd!important;color:#fff!important}
+.recentDrawItem .recentDrawNum.numberPicked{display:inline-block!important;background:#159447!important;background-image:none!important;color:#ffffff!important;border:2px solid #baffc5!important;border-radius:6px!important;padding:1px 4px!important;box-shadow:0 0 9px #20df69!important;font-weight:950!important}.recentDrawItem:has([data-dmode="number"].active) [data-dnum]{cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.cm-scroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain}.cm-scroll .cm-table{min-width:570px}.cm-table td.cm-mark{background:#098449!important;color:#fff!important;font-weight:800}.cm-table .cm-date{width:23%!important;font-size:10px!important;white-space:nowrap}.cm-toolbar input[type=range]{width:110px;accent-color:#b76bff}.cm-table .cm-empty td:not(.cm-mark){color:#667a8e}.cm-table .cm-empty td[data-cm-col]{cursor:pointer}.cm-table td.cm-history{background:#455b73!important}.cm-table td.cm-picked{background:#ffd03d!important}/* Compact mobile matrix: all ten columns, parity and date fit the viewport. */
+#tableMatrixPanel{width:100%;min-width:0;box-sizing:border-box}
+#tableMatrixPanel .cm-panel{width:100%;min-width:0;box-sizing:border-box;padding:5px;margin:6px 0}
+#tableMatrixPanel .cm-scroll{width:100%;overflow-x:hidden}
+#tableMatrixPanel .cm-scroll .cm-table{width:100%;min-width:0;table-layout:fixed}
+#tableMatrixPanel .cm-table .cm-draw{width:15%!important}
+#tableMatrixPanel .cm-table .cm-num{width:6.6%!important}
+#tableMatrixPanel .cm-table .cm-parity{width:4%!important}
+#tableMatrixPanel .cm-table .cm-date{width:15%!important;white-space:nowrap;letter-spacing:-.35px;font-size:clamp(7px,1.85vw,10px)!important}
+#tableMatrixPanel .cm-table td,#tableMatrixPanel .cm-table th{font-size:clamp(8px,2.35vw,12px);height:23px;white-space:nowrap}
+#tableMatrixPanel .cm-table td.cm-date{font-size:clamp(7px,1.85vw,10px)!important}
+#tableMatrixPanel .cm-table td.cm-trail{background:#263343}
+#tableMatrixPanel .cm-table td.cm-trail[style]{background:var(--cm-heat,transparent)}
+#tableMatrixPanel .cm-toolbar input[type=range]{width:clamp(80px,26vw,170px)}
+@media(min-width:720px){#tableMatrixPanel .cm-panel{padding:12px}#tableMatrixPanel .cm-table td,#tableMatrixPanel .cm-table th{height:28px;font-size:13px}#tableMatrixPanel .cm-table .cm-date{font-size:12px!important}}
+#tableMatrixPanel .cm-table td.cm-trail{background:var(--cm-heat,#795b21)!important;opacity:1!important}
+#tableMatrixPanel .cm-table td.cm-picked{background:#ffd13c!important;color:#152333!important}
+#tableMatrixPanel .cm-table td.cm-history{background:#455b73!important}
+
+#tableMatrixPanel .cm-table tfoot .cm-column-head th{height:22px!important;background:#17465a!important;color:#fff!important;font-size:clamp(8px,2vw,11px)!important;font-weight:800!important}
+#tableMatrixPanel .cm-table td.cm-trail{background:#75591f!important;opacity:1!important}
+#tableMatrixPanel .cm-table td.cm-trail[style]{background:#75591f!important}
+
+#tableMatrixPanel .cm-table tfoot .cm-column-head th,#tableMatrixPanel .cm-table tfoot .cm-column-head td{height:22px!important;background:#17465a!important;color:white!important;font-weight:800!important}
+#tableMatrixPanel .cm-scroll{overflow-x:hidden!important;max-width:100%!important}
+#tableMatrixPanel .cm-scroll .cm-table{min-width:0!important;width:100%!important;table-layout:fixed!important}
+#tableMatrixPanel .cm-table .cm-draw{width:16%!important}
+#tableMatrixPanel .cm-table .cm-num{width:6.5%!important}
+#tableMatrixPanel .cm-table .cm-date{width:14%!important}
+#tableMatrixPanel .cm-table td,#tableMatrixPanel .cm-table th{box-sizing:border-box!important;padding:0!important}
+
+
+@media(max-width:600px){#tableMatrixPanel .cm-panel{padding:3px!important}#tableMatrixPanel .cm-table td,#tableMatrixPanel .cm-table th{height:23px;font-size:clamp(7px,2.1vw,11px)!important}#tableMatrixPanel .cm-table .cm-date{font-size:clamp(6px,1.55vw,9px)!important}}
+#tableMatrixPanel .cm-table tfoot .cm-column-head th.cm-heat-label{box-shadow:inset 0 -3px 0 var(--cm-temp-color)}
+#tableMatrixPanel .cm-table tfoot tr:last-child th,#tableMatrixPanel .cm-table tfoot tr:last-child td{background:#0f172a}
+/* Desktop matrix only: retain mobile geometry and vertical drawer scrolling. */
+@media (min-width:900px) and (pointer:fine) {
+ #tableMatrixPanel{width:min(100%,740px)!important;max-width:740px!important;margin-left:0!important;margin-right:auto!important}
+ #tableMatrixPanel .cm-panel{width:100%!important;max-width:100%!important}
+ #tableMatrixPanel .cm-scroll{width:100%!important}
+}
+/* A toggle: display each draw's actual numbers within the existing ten-column grid. */
+#tableMatrixPanel .cm-table td:has(.cm-cell-numbers){white-space:normal!important;overflow:hidden!important;vertical-align:middle!important}
+#tableMatrixPanel .cm-cell-numbers{display:block;font-size:clamp(6px,.72vw,10px);line-height:1.05;overflow-wrap:anywhere;word-spacing:1px;font-weight:700}
+@media(max-width:600px){#tableMatrixPanel .cm-cell-numbers{font-size:6px;letter-spacing:-.3px}}
+#tableMatrixPanel .cm-table td.cm-draw-with-a{position:relative!important;overflow:visible!important}
+#tableMatrixPanel .cm-inline-a{position:absolute;right:1px;top:1px;min-width:12px;height:12px;padding:0 1px;border:1px solid #647d93;border-radius:2px;background:#183449;color:#e2eaf0;font-size:9px;line-height:10px;cursor:pointer;z-index:2}
+#tableMatrixPanel .cm-inline-a.active{background:#188a45;color:white;border-color:#8cf5aa}
+.tableNextDraw{display:block!important;visibility:visible!important;position:relative;z-index:2;margin:10px 0 12px;padding:17px 12px;border:2px solid #4ade80;border-radius:15px;background:#0e1b2d;color:#f4f8ff;text-align:center;font-weight:950;font-size:clamp(21px,5vw,29px);line-height:1.25;min-height:94px;font-variant-numeric:tabular-nums}.tableNextDraw .nextDrawTime{display:block;color:#72df95;font-size:clamp(25px,6vw,34px);margin-top:2px}.tableNextDraw .nextDrawLabel{color:#e7f0fa}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><div class="logo" style="display:grid;place-items:center;font-size:27px" aria-label="COMBO">🎲</div><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.1.5 · архив</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.48</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 
 <section id="our" class="section on">
- <div class="card"><h2>Наши комбы</h2><div class="muted">Каталог комбинаций восстанавливается · проверка своих чисел доступна</div><div id="groups" class="groups" style="margin-top:8px"></div><div id="comboList" class="comboList" style="margin-top:8px"></div></div>
+ <div class="card"><h2>Наши комбы</h2><div class="muted">45 комбинаций · К16 и ТС7 считаются отдельно</div><div id="groups" class="groups" style="margin-top:8px"></div><div id="comboList" class="comboList" style="margin-top:8px"></div></div>
  <div id="ourChosen" class="card hidden"></div>
 </section>
 
 <section id="any" class="section">
- <div class="card"><h2>Любая комба</h2><div class="muted">Выберите от 1 до 10 чисел</div><div id="pickgrid" class="pickgrid" style="margin-top:9px"></div><div id="selectedbar" class="selectedbar"></div></div>
+ <div class="card"><h2>Любая комба</h2><div class="muted">Выберите от 1 до 10 чисел</div><div id="pickgrid" class="pickgrid" style="margin-top:9px"></div><div id="selectedbar" class="selectedbar"></div><div id="anyActionBar" class="anyTools"><button id="clearSelectedBtn" class="ghost" type="button">❌ Удалить</button><button id="saveSelectedBtn" type="button">✅ Запомнить</button></div></div>
  <div id="anyParams"></div>
  <button id="checkAny" class="primary big">ПРОВЕРИТЬ</button>
 </section>
@@ -37,48 +123,183 @@ button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff
 <section id="history" class="section">
  <div id="historyBox" class="card"><h2>История</h2><div class="msg">Сначала проверьте нашу или любую комбинацию.</div></div>
 </section>
+
+<section id="xray" class="section">
+ <div id="xrayRoot"><div class="card"><h2>🔬 Рентген</h2><div class="msg">База загружается…</div></div></div>
+</section>
 </div>
 
-<nav class="footer"><div class="footin">
+<div id="savedDrawer" class="savedDrawer hidden">
+  <div class="savedDrawerHead"><b>Комбы ⏰</b><button id="closeSavedDrawer" type="button">▼</button></div>
+  <div class="muted">Нажмите на комбу — проверка по выбранным тиражам. ❌ удаляет комбу.</div>
+  <div id="savedCombosList" class="savedWrap"></div>
+</div>
+<div id="tableDrawer" class="tableDrawer hidden">
+  <div class="tableDrawerHead"><b>📊 Таблица</b><button id="tableRefreshBtn" type="button" aria-label="Обновить все данные" title="Обновить тиражи и все данные">⟳</button><button id="tableLockBtn" class="tableHeadToggle tableLockBtn" type="button" aria-pressed="false" aria-label="Закрепить цветные числа" title="Закрепить цветные числа">🔒</button><button id="tableActiveBtn" class="tableHeadToggle" type="button" aria-pressed="false">Актив</button><button id="tableOrderBtn" class="tableHeadToggle" type="button" aria-pressed="false">Воз</button><button id="closeTableDrawer" type="button">▼</button></div>
+  <div class="tableFeatureControls"><button id="tableMatrixBtn" type="button" aria-pressed="false" title="Открыть или закрыть матрицу столбов">МАТР</button><button id="tableTrgBtn" type="button" aria-pressed="false" title="Режим малых треугольников">🔺 TRG</button></div>
+  <div id="tableNextDraw" class="tableNextDraw" aria-live="polite">Ожидание данных последнего тиража</div>
+  <div id="tableDrawerBody"></div><div id="tableMatrixPanel" class="hidden"></div>
+</div>
+<nav class="footer"><div class="footwrap"><div class="footin">
 <button class="nav on" data-sec="our"><b>★</b>Наши комбы</button>
 <button class="nav" data-sec="any"><b>⊞</b>Любая комба</button>
+<button id="savedDrawerBtn" class="nav" type="button"><b>⏰</b>Комбы</button>
+<button class="nav" data-sec="xray"><b>🔬</b>Рентген</button>
 <button class="nav" data-sec="history"><b>◷</b>История</button>
-</div></nav>
+</div><div class="footrow2">
+<button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=a87e7f202611'"><b>🔁</b>Интервалы</button>
+<div class="navSpacer"></div><div class="navSpacer"></div>
+</div></div></nav>
 
+<script src="xray-engine-v1.js?v=a87e7f202611"></script>
+<script src="xray-ui-v1.js?v=a87e7f202611"></script>
+<script src="xray-archive-tools-v1.js?v=a87e7f202611"></script>
+<script src="xray-analog-columns-v1.js?v=a87e7f202611"></script>
 <script>
 'use strict';
+
 const $=id=>document.getElementById(id);const fmt=n=>String(n).padStart(2,'0');
-let DRAWS=[],PRESETS={combos:[],groups:[]},PAYOUTS={combination:{}},group='КУ-КУ',selected=[],lastResult=null,showCount=20,historyMarks=new Set(),historyOrder='draw',syncMeta=null,autoRefreshBusy=false;
+let DRAWS=[],PRESETS={combos:[],groups:[]},PAYOUTS={combination:{}},group='КУ-КУ',selected=[],lastResult=null,showCount=20,historyMarks=new Set(),historyOrder='draw',historyTransitions=false,syncMeta=null,autoRefreshBusy=false,savedAnyCombos=[],tableManualSelected=[],tableManualColors={},tablePaintColor='',tableActiveDrawIds=[],tableRecentWindow=0,tableParityFilter="all",tableReverseDigits=false,tableMirrorPairs=false,tableHighlightActive=false,tableRecentOrder='draw',tableNumberMode=false,tableMarkedNumbers=new Set();
 const AUTO_REFRESH_MS=10*1000;
 const TICKET_PRICE=100;
+const SAVED_ANY_KEY='comboKenoSavedAnyCombosV2';
+window.getComboDraws=()=>DRAWS;
 const filter={mode:'last',one:'',date:'',fromDate:'',toDate:'',count:50,fromDraw:'',toDraw:''};
 
 function parseDMY(s){const m=String(s||'').match(/^(\d{2})\.(\d{2})\.(\d{2,4})$/);if(!m)return 0;let y=+m[3];if(y<100)y+=2000;return Date.UTC(y,+m[2]-1,+m[1]);}
 function inputDateToUTC(s){if(!s)return 0;const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)}
-function drawColumn(d){const cnt=Array(10).fill(0);for(const n of d.balls)cnt[(n-1)%10]++;const mx=Math.max(...cnt), tied=new Set(cnt.map((c,i)=>c===mx?i+1:null).filter(Boolean));for(const n of d.balls){const c=((n-1)%10)+1;if(tied.has(c))return c}return 1}
+function drawColumn(d){const c=Number(d?.column);return Number.isInteger(c)&&c>=1&&c<=10?c:null;}
 function prizeForHits(selectedCount,h){return Number(PAYOUTS?.combination?.[String(selectedCount)]?.[String(h)]||0)}
 function money(v){return v.toLocaleString('ru-RU')+' ₽'}
+function comboKey(nums){return [...nums].sort((a,b)=>a-b).join('-')}
+function loadSavedAnyCombos(){try{const raw=JSON.parse(localStorage.getItem(SAVED_ANY_KEY)||'[]');savedAnyCombos=(Array.isArray(raw)?raw:[]).map(item=>{const nums=(Array.isArray(item?.nums)?item.nums:[]).map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=80);return nums.length?{key:comboKey(nums),nums:[...new Set(nums)].sort((a,b)=>a-b),createdAt:Number(item?.createdAt)||Date.now()}:null;}).filter(Boolean);}catch(e){savedAnyCombos=[]}}
+function persistSavedAnyCombos(){try{localStorage.setItem(SAVED_ANY_KEY,JSON.stringify(savedAnyCombos.map(item=>({nums:item.nums,createdAt:item.createdAt}))))}catch(e){}}
+function renderSavedCombos(){const box=$('savedCombosList');if(!box)return;if(!savedAnyCombos.length){box.innerHTML='<div class="savedEmpty">Пока ничего не сохранено.</div>';return}box.innerHTML=savedAnyCombos.map(item=>`<div class="savedItem"><button type="button" class="savedMain" data-saved-run="${item.key}"><div class="savedNums">${item.nums.map(fmt).join(' ')}</div><div class="savedMeta">Нажать, чтобы проверить по выбранным тиражам</div></button><button type="button" class="savedDel" data-saved-del="${item.key}">❌</button></div>`).join('');box.querySelectorAll('[data-saved-run]').forEach(b=>b.onclick=()=>runSavedCombo(b.dataset.savedRun));box.querySelectorAll('[data-saved-del]').forEach(b=>b.onclick=()=>deleteSavedCombo(b.dataset.savedDel));}
+function openSavedDrawer(){const d=$('savedDrawer');if(!d)return;renderSavedCombos();d.classList.remove('hidden');if($('savedDrawerBtn'))$('savedDrawerBtn').classList.add('on');}
+function closeSavedDrawer(){const d=$('savedDrawer');if(!d)return;d.classList.add('hidden');if($('savedDrawerBtn'))$('savedDrawerBtn').classList.remove('on');}
+function toggleSavedDrawer(){const d=$('savedDrawer');if(!d)return;if(d.classList.contains('hidden'))openSavedDrawer();else closeSavedDrawer();}
+function clearCurrentSelection(){selected=[];renderPick()}
+function saveCurrentSelection(){if(!selected.length){alert('Сначала выберите хотя бы одно число');return}const nums=[...selected].sort((a,b)=>a-b);const key=comboKey(nums);if(savedAnyCombos.some(item=>item.key===key)){alert('Эта комба уже сохранена');return}savedAnyCombos.unshift({key,nums,createdAt:Date.now()});persistSavedAnyCombos();renderSavedCombos();}
+function deleteSavedCombo(key){savedAnyCombos=savedAnyCombos.filter(item=>item.key!==key);persistSavedAnyCombos();renderSavedCombos();}
+function runSavedCombo(key){const item=savedAnyCombos.find(x=>x.key===key);if(!item)return;selected=[...item.nums];renderPick();runCheck(item.nums,`⏰ ${item.nums.map(fmt).join(' ')}`);}
+function getDrawById(id){return DRAWS.find(d=>d.draw===Number(id))}
+function comboColOf(n){return ((Number(n)-1)%10)+1}
+function comboColumnCounts(draw){const out=Array(11).fill(0);(draw?.balls||[]).forEach(n=>out[comboColOf(n)]++);return out}
+function comboGroupLabel(count){return count>=4?'4+':String(count)}
+function comboDrawGroupDetails(draw){const idx=DRAWS.findIndex(x=>Number(x.draw)===Number(draw?.draw)),winner=drawColumn(draw),prev=idx>0?DRAWS[idx-1]:null;if(!prev||!winner)return{winner:winner||'—',group:'—',columns:[],numbers:[]};const counts=comboColumnCounts(prev),raw=counts[winner]||0,columns=[];for(let col=1;col<=10;col++){const v=counts[col]||0;if(raw>=4?v>=4:v===raw)columns.push(col)}const numbers=(prev.balls||[]).map(Number).filter(n=>comboColOf(n)===winner);return{winner,group:comboGroupLabel(raw),columns,numbers};}
+function comboDrawDetailsHTML(draw){const x=comboDrawGroupDetails(draw);const counts=comboColumnCounts(draw);const groups=[[],[],[],[],[]];for(let col=1;col<=10;col++){const count=counts[col]||0;groups[Math.min(count,4)].push('ст'+col);}const currentGroups='<div class="rdCurrentGroups" style="margin-top:12px;padding-top:10px;border-top:1px solid #35536b"><b>Группы сейчас</b>'+groups.map((cols,i)=>'<div style="margin-top:5px"><span style="color:#9aafc1">ГР '+(i===4?'4+':i)+':</span> <span style="color:#80d99b;font-weight:700">'+(cols.length?cols.join(' · '):'—')+'</span></div>').join('')+'</div>';const even=(draw.balls||[]).filter(n=>Number(n)%2===0).length;const odd=(draw.balls||[]).length-even;const parity=even===odd?'ПОРОВНУ':even>odd?'ЧТ':'НЧТ';return '<div class="recentDrawDetails"><div style="font-size:14px;font-weight:950;color:#8ff0a3;margin-bottom:7px">'+parity+'</div><div class="rdMain"><span>Столб: '+x.winner+'</span><span>Группа: '+x.group+'</span></div><div>Вышел из группы: <span style="display:inline-block;background:#e00000;color:white;padding:2px 7px;border-radius:5px;font-weight:800">гр'+x.group+'</span></div><div class="rdCols">В этой группе были: '+(x.columns.length?x.columns.map(c=>'ст'+c).join(' · '):'—')+'</div><div class="rdNums">В предыдущем тираже в ст'+x.winner+' было: '+(x.numbers.length?x.numbers.map(n=>'<span'+(tableParityVisible(n)?'':' style="visibility:hidden"')+'>'+fmt(n)+'</span>').join(' · '):'—')+'</div>'+currentGroups+'</div>';}
+function comboSourceHighlightSetForDraw(draw){const out=new Set();const drawId=Number(draw?.draw);for(const activeId of tableActiveDrawIds){const idx=DRAWS.findIndex(x=>Number(x.draw)===Number(activeId));if(idx<=0) continue;const current=DRAWS[idx];const prev=DRAWS[idx-1];if(Number(prev.draw)!==drawId) continue;const info=comboDrawGroupDetails(current);info.numbers.forEach(n=>out.add(Number(n)));}return out;}
+const TABLE_DRAW_COLORS=['c1','c2','c3','c4','c5'];
+function getTableEffectiveSelected(){const set=new Set(tableManualSelected);tableActiveDrawIds.forEach(id=>{const d=getDrawById(id);if(d)d.balls.forEach(n=>set.add(n))});return [...set].sort((a,b)=>a-b)}
+function tableParityVisible(n){return tableParityFilter==="all"||(Number(n)%2===0)===(tableParityFilter==="even")}
+function tableSum(nums){return nums.reduce((a,b)=>a+b,0)}
+function getRecentVisibleDraws(){return tableRecentWindow?DRAWS.slice(-tableRecentWindow).reverse():[]}
+function getTableNumberMap(recent){const map=new Map();for(const n of tableManualSelected) map.set(n,{manual:true,manualColor:tableManualColors[n]||'',colors:[]});recent.forEach((d,idx)=>{if(!tableActiveDrawIds.includes(d.draw)) return;const cls=TABLE_DRAW_COLORS[idx%TABLE_DRAW_COLORS.length];d.balls.forEach(n=>{if(!map.has(n)) map.set(n,{manual:false,colors:[]});map.get(n).colors.push(cls);});});return map;}
+function tableClassForNumber(meta){if(!meta)return'';if(meta.manualColor)return meta.manualColor;if(meta.colors.length>1)return'overlap';if(meta.colors.length===1)return meta.colors[0];if(meta.manual)return'manual';return'';}
+function tableReverseDisplay(n){const original=fmt(n);return tableReverseDigits?original.split('').reverse().join(''):original;}
+function getTableMirrorPairNumbers(draw){
+  const numbers=new Set((draw?.balls||[]).map(Number));
+  const pairs=new Set();
+  for(const n of numbers){
+    const reverse=Number(fmt(n).split('').reverse().join(''));
+    if(n!==reverse&&numbers.has(reverse))pairs.add(n);
+  }
+  return pairs;
+}
+function comboRecentNumbersHTML(draw,numberMap){const source=comboSourceHighlightSetForDraw(draw);const balls=tableRecentOrder==='asc'?[...(draw.balls||[])].sort((a,b)=>a-b):(draw.balls||[]);const mirrorNumbers=tableMirrorPairs?getTableMirrorPairNumbers(draw):new Set();return balls.map(n=>{const echo=tableHighlightActive?tableClassForNumber(numberMap.get(Number(n))):'';const shown=tableReverseDisplay(n);const mirror=mirrorNumbers.has(Number(n));const marked=tableMarkedNumbers.has(Number(n));const cls=['recentDrawNum',source.has(Number(n))?'sourceOn':'',echo?'tableEcho':'',echo,mirror?'mirrorPair':'',marked?'numberPicked':''].filter(Boolean).join(' ');return '<span class="'+cls+'" data-dnum="'+Number(n)+'"'+(tableParityVisible(n)?'':' style="visibility:hidden"')+'>'+shown+'</span>';}).join(' ');}
+function getTableOverlapNumbers(recent){const numberMap=getTableNumberMap(recent);return [...numberMap.entries()].filter(([,meta])=>meta.colors.length>1).map(([n])=>Number(n)).sort((a,b)=>a-b);}
+function getDrawColorClass(drawId,recent){const idx=recent.findIndex(d=>d.draw===drawId);return idx>=0?TABLE_DRAW_COLORS[idx%TABLE_DRAW_COLORS.length]:'';}
+function syncTableHeadButtons(){if($('tableActiveBtn')){$('tableActiveBtn').classList.toggle('active',tableHighlightActive);$('tableActiveBtn').setAttribute('aria-pressed',tableHighlightActive?'true':'false');}if($('tableOrderBtn')){$('tableOrderBtn').classList.toggle('active',tableRecentOrder==='asc');$('tableOrderBtn').setAttribute('aria-pressed',tableRecentOrder==='asc'?'true':'false');}}
+function toggleTableHighlight(){tableHighlightActive=!tableHighlightActive;renderTableDrawer()}
+function toggleTableRecentOrder(){tableRecentOrder=tableRecentOrder==='asc'?'draw':'asc';renderTableDrawer()}
+function toggleTablePaintColor(cls){if(!TABLE_DRAW_COLORS.includes(cls))return;tablePaintColor=tablePaintColor===cls?'':cls;renderTableDrawer();}
+function toggleTableNumber(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(tablePaintColor){if(tableManualSelected.includes(n) && tableManualColors[n]===tablePaintColor){tableManualSelected=tableManualSelected.filter(x=>x!==n);delete tableManualColors[n];}else{if(!tableManualSelected.includes(n)){tableManualSelected=[...tableManualSelected,n].sort((a,b)=>a-b);}tableManualColors[n]=tablePaintColor;}}else{if(tableManualSelected.includes(n)){tableManualSelected=tableManualSelected.filter(x=>x!==n);delete tableManualColors[n];}else{tableManualSelected=[...tableManualSelected,n].sort((a,b)=>a-b);tableManualColors[n]='';}}renderTableDrawer();}
+function setTableParity(mode){tableParityFilter=tableParityFilter===mode?"all":mode;renderTableDrawer()}
+function setTableCustomWindow(){const el=$("tableCustomWindow");if(!el)return;const n=Number(el.value);if(!Number.isSafeInteger(n)||n<1){el.setCustomValidity("Введите целое количество тиражей от 1");el.reportValidity();return;}el.setCustomValidity("");tableRecentWindow=Math.min(n,DRAWS.length);renderTableDrawer()}
+function setTableWindow(n){tableRecentWindow=(tableRecentWindow===n?0:n);renderTableDrawer()}
+function setTableDrawMode(id,mode){id=Number(id);if(mode==='draw'){tableNumberMode=false;toggleTableDraw(id);return;}tableNumberMode=true;tableActiveDrawIds=tableActiveDrawIds.filter(x=>x!==id);renderTableDrawer()}
+function toggleTableDrawNumber(id,n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(tableMarkedNumbers.has(n))tableMarkedNumbers.delete(n);else tableMarkedNumbers.add(n);renderTableDrawer()}
+function toggleTableDraw(id){id=Number(id);if(tableActiveDrawIds.includes(id)) tableActiveDrawIds=tableActiveDrawIds.filter(x=>x!==id);else tableActiveDrawIds=[...tableActiveDrawIds,id];renderTableDrawer();}
+function clearTableAll(){tableManualSelected=[];tableManualColors={};tablePaintColor='';tableActiveDrawIds=[];tableMarkedNumbers.clear();renderTableDrawer()}
+function openTableDrawer(){updateTableNextDraw();closeSavedDrawer();const d=$('tableDrawer');if(!d)return;renderTableDrawer();d.classList.remove('hidden');document.body.style.overflow='hidden';if($('tableDrawerBtn'))$('tableDrawerBtn').classList.add('on')}
+function closeTableDrawer(){const d=$('tableDrawer');if(!d)return;d.classList.add('hidden');document.body.style.overflow='';if($('tableDrawerBtn'))$('tableDrawerBtn').classList.remove('on')}
+function toggleTableDrawer(){const d=$('tableDrawer');if(!d)return;if(d.classList.contains('hidden'))openTableDrawer();else closeTableDrawer()}
+
+const cmStateKey='combo-matrix-state-v1';
+let cmSaved={};try{cmSaved=JSON.parse(sessionStorage.getItem(cmStateKey)||'{}')||{}}catch(e){}
+let cmOpen=cmSaved.open===true,cmCount=50,cmReverse=false,cmTemperature=false,cmEmpty=0,cmReduce=0,cmSelected=null,cmTrg=false,cmNumbers=cmSaved.numbers===true;
+const cmIndividual=new Set((Array.isArray(cmSaved.individual)?cmSaved.individual:[]).map(Number).filter(n=>Number.isSafeInteger(n)&&n>0));
+function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,individual:[...cmIndividual]}))}catch(e){}}
+const cmFutureMarks=new Map();
+function cmData(){return DRAWS.slice(-cmCount).filter(d=>drawColumn(d)).slice().sort((a,b)=>cmReverse?b.draw-a.draw:a.draw-b.draw);}
+function cmGroups(d){const counts=comboColumnCounts(d),out=[[],[],[],[],[]];for(let i=1;i<=10;i++)out[Math.min(counts[i],4)].push('ст'+i);return out;}
+function cmTemperatureColors(values){
+ const min=Math.min(...values),max=Math.max(...values),span=max-min;
+ // Lucky Numbers scale: lowest frequency is blue, highest is red; blend through purple.
+ return values.map(value=>{const red=span?Math.round(255*(value-min)/span):128;return 'rgb('+red+', 0, '+(255-red)+')';});
+}
+function cmRender(updateTableOnly=false){
+ const panel=$('tableMatrixPanel'),toggle=$('tableMatrixBtn'),trg=$('tableTrgBtn');if(!panel)return;
+ panel.classList.toggle('hidden',!cmOpen);toggle?.classList.toggle('active',cmOpen);toggle?.setAttribute('aria-pressed',String(cmOpen));trg?.classList.toggle('active',cmTrg);trg?.setAttribute('aria-pressed',String(cmTrg));
+ if(!cmOpen)return;
+ const all=cmData(),freq=Array(11).fill(0),latestByCol=Array(11).fill(-1);
+ all.forEach((d,i)=>{const c=drawColumn(d);if(c){freq[c]++;latestByCol[c]=i}});
+ const maxFreq=Math.max(1,...freq.slice(1)),rows=[];
+ const heatColor=n=>'#75591f';
+ const renderCell=(col,hit,last,trail,mark,draw)=>{const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'" class="'+cls+'"'+heat+'>'+(mark||hit?col:'')+'</td>';};
+ all.forEach((d,idx)=>{
+  const col=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I';
+  const cells=Array.from({length:10},(_,j)=>{const n=j+1,hit=n===col;const base=renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&idx>latestByCol[n]&&latestByCol[n]>=0,false,d.draw);if(!(cmNumbers||cmIndividual.has(Number(d.draw))))return base;const nums=(d.balls||[]).map(Number).filter(v=>comboColOf(v)===n).sort((a,b)=>a-b);return base.replace(/>[^<]*<\/td>$/, ' title="'+nums.join(', ')+'"><span class="cm-cell-numbers">'+nums.join(' ')+'</span></td>');}).join('');
+  rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="Показать числа только этого тиража">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
+ });
+ const lastDraw=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));
+ for(let gap=1;gap<=cmEmpty;gap++){
+  const draw=lastDraw+gap,marked=cmFutureMarks.get(draw)||new Set();
+  const cells=Array.from({length:10},(_,j)=>{const n=j+1;return renderCell(n,false,false,latestByCol[n]>=0,marked.has(n),draw)}).join('');
+  const row='<tr class="cm-empty"><td class="cm-draw">'+draw+'</td>'+cells+'<td class="cm-parity"></td><td class="cm-date">—</td></tr>';
+  if(cmReverse)rows.unshift(row);else rows.push(row);
+ }
+ const counts=Array.from({length:10},(_,i)=>'<td>'+Math.max(0,freq[i+1]-cmReduce)+'</td>').join('');
+ const temperatureColors=cmTemperatureColors(freq.slice(1).map(value=>Math.max(0,value-cmReduce)));
+ const footerHeads=Array.from({length:10},(_,i)=>'<th class="cm-num'+(cmTemperature?' cm-heat-label':'')+'" style="--cm-temp-color:'+temperatureColors[i]+'">'+(i+1)+'</th>').join('');
+ const heads=Array.from({length:10},(_,i)=>'<th class="cm-num">'+(i+1)+'</th>').join('');
+ const footer='<tr class="cm-column-head"><th>Тираж</th>'+footerHeads+'<td>⚖</td><td>Дата</td></tr><tr><th>Частота</th>'+counts+'<td>⚖</td><td>Частота</td></tr>';
+ // Keep both native range inputs mounted during dragging (including touch capture).
+ const table=panel.querySelector('.cm-table');
+ if(updateTableOnly&&table){
+  // Retain row buttons, toolbar, range capture and scroll containers on data updates.
+  const body=table.tBodies[0],next=document.createElement('tbody');next.innerHTML=rows.join('');
+  const key=row=>row.querySelector('[data-cm-draw]')?.dataset.cmDraw;
+  const old=new Map([...body.rows].map(row=>[key(row),row]));
+  let cursor=body.firstElementChild;
+  for(const fresh of [...next.rows]){
+   const id=key(fresh),row=old.get(id)||fresh;old.delete(id);
+   if(row!==fresh){row.className=fresh.className;[...fresh.cells].forEach((cell,i)=>{if(row.cells[i].outerHTML!==cell.outerHTML)row.cells[i].replaceWith(cell)});}
+   if(row!==cursor)body.insertBefore(row,cursor);cursor=row.nextElementSibling;
+  }
+  for(const row of old.values())row.remove();
+  if(table.tFoot.innerHTML!==footer)table.tFoot.innerHTML=footer;return;
+ }
+ const card=cmSelected?(()=>{const d=DRAWS.find(x=>x.draw===cmSelected.draw);if(!d)return '';const g=cmGroups(d),previous=DRAWS[DRAWS.findIndex(z=>z.draw===d.draw)-1],previousCounts=comboColumnCounts(previous),selectedCount=previousCounts[cmSelected.col]||0,selectedGroup=comboGroupLabel(selectedCount),groupCols=Array.from({length:10},(_,i)=>i+1).filter(i=>selectedCount>=4?previousCounts[i]>=4:previousCounts[i]===selectedCount),selectedNumbers=(previous?.balls||[]).filter(n=>comboColOf(n)===cmSelected.col);return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>ст'+cmSelected.col+'</b><p>Тираж: №'+d.draw+'</p><p>Дата: '+(d.date||'—')+' · Время: '+(d.time||'—')+'</p><p>Вышел из группы: '+selectedGroup+'</p><p>В этой группе были: '+(groupCols.map(v=>'ст'+v).join(' · ')||'—')+'</p><p>Числа выбранного столба в предыдущем тираже: '+(selectedNumbers.join(' · ')||'—')+'</p><b>Группы сейчас</b>'+g.map((a,i)=>'<div>ГР '+(i===4?'4+':i)+': '+(a.join(' · ')||'—')+'</div>').join('')+'</div>'})():'';
+ panel.innerHTML='<section class="cm-panel"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button></div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи внизу · серый — история · жёлтый — последний столб · зелёный — отметка</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const marks=cmFutureMarks.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);cmFutureMarks.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
+document.addEventListener('change',e=>{if(e.target.id==='cmCount'){cmCount=Number(e.target.value);cmRender()}});
+document.addEventListener('input',e=>{if(e.target.id==='cmEmpty'||e.target.id==='cmReduce'){const n=Number(e.target.value);if(e.target.id==='cmEmpty')cmEmpty=n;else cmReduce=n;const output=e.target.parentElement?.querySelector('output');if(output)output.textContent=n;cmRender(true);}});
+
+function renderTableDrawer(live=false){updateTableNextDraw();cmRender(live);const box=$('tableDrawerBody');if(!box)return;syncTableHeadButtons();const nums=getTableEffectiveSelected().filter(tableParityVisible);const recent=getRecentVisibleDraws();const numberMap=getTableNumberMap(recent);const overlaps=getTableOverlapNumbers(recent).filter(tableParityVisible);const legend=`<div class="tableLegend">
+<button type="button" class="lg c1 ${tablePaintColor==='c1'?'paintOn':''}" data-paint="c1">1 зел</button>
+<button type="button" class="lg c2 ${tablePaintColor==='c2'?'paintOn':''}" data-paint="c2">2 жёлт</button>
+<button type="button" class="lg c3 ${tablePaintColor==='c3'?'paintOn':''}" data-paint="c3">3 красн</button>
+<button type="button" class="lg c4 ${tablePaintColor==='c4'?'paintOn':''}" data-paint="c4">4 голуб</button>
+<button type="button" class="lg c5 ${tablePaintColor==='c5'?'paintOn':''}" data-paint="c5">5 синий</button>
+</div>`;const grid=Array.from({length:80},(_,i)=>i+1).map(n=>{const meta=numberMap.get(n);let cls='';if(meta){if(meta.manualColor) cls=meta.manualColor;else if(meta.colors.length>1) cls='overlap';else if(meta.colors.length===1) cls=meta.colors[0];else if(meta.manual) cls='manual';}return `<button type="button" class="tcell ${cls}" data-tcell="${n}" style="${!tableParityVisible(n)?"visibility:hidden":""}">${n}</button>`;}).join('');const recentHtml=tableRecentWindow?`<div class="recentDraws">${recent.map(d=>{const active=tableActiveDrawIds.includes(d.draw);const colorCls=active?getDrawColorClass(d.draw,recent):'';return `<div class="recentDrawItem ${active?'on':''} ${colorCls}" data-tdraw="${d.draw}"><div class="recentDrawTop"><span>№${d.draw}</span><span class="drawModeSwitch"><button type="button" data-dmode="draw" data-did="${d.draw}" class="${active?'active':''}">ТИР</button><button type="button" data-dmode="number" data-did="${d.draw}" class="${tableNumberMode?'active':''}">ЧСЛ</button></span><span>${d.date} ${d.time}</span></div><div class="recentDrawNums">${comboRecentNumbersHTML(d,numberMap)}</div>${comboDrawDetailsHTML(d)}</div>`;}).join('')}</div>`:'';box.innerHTML=`<div class="tableTopStats"><span>Отмечено <b>${nums.length}</b></span><span>Сумма <b>${tableSum(nums)}</b></span></div>`+legend+`<div class="tableGrid">${grid}</div>`+`<div class="tableActions"><button id="tableRandomInfo" class="ghost" type="button">Тиры: ${tableRecentWindow||'5 / 10 / 20'}</button><button id="tableClearAll" type="button">Очистить</button></div>`+`<div class="muted" style="margin-top:8px">Таблица сделана в формате 1–9, 10–18, 19–27 и так далее. Список тиров свёрнут. Нажмите 5, 10 или 20 либо введите количество — откроются последние тиражи. ЧЁТ / НЕЧЁТ скрывают остальные числа; повторное нажатие показывает все. Нажатие на тираж вставляет его числа в таблицу, повторное нажатие удаляет.</div>`+`<div class="recentModes" style="grid-template-columns:repeat(2,minmax(0,1fr))"><input id="tableCustomWindow" type="number" inputmode="numeric" min="1" step="1" value="${tableRecentWindow||''}" aria-label="Количество тиражей" placeholder="Сколько тиров" style="width:100%;min-width:0;background:#132f49;color:white;border:1px solid #416783;border-radius:10px;padding:10px"/><button type="button" id="tableCustomApply">Показать</button><button type="button" id="tableEvenFilter" aria-pressed="${tableParityFilter==='even'}" class="${tableParityFilter==='even'?'active':''}">ЧЁТ</button><button type="button" id="tableOddFilter" aria-pressed="${tableParityFilter==='odd'}" class="${tableParityFilter==='odd'?'active':''}">НЕЧЁТ</button><button type="button" id="tableReverseDigits" aria-pressed="${tableReverseDigits}" class="${tableReverseDigits?'active':''}" title="Перевернуть цифры только в тиражах">🔁</button><button type="button" id="tableMirrorPairs" aria-pressed="${tableMirrorPairs}" class="${tableMirrorPairs?'active':''}" title="Подсветить зеркальные пары в тиражах">🪞</button></div>`+`<div class="recentModes"><button type="button" class="${tableRecentWindow===5?'active':''}" data-twindow="5">5 тир</button><button type="button" class="${tableRecentWindow===10?'active':''}" data-twindow="10">10 тир</button><button type="button" class="${tableRecentWindow===20?'active':''}" data-twindow="20">20 тир</button></div>`+recentHtml+`<div class="tableOverlap"><b>Совпали — </b>${overlaps.length?overlaps.map(fmt).join(' '):'нет совпадений'}</div>`;box.querySelectorAll('[data-paint]').forEach(b=>b.onclick=()=>toggleTablePaintColor(b.dataset.paint));box.querySelectorAll('[data-tcell]').forEach(b=>b.onclick=()=>toggleTableNumber(b.dataset.tcell));box.querySelectorAll('[data-twindow]').forEach(b=>b.onclick=()=>setTableWindow(Number(b.dataset.twindow)));box.querySelectorAll('[data-tdraw]').forEach(b=>b.onclick=e=>{if(e.target.closest('[data-dmode]'))return;const id=Number(b.dataset.tdraw);if(tableNumberMode)return;toggleTableDraw(id)});box.querySelectorAll('[data-dnum]').forEach(el=>el.onclick=e=>{const card=el.closest('[data-tdraw]');if(!card)return;const id=Number(card.dataset.tdraw);if(!tableNumberMode)return;e.stopPropagation();toggleTableDrawNumber(id,Number(el.dataset.dnum))});box.querySelectorAll('[data-dmode]').forEach(b=>b.onclick=e=>{e.stopPropagation();setTableDrawMode(Number(b.dataset.did),b.dataset.dmode)});if($('tableClearAll'))$('tableClearAll').onclick=clearTableAll;if($('tableCustomApply'))$('tableCustomApply').onclick=setTableCustomWindow;if($('tableCustomWindow'))$('tableCustomWindow').oninput=()=>{ $('tableCustomWindow').setCustomValidity(''); };if($('tableCustomWindow'))$('tableCustomWindow').onkeydown=e=>{if(e.key==='Enter')setTableCustomWindow()};if($('tableEvenFilter'))$('tableEvenFilter').onclick=()=>setTableParity('even');if($('tableOddFilter'))$('tableOddFilter').onclick=()=>setTableParity('odd');if($('tableReverseDigits'))$('tableReverseDigits').onclick=()=>{tableReverseDigits=!tableReverseDigits;renderTableDrawer()};if($('tableMirrorPairs'))$('tableMirrorPairs').onclick=()=>{tableMirrorPairs=!tableMirrorPairs;renderTableDrawer()};}
 function getFiltered(){let a=DRAWS;if(filter.mode==='one'){const x=+filter.one;a=a.filter(d=>d.draw===x)}else if(filter.mode==='date'){const t=inputDateToUTC(filter.date);a=a.filter(d=>parseDMY(d.date)===t)}else if(filter.mode==='dates'){const f=inputDateToUTC(filter.fromDate),t=inputDateToUTC(filter.toDate);a=a.filter(d=>{const x=parseDMY(d.date);return (!f||x>=f)&&(!t||x<=t)})}else if(filter.mode==='last'){const n=Math.max(1,+filter.count||50);a=a.slice(-n)}else if(filter.mode==='range'){const f=+filter.fromDraw||-Infinity,t=+filter.toDraw||Infinity;a=a.filter(d=>d.draw>=f&&d.draw<=t)}return a}
 function hitsFor(nums,d){let h=0;for(const n of nums)if(d.balls.includes(n))h++;return h}
 function stats(nums,a){const hs=a.map(d=>hitsFor(nums,d)),sum=hs.reduce((x,y)=>x+y,0),best=hs.length?Math.max(...hs):0,avg=hs.length?sum/hs.length:0,withHit=hs.filter(x=>x>0).length;let cur=0;for(let i=hs.length-1;i>=0&&hs[i]>0;i--)cur++;let rec=0,run=0;for(const h of hs){if(h>0){run++;rec=Math.max(rec,run)}else run=0}return{sum,best,avg,pct:hs.length?withHit*100/hs.length:0,cur,rec}}
-function financeStats(nums,a){
-  const selectedCount=nums.length;
-  let gross=0,winningDraws=0;
-  for(const d of a){
-    const h=hitsFor(nums,d);
-    const prize=prizeForHits(selectedCount,h);
-    gross+=prize;
-    if(prize>0)winningDraws++;
-  }
-  const costs=a.length*TICKET_PRICE;
-  const net=gross-costs;
-  return{costs,gross,net,winningDraws};
-}
-function signedMoney(v){
-  if(v>0)return '+'+money(v);
-  if(v<0)return '−'+money(Math.abs(v));
-  return money(0);
-}
+function financeStats(nums,a){const selectedCount=nums.length;let gross=0,winningDraws=0;for(const d of a){const h=hitsFor(nums,d);const prize=prizeForHits(selectedCount,h);gross+=prize;if(prize>0)winningDraws++;}const costs=a.length*TICKET_PRICE;const net=gross-costs;return{costs,gross,net,winningDraws};}
+function signedMoney(v){if(v>0)return '+'+money(v);if(v<0)return '−'+money(Math.abs(v));return money(0);}
 function modeLabel(){if(filter.mode==='one')return 'Тираж №'+filter.one;if(filter.mode==='date')return 'Дата '+(filter.date||'—');if(filter.mode==='dates')return 'Диапазон дат';if(filter.mode==='last')return 'Последние '+filter.count+' тиражей';if(filter.mode==='range')return 'Диапазон тиражей';return 'Вся база'}
 function paramsHTML(prefix){return `<div class="card acc" id="${prefix}Acc"><div class="accHead" data-acc="${prefix}"><div><b>🎯 Параметры проверки</b><div class="muted" id="${prefix}ModeLabel">${modeLabel()}</div></div><div>▶</div></div><div class="accBody hidden" id="${prefix}Body"><div class="modegrid">${[['one','1 тираж'],['date','Дата'],['dates','Диапазон дат'],['last','Кол-во тиражей'],['range','Диапазон тир.'],['all','Вся база']].map(([m,t])=>`<button data-mode="${m}" data-prefix="${prefix}" class="${filter.mode===m?'active':''}">${t}</button>`).join('')}</div><div id="${prefix}Fields" class="fields"></div></div></div>`}
 function renderFields(prefix){const box=$(prefix+'Fields');if(!box)return;let h='';if(filter.mode==='one')h=`<label class="wide">Номер тиража<input data-f="one" type="number" value="${filter.one}"></label>`;if(filter.mode==='date')h=`<label class="wide">Дата<input data-f="date" type="date" value="${filter.date}"></label>`;if(filter.mode==='dates')h=`<label>От<input data-f="fromDate" type="date" value="${filter.fromDate}"></label><label>До<input data-f="toDate" type="date" value="${filter.toDate}"></label>`;if(filter.mode==='last')h=`<label class="wide">Количество тиражей<input data-f="count" type="number" min="1" max="${DRAWS.length||31027}" value="${filter.count}"></label>`;if(filter.mode==='range')h=`<label>С №<input data-f="fromDraw" type="number" value="${filter.fromDraw}"></label><label>По №<input data-f="toDraw" type="number" value="${filter.toDraw}"></label>`;box.innerHTML=h;box.querySelectorAll('[data-f]').forEach(el=>el.oninput=()=>{filter[el.dataset.f]=el.value;document.querySelectorAll('[id$="ModeLabel"]').forEach(x=>x.textContent=modeLabel())})}
@@ -86,144 +307,211 @@ function bindParams(root=document){root.querySelectorAll('[data-acc]').forEach(h
 function renderGroups(){$('groups').innerHTML=PRESETS.groups.map(g=>`<button data-group="${g}" class="${g===group?'active':''}">${g}</button>`).join('');$('groups').querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>{group=b.dataset.group;renderGroups();renderCombos()})}
 function renderCombos(){const a=PRESETS.combos.filter(c=>c.group===group);$('comboList').innerHTML=a.map((c,i)=>`<button class="comboBtn" data-i="${i}"><span class="cid">${c.id}</span><span class="nums">${c.numbers.map(fmt).join(' ')}</span><span class="ncount">${c.numbers.length} ч.</span></button>`).join('');$('comboList').querySelectorAll('[data-i]').forEach((b)=>b.onclick=()=>chooseOur(a[+b.dataset.i]))}
 function chooseOur(c){const box=$('ourChosen');box.classList.remove('hidden');box.innerHTML=`<h2>${c.id}</h2><div class="resultTop">${c.numbers.map(n=>`<span class="sel">${fmt(n)}</span>`).join('')}</div><div id="ourParams">${paramsHTML('ourP')}</div><button id="checkOur" class="primary big" style="margin-top:8px">ПРОВЕРИТЬ</button>`;bindParams(box);renderFields('ourP');$('checkOur').onclick=()=>runCheck(c.numbers,c.id);box.scrollIntoView({behavior:'smooth',block:'start'})}
-function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1).map(n=>`<button class="pick ${selected.includes(n)?'on':''}" data-n="${n}">${fmt(n)}</button>`).join('');$('pickgrid').querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n;if(selected.includes(n))selected=selected.filter(x=>x!==n);else if(selected.length<10)selected=[...selected,n].sort((a,b)=>a-b);renderPick()});$('selectedbar').innerHTML=selected.length?selected.map(n=>`<span class="sel">${fmt(n)}</span>`).join(''):'<span class="muted">Ничего не выбрано</span>'}
+function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1).map(n=>`<button class="pick ${selected.includes(n)?'on':''}" data-n="${n}">${fmt(n)}</button>`).join('');$('pickgrid').querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n;if(selected.includes(n))selected=selected.filter(x=>x!==n);else if(selected.length<10)selected=[...selected,n].sort((a,b)=>a-b);renderPick()});$('selectedbar').innerHTML=selected.length?selected.map(n=>`<span class="sel">${fmt(n)}</span>`).join(''):'<span class="muted">Ничего не выбрано</span>';if($('clearSelectedBtn'))$('clearSelectedBtn').disabled=!selected.length;if($('saveSelectedBtn'))$('saveSelectedBtn').disabled=!selected.length}
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
-function histRow(d,nums){const balls=historyBalls(d);return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">➡️ Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">⬆️ Возрастание</button></div>`}
-function bindHistoryOrder(){document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
+function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=a87e7f202611">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
-function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n))historyMarks.delete(n);else historyMarks.add(n);renderHistory()}
+function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
 function bindHistoryNumbers(){document.querySelectorAll('#historyBox .dn[data-hn]').forEach(el=>{el.onclick=()=>toggleHistoryMark(el.dataset.hn);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleHistoryMark(el.dataset.hn)}}});if($('markClear'))$('markClear').onclick=()=>{historyMarks.clear();renderHistory()}}
-function renderHistory(){
-  if(!lastResult)return;
-  const {nums,name,draws,st}=lastResult;
-  const ordered=[...draws].sort((a,b)=>b.draw-a.draw),shown=ordered.slice(0,showCount);
-  const fin=financeStats(nums,draws);
-  const netClass=fin.net<0?'loss':'';
-  $('historyBox').innerHTML=
-    `<h2>${name}</h2>`+
-    `<div class="resultTop">${nums.map(n=>`<span class="sel">${fmt(n)}</span>`).join('')}</div>`+
-    `<div class="muted" style="margin-top:6px">${modeLabel()} · ${draws.length} тиражей</div>`+
-    `<div class="stats" style="margin-top:9px">`+
-      `<div class="stat"><b>${st.sum}</b><span>Σ попаданий</span></div>`+
-      `<div class="stat"><b>${st.best}</b><span>Макс.</span></div>`+
-      `<div class="stat"><b>${st.avg.toFixed(2)}</b><span>Среднее</span></div>`+
-      `<div class="stat"><b>${st.pct.toFixed(0)}%</b><span>С попад.</span></div>`+
-      `<div class="stat fire"><b>${st.cur}</b><span>🔥 текущая серия</span></div>`+
-      `<div class="stat fire"><b>${st.rec}</b><span>🔥 рекорд серии</span></div>`+
-    `</div>`+
-    '<div class="msg">Финансовые итоги временно отключены: историческая таблица выплат ещё не восстановлена.</div>'+ 
-    `<div class="historyTitle">КАК ШЛА КОМБИНАЦИЯ</div>`+
-    `${orderSwitchHTML()}`+
-    `${markBarHTML()}`+
-    `<div class="hist">`+
-      `<div class="hrow head"><div class="hcell">Тираж / Столб / Дата</div><div class="hcell">Попад.</div><div class="hcell">Числа тиража · ${historyOrder==='asc'?'⬆️':'➡️'} · 2×10</div></div>`+
-      `${shown.map(d=>histRow(d,nums)).join('')}`+
-      `${shown.length<ordered.length?'<button id="moreBtn" class="more">ПОКАЗАТЬ ЕЩЁ ▼</button>':''}`+
-    `</div>`;
-  bindHistoryOrder();
-  bindHistoryNumbers();
-  if($('moreBtn'))$('moreBtn').onclick=()=>{showCount+=20;renderHistory()};
+function renderHistory(){if(!lastResult)return;const {nums,name,draws,st}=lastResult;const ordered=[...draws].sort((a,b)=>b.draw-a.draw),shown=ordered.slice(0,showCount);const fin=financeStats(nums,draws);const netClass=fin.net<0?'loss':'';$('historyBox').innerHTML=`<div class="historyPickBox"><div class="historyPickHead"><b>Выбранная комбинация (макс. 10 чисел)</b><span class="historyPickCount">${selected.length} / 10</span></div><div class="historyPickNums">${selected.length?selected.map(n=>`<span class="sel">${fmt(n)}</span>`).join(''):'<span class="muted">Нажимайте числа в тиражах ниже</span>'}</div><div class="historyPickActions"><button id="historyClearSelected" class="ghost" type="button">❌ Удалить</button><button id="historySaveSelected" type="button">✅ Запомнить</button></div></div><h2>${name}</h2><div class="resultTop">${nums.map(n=>`<span class="sel">${fmt(n)}</span>`).join('')}</div><div class="muted" style="margin-top:6px">${modeLabel()} · ${draws.length} тиражей</div><div class="stats" style="margin-top:9px"><div class="stat"><b>${st.sum}</b><span>Σ попаданий</span></div><div class="stat"><b>${st.best}</b><span>Макс.</span></div><div class="stat"><b>${st.avg.toFixed(2)}</b><span>Среднее</span></div><div class="stat"><b>${st.pct.toFixed(0)}%</b><span>С попад.</span></div><div class="stat fire"><b>${st.cur}</b><span>🔥 текущая серия</span></div><div class="stat fire"><b>${st.rec}</b><span>🔥 рекорд серии</span></div></div><div class="financeStats"><div class="financeStat"><div class="flabel">Затраты</div><b>${money(fin.costs)}</b><div class="fsub">${draws.length} × ${money(TICKET_PRICE)}</div></div><div class="financeStat"><div class="flabel">Чистый выигрыш</div><b class="${netClass}">${signedMoney(fin.net)}</b><div class="fsub">все выплаты − затраты</div></div><div class="financeStat"><div class="flabel">Выигрышные тиражи</div><b class="winCount">${fin.winningDraws}</b><div class="fsub">раз с выигрышем</div></div></div><div class="historyTitle">КАК ШЛА КОМБИНАЦИЯ</div>${orderSwitchHTML()}${markBarHTML()}<div class="hist"><div class="hrow head"><div class="hcell">Тираж / Столб / Дата</div><div class="hcell">Попад.</div><div class="hcell">Числа тиража · ${historyOrder==='asc'?'⬆️':'➡️'} · 2×10</div></div>${shown.map(d=>histRow(d,nums)).join('')}${shown.length<ordered.length?'<button id="moreBtn" class="more">ПОКАЗАТЬ ЕЩЁ ▼</button>':''}</div>`;bindHistoryOrder();bindHistoryNumbers();if($('historyClearSelected'))$('historyClearSelected').onclick=()=>{selected=[];historyMarks.clear();renderPick();renderHistory()};if($('historySaveSelected'))$('historySaveSelected').onclick=saveCurrentSelection;if($('moreBtn'))$('moreBtn').onclick=()=>{showCount+=20;renderHistory()};}
+function runCheck(nums,name){if(!nums.length){alert('Выберите хотя бы одно число');return}const a=getFiltered();if(!a.length){alert('По выбранным параметрам тиражи не найдены');return}showCount=20;historyMarks.clear();selected=[...nums].slice(0,10);lastResult={nums:[...nums],name,draws:a,st:stats(nums,a)};renderPick();renderHistory();switchSec('history')}
+function notifyComboXray(){try{const x=window.ComboXrayUI;if(typeof x?.notifyDataUpdated==='function')Promise.resolve(x.notifyDataUpdated()).catch(e=>console.warn('COMBO XRAY REFRESH',e));}catch(e){console.warn('COMBO XRAY REFRESH',e)}}
+function switchSec(id){try{document.activeElement?.blur()}catch(e){}document.querySelectorAll('.section').forEach(s=>s.classList.toggle('on',s.id===id));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('on',b.dataset.sec===id));if(id==='xray')notifyComboXray();window.scrollTo({top:0,behavior:'smooth'})}
+function updateDbLine(){const last=DRAWS.at(-1);if(!last){$('dbline').textContent='База пуста';return}$('dbline').textContent=`База: ${DRAWS.length.toLocaleString('ru-RU')} · последний №${last.draw} · ${last.date} ${last.time}`;}
+function openIntervalHistory(){
+ const raw=new URLSearchParams(location.search).get('intervalK7');
+ if(!raw)return;
+ const nums=raw.split('-').map(Number);
+ if(nums.length!==7||new Set(nums).size!==7||nums.some(n=>!Number.isInteger(n)||n<1||n>80))return;
+ filter.mode='all';
+ runCheck(nums,'K7 · Интервалы · '+nums.map(fmt).join(' '));
 }
-function runCheck(nums,name){if(!nums.length){alert('Выберите хотя бы одно число');return}const a=getFiltered();if(!a.length){alert('По выбранным параметрам тиражи не найдены');return}showCount=20;historyMarks.clear();lastResult={nums:[...nums],name,draws:a,st:stats(nums,a)};renderHistory();switchSec('history')}
-function switchSec(id){document.querySelectorAll('.section').forEach(s=>s.classList.toggle('on',s.id===id));document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('on',b.dataset.sec===id));window.scrollTo({top:0,behavior:'smooth'})}
-
-function updateDbLine(){
-  const last=DRAWS.at(-1);
-  if(!last){$('dbline').textContent='База пуста';return}
-  $('dbline').textContent=`База: ${DRAWS.length.toLocaleString('ru-RU')} · последний №${last.draw} · ${last.date} ${last.time}`;
-}
-function refreshOpenHistory(){
-  if(!lastResult)return;
-  const nums=[...lastResult.nums],name=lastResult.name;
-  const a=getFiltered();
-  lastResult={nums,name,draws:a,st:stats(nums,a)};
-  renderHistory();
-}
+function refreshOpenHistory(){if(!lastResult)return;const nums=[...lastResult.nums],name=lastResult.name;const a=getFiltered();lastResult={nums,name,draws:a,st:stats(nums,a)};renderHistory();}
 async function fetchJSONLive(name){
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),30000);
+ try{
   const sep=name.includes('?')?'&':'?';
-  const r=await fetch(`${name}${sep}_live=${Date.now()}`,{cache:'no-store'});
+  const r=await fetch(`${name}${sep}_live=${Date.now()}`,{cache:'no-store',signal:controller.signal});
   if(!r.ok)throw new Error(`${name}: HTTP ${r.status}`);
   const text=await r.text();
   if(/^\s*</.test(text))throw new Error(`${name}: получен HTML вместо JSON`);
   return JSON.parse(text);
+ }finally{clearTimeout(timer)}
 }
+// One in-flight refresh for every entry point. Slow/older responses cannot roll data back.
+let liveRefreshTask=null;
+function captureLiveView(){
+ const selectors=['#tableDrawer','#tableDrawerBody','#tableMatrixPanel .cm-scroll'];
+ const scrolls=selectors.map(selector=>{const el=document.querySelector(selector);return {selector,top:el?.scrollTop||0,left:el?.scrollLeft||0}});
+ const scroller=document.querySelector('#tableMatrixPanel .cm-scroll');
+ const anchor=scroller&&[...scroller.querySelectorAll('tbody tr')].find(row=>row.getBoundingClientRect().bottom>scroller.getBoundingClientRect().top);
+ const focused=document.activeElement;
+ return {scrolls,x:window.scrollX,y:window.scrollY,anchor:anchor?.querySelector('[data-cm-draw]')?.dataset.cmDraw,offset:anchor?.getBoundingClientRect().top,
+  focus:focused?.id,value:focused?.value,start:focused?.selectionStart,end:focused?.selectionEnd};
+}
+function restoreLiveView(view){
+ for(const s of view.scrolls){const el=document.querySelector(s.selector);if(el){el.scrollTop=s.top;el.scrollLeft=s.left;}}
+ const scroller=document.querySelector('#tableMatrixPanel .cm-scroll');
+ const anchor=view.anchor&&scroller?.querySelector('[data-cm-draw="'+view.anchor+'"]')?.closest('tr');
+ if(anchor)scroller.scrollTop+=anchor.getBoundingClientRect().top-view.offset;
+ const focus=view.focus&&$(view.focus);
+ if(focus&&focus!==document.activeElement){if(view.value!==undefined)focus.value=view.value;focus.focus({preventScroll:true});try{focus.setSelectionRange(view.start,view.end)}catch{}}
+ window.scrollTo(view.x,view.y);
+}
+function validateLiveHistory(draws,status){
+ if(!Array.isArray(draws)||!draws.length)throw new Error('История пуста');
+ const current=Number(DRAWS.at(-1)?.draw||0);let previous=0;
+ for(const d of draws){
+  if(!Number.isSafeInteger(d.draw)||d.draw<=previous||!Array.isArray(d.balls)||d.balls.length!==20||new Set(d.balls).size!==20||d.balls.some(n=>!Number.isInteger(n)||n<1||n>80))throw new Error('Некорректный или повторный тираж');
+  if(current&&d.draw>current&&d.draw!==Math.max(previous,current)+1)throw new Error('Пропуск нового тиража');
+  previous=d.draw;
+ }
+ if(previous<current)throw new Error('Источник вернул устаревшую историю');
+ if(previous<Number(status?.latestDraw||0))throw new Error('История ещё не догнала статус источника');
+ return previous;
+}
+// Restored archive extension. Keep older verified data; never replace or silently rewrite a draw.
+async function loadComboHistory(){
+ const [base,tail]=await Promise.all([
+  fetchJSONLive('combo-history-v1.json'),
+  fetchJSONLive('combo-history-tail-restored-v1.json')
+ ]);
+ if(!Array.isArray(base)||!Array.isArray(tail))throw new Error('Неполный архив COMBO');
+ const byId=new Map();
+ for(const row of [...base,...tail]){
+  const id=Number(row?.draw);
+  if(!Number.isSafeInteger(id)||!Array.isArray(row.balls)||row.balls.length!==20||new Set(row.balls).size!==20)throw new Error('Неверные 20 чисел тиража №'+id);
+  if(byId.has(id)){
+   const previous=byId.get(id);
+   if(previous.date!==row.date||previous.time!==row.time||JSON.stringify(previous.balls)!==JSON.stringify(row.balls))throw new Error('Архивы расходятся на тираже №'+id);
+  }else byId.set(id,row);
+ }
+ const merged=[...byId.values()].sort((a,b)=>a.draw-b.draw);
+ for(let i=1;i<merged.length;i++)if(merged[i].draw!==merged[i-1].draw+1)throw new Error('Пропуск тиража после №'+merged[i-1].draw);
+ return merged;
+}
+
 async function autoRefreshLive(force=false){
-  if(autoRefreshBusy||document.hidden)return;
-  autoRefreshBusy=true;
-  try{
-    const s=await fetchJSONLive('combo-status-v1.json');
-    const current=Number(DRAWS.at(-1)?.draw||0);
-    const official=Number(s?.latestDraw||0);
-    syncMeta=s;
-
-    if(!force && official<=current)return;
-
-    const d=await fetchJSONLive('combo-history-v1.json');
-    if(!Array.isArray(d)||!d.length)throw new Error('combo-history-v1.json пуст');
-    d.sort((a,b)=>a.draw-b.draw);
-
-    const received=Number(d.at(-1)?.draw||0);
-    if(official && received<official)throw new Error(`История ещё не догнала status: ${received}<${official}`);
-
-    if(received>current || force){
-      DRAWS=d;
-      updateDbLine();
-      renderFields('anyP');
-      renderFields('ourP');
-      refreshOpenHistory();
-    }
-  }catch(e){
-    console.warn('COMBO LIVE AUTO',e);
-  }finally{
-    autoRefreshBusy=false;
+ if(liveRefreshTask)return liveRefreshTask;
+ if(document.hidden&&!force)return;
+ autoRefreshBusy=true;
+ liveRefreshTask=(async()=>{
+  const s=await fetchJSONLive('combo-status-v1.json');
+  const current=Number(DRAWS.at(-1)?.draw||0);
+  if(!force&&Number(s?.latestDraw||0)<=current){syncMeta=s;return {latest:current,changed:false};}
+  const d=await loadComboHistory();
+  const latest=validateLiveHistory(d,s),changed=JSON.stringify(d)!==JSON.stringify(DRAWS);
+  syncMeta=s;
+  if(changed){
+   const view=captureLiveView();
+   try{
+    DRAWS=d;updateDbLine();updateTableNextDraw();refreshOpenHistory();
+    const drawer=$('tableDrawer');
+    if(drawer&&!drawer.classList.contains('hidden'))renderTableDrawer(true);
+    notifyComboXray();
+   }finally{restoreLiveView(view)}
   }
+  return {latest,changed};
+ })().catch(error=>{console.warn('COMBO LIVE AUTO',error);return {error};}).finally(()=>{autoRefreshBusy=false;liveRefreshTask=null;});
+ return liveRefreshTask;
 }
-function startAutoRefresh(){
-  window.setTimeout(()=>autoRefreshLive(false),1000);
-  window.setInterval(()=>autoRefreshLive(false),AUTO_REFRESH_MS);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshLive(true)});
-  window.addEventListener('focus',()=>autoRefreshLive(false));
-  window.addEventListener('pageshow',()=>autoRefreshLive(false));
-  window.addEventListener('online',()=>autoRefreshLive(true));
+async function refreshAllFromTable(){
+ const buttons=[$('refreshBtn'),$('tableRefreshBtn'),...document.querySelectorAll('[data-cm-action="refresh"]')].filter(Boolean);
+ if(buttons.some(b=>b.disabled))return;
+ const labels=buttons.map(b=>b.textContent);
+ buttons.forEach(b=>{b.disabled=true;b.textContent='⟳ Проверяю…'});
+ try{
+  const result=await autoRefreshLive(true);
+  if(result?.error)throw result.error;
+  const message=result.changed?'Загружен тираж №'+result.latest:'Новых опубликованных тиражей нет · последний №'+result.latest;
+  const status=$('dbline');if(status){updateDbLine();status.textContent+=' · '+message;status.title=message;}
+  buttons.forEach(b=>b.title=message);
+  if(!result.changed)alert(message);
+ }catch(error){alert('Не удалось обновить данные: '+error.message);}
+ finally{buttons.forEach((b,i)=>{b.disabled=false;if(b.textContent==='⟳ Проверяю…')b.textContent=labels[i]});}
 }
 
-async function forceUpdate(){const b=$('refreshBtn');if(!b)return;b.disabled=true;b.textContent='↻ Обновляю…';try{if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.update().catch(()=>{})))}if('caches' in window){const ks=await caches.keys();await Promise.all(ks.filter(k=>k.startsWith('combo-keno-shell')).map(k=>caches.delete(k)))}}catch(e){console.warn(e)}finally{const u=new URL(location.href);u.searchParams.set('_v',Date.now());location.replace(u.toString())}}
-async function load(){
+// Official Moscow schedule; derived from the Stoloto ingestion schedule, not a browser prediction.
+const COMBO_DRAW_TIMES='00:02 00:17 00:32 01:02 01:17 01:32 02:02 02:17 02:32 03:02 03:32 04:02 04:17 04:32 05:02 05:17 05:32 06:02 06:17 06:32 07:02 07:32 08:02 08:17 08:32 09:02 09:17 09:32 10:02 10:17 10:32 11:02 11:32 12:02 12:17 12:32 13:02 13:17 13:32 14:02 14:17 14:32 15:02 15:32 16:02 16:17 16:32 17:02 17:17 17:32 18:02 18:17 18:32 19:02 19:32 20:02 20:17 20:32 21:02 21:17 21:32 22:02 22:17 22:32 23:02 23:32'.split(' ');
+function updateTableNextDraw(){
+ const el=$('tableNextDraw');if(!el)return;
+ // The schedule is a fixed Moscow-time grid. Always advance exactly one
+ // scheduled slot after COMBO's own last confirmed draw, never from wall clock.
+ const last=DRAWS.reduce((best,item)=>Number.isSafeInteger(Number(item?.draw))&&Number(item.draw)>0&&(!best||Number(item.draw)>Number(best.draw))?item:best,null);
+ if(!last){el.textContent='Ожидание последнего подтверждённого тиража';return;}
+ const m=String(last.time||'').match(/([01]?\d|2[0-3]):([0-5]\d)/);
+ const lastTime=m?m[1].padStart(2,'0')+':'+m[2]:'';
+ const slot=COMBO_DRAW_TIMES.indexOf(lastTime);
+ const draw=Number(last.draw)+1;
+ if(slot<0){
+  const label='СЛЕД. ТИРАЖ №'+draw;
+  if(el.textContent!==label)el.textContent=label;
+  return;
+ }
+ const nextSlot=(slot+1)%COMBO_DRAW_TIMES.length;
+ const nextTime=COMBO_DRAW_TIMES[nextSlot];
+ const html='<span class="nextDrawLabel">СЛЕД. ТИРАЖ №'+draw+'</span><span class="nextDrawTime">'+nextTime+'</span>';
+ if(el.innerHTML!==html)el.innerHTML=html;
+}
+
+function startAutoRefresh(){window.setTimeout(()=>autoRefreshLive(false),1000);window.setInterval(()=>autoRefreshLive(false),AUTO_REFRESH_MS);document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshLive(true)});window.addEventListener('focus',()=>autoRefreshLive(false));window.addEventListener('pageshow',()=>autoRefreshLive(false));window.addEventListener('online',()=>autoRefreshLive(true));}
+async function forceUpdate(){return refreshAllFromTable();}
+async function load(){let d,p,s,pay;try{[d,p,s,pay]=await Promise.all([loadComboHistory(),fetchJSONLive('combo-presets-v1.json'),fetchJSONLive('combo-status-v1.json').catch(()=>null),fetchJSONLive('keno-payouts-v1.json')]);if(!Array.isArray(d)||!d.length)throw new Error('combo-history-v1.json пуст');DRAWS=d.sort((a,b)=>a.draw-b.draw);PRESETS=p;PAYOUTS=pay;syncMeta=s;}catch(e){$('dbline').textContent='Ошибка загрузки базы';console.error('COMBO DB LOAD',e);window.setTimeout(load,AUTO_REFRESH_MS);return}try{updateDbLine();if(syncMeta?.verification==='archive-restored-2026-10-20')$('dbline').textContent+=' · АРХИВ (ожидает обновления)';updateTableNextDraw();renderGroups();renderCombos();renderPick();}catch(e){console.error('COMBO UI RENDER',e)}startAutoRefresh();notifyComboXray();openIntervalHistory();}
+
+document.querySelectorAll('.nav[data-sec]').forEach(b=>b.onclick=()=>{closeSavedDrawer();closeTableDrawer();switchSec(b.dataset.sec)});
+$('anyParams').innerHTML=paramsHTML('anyP');bindParams(document);renderFields('anyP');$('checkAny').onclick=()=>runCheck(selected,'Любая комба');$('refreshBtn').onclick=forceUpdate;
+if($('clearSelectedBtn'))$('clearSelectedBtn').onclick=clearCurrentSelection;
+if($('saveSelectedBtn'))$('saveSelectedBtn').onclick=saveCurrentSelection;
+if($('savedDrawerBtn'))$('savedDrawerBtn').onclick=()=>{closeTableDrawer();toggleSavedDrawer()};
+if($('closeSavedDrawer'))$('closeSavedDrawer').onclick=closeSavedDrawer;
+if($('tableDrawerBtn'))$('tableDrawerBtn').onclick=toggleTableDrawer;
+if($('tableRefreshBtn'))$('tableRefreshBtn').onclick=refreshAllFromTable;
+if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
+if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
+if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
+loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=a87e7f202611',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+</script>
+<script src="combo-table-lock-v1.js?v=a87e7f202611"></script>
+<script src="combo-search-v1.js?v=a87e7f202611"></script>
+<script id="appVersionOwner">(()=>{const fix=()=>{const el=document.querySelector('.version');if(el)el.textContent='Версия v4.8.48'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix()})()</script>
+<script src="combo-max-details-v1.js?v=a87e7f202611"></script>
+<script id="comboAutoUpdate">
+(()=>{
+ const current=document.querySelector('meta[name="app-build"]')?.content;
+ let busy=false,reloading=false;
+ const check=async()=>{
+  if(busy||reloading||document.hidden)return;
+  busy=true;
   try{
-    const [d,p,st] = await Promise.all([
-      fetchJSONLive('combo-history-v1.json'),
-      fetchJSONLive('combo-presets-v1.json').catch(()=>({groups:[],combos:[]})),
-      fetchJSONLive('combo-status-v1.json').catch(()=>null)
-    ]);
-    if(!Array.isArray(d)||!d.length)throw new Error('Историческая база пуста');
-    DRAWS=d.sort((a,b)=>a.draw-b.draw);
-    PRESETS=p&&Array.isArray(p.combos)&&Array.isArray(p.groups)?p:{groups:[],combos:[]};
-    syncMeta=st;
-    updateDbLine();
-    renderGroups();renderCombos();renderPick();
-    if(!PRESETS.combos.length){
-      $('comboList').innerHTML='<div class="msg">Архив сохранённых комбинаций ещё восстанавливается. Раздел «Любая комба» уже работает: выберите числа и нажмите «ПРОВЕРИТЬ».</div>';
-    }
-    if(syncMeta?.verification==='historical-snapshot-only'){
-      $('dbline').textContent+=' · АРХИВ, не прямой эфир';
-    }
-    startAutoRefresh();
-  }catch(e){
-    $('dbline').textContent='Ошибка загрузки истории: '+e.message;
-    console.error(e);
-  }
-}
-
-document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>switchSec(b.dataset.sec));
-$('anyParams').innerHTML=paramsHTML('anyP');
-bindParams(document);
-renderFields('anyP');
-$('checkAny').onclick=()=>runCheck(selected,'Любая комба');
-$('refreshBtn').onclick=forceUpdate;
-renderPick();
-load();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+   const {build}=await fetchJSONLive('app-version.json');
+   if(!/^[a-f0-9]{12}$/.test(build)||build===current)return;
+   const url=new URL(location.href);
+   const key='combo-app-reloaded:'+url.pathname+':'+build;
+   if(sessionStorage.getItem(key)||url.searchParams.get('v')===build)return;
+   if('caches' in window){
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k.startsWith('combo-keno-shell-')).map(k=>caches.delete(k)));
+   }
+   if('serviceWorker' in navigator){
+    const reg=await navigator.serviceWorker.getRegistration();
+    if(reg)await reg.update().catch(e=>console.warn('SW update',e));
+   }
+   // Install the new service worker in the background, but never navigate
+   // away from the user's current section or discard in-memory table state.
+   sessionStorage.setItem(key,'1');
+   reloading=true;
+  }catch(e){console.warn('COMBO app update',e)}finally{busy=false}
+ };
+ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',check);
+ addEventListener('load',check);addEventListener('focus',check);addEventListener('pageshow',check);addEventListener('online',check);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+ setInterval(check,600000);check();
+})();
 </script>
 </body></html>
+

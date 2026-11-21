@@ -1,11 +1,21 @@
 {
-  "version": "restored-archive-2026-11-21",
-  "source": "Сохранённый архив COMBO KENO, не прямой эфир",
+  "version": "restored-v4.8.47-2026-11-21",
+  "source": "Проверенная резервная копия COMBO KENO (20.10.2026); не прямой эфир",
   "updatedAt": null,
-  "drawsStored": 30572,
-  "latestDraw": 325153,
-  "latestDate": "09.08.26",
-  "latestTime": "09:32",
-  "verification": "historical-snapshot-only",
-  "added": 0
+  "drawsStored": 35303,
+  "latestDraw": 329884,
+  "latestDate": "20.10.26",
+  "latestTime": "11:02",
+  "verification": "archive-restored-2026-10-20",
+  "stableDraws": 10,
+  "checkedTail": 10,
+  "added": 0,
+  "latestOfficial": {
+    "draw": 329884,
+    "date": "20.10.26",
+    "time": "11:02",
+    "column": 6
+  },
+  "checkedAt": "2026-10-20T08:25:01.982691+00:00",
+  "sourceState": "current"
 }
