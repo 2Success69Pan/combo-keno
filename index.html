@@ -600,7 +600,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{co
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
  const localVersion=document.querySelector('meta[name="app-version"]')?.content||'';
  const badge=document.querySelector('.version');
- const showVersion=version=>{if(badge&&/^\\d+\\.\\d+\\.\\d+$/.test(String(version||'')))badge.textContent='Версия v'+version};
+ const showVersion=version=>{if(badge&&/^[0-9]+[.][0-9]+[.][0-9]+$/.test(String(version||'')))badge.textContent='Версия v'+version};
  showVersion(localVersion);
  let pending=null,navigating=false;
  const check=(manual=false)=>{
