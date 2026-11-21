@@ -33,6 +33,8 @@ jobs:
               curl -sSL --max-time 12 -o /dev/null -w "RESULT %{http_code}, bytes %{size_download}, IP %{remote_ip}\n" "$url" || true
             done
           done
+      - name: Probe archive pagination without storing unverified data
+        run: node scripts/combo-pagination-probe.mjs
       - name: Validate and catch up official KENO results
         run: node scripts/combo-backfill-v1.mjs
       - name: Commit verified draw archive only
