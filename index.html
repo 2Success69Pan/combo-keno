@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="sum20261121a">
-<link rel="manifest" href="manifest.webmanifest?v=sum20261121a">
+<meta name="app-build" content="ca112621a001">
+<link rel="manifest" href="manifest.webmanifest?v=ca112621a001">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=sum20261121a">
+<link rel="stylesheet" href="xray-v1.css?v=ca112621a001">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -109,7 +109,7 @@ button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.50</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.51</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 
 <section id="our" class="section on">
  <div class="card"><h2>Наши комбы</h2><div class="muted">45 комбинаций · К16 и ТС7 считаются отдельно</div><div id="groups" class="groups" style="margin-top:8px"></div><div id="comboList" class="comboList" style="margin-top:8px"></div></div>
@@ -150,14 +150,14 @@ button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=sum20261121a'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=ca112621a001'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=sum20261121a"></script>
-<script src="xray-ui-v1.js?v=sum20261121a"></script>
-<script src="xray-archive-tools-v1.js?v=sum20261121a"></script>
-<script src="xray-analog-columns-v1.js?v=sum20261121a"></script>
+<script src="xray-engine-v1.js?v=ca112621a001"></script>
+<script src="xray-ui-v1.js?v=ca112621a001"></script>
+<script src="xray-archive-tools-v1.js?v=ca112621a001"></script>
+<script src="xray-analog-columns-v1.js?v=ca112621a001"></script>
 <script>
 'use strict';
 
@@ -325,7 +325,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=sum20261121a">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=ca112621a001">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -437,16 +437,25 @@ async function refreshAllFromTable(){
  const buttons=[$('refreshBtn'),$('tableRefreshBtn'),...document.querySelectorAll('[data-cm-action="refresh"]')].filter(Boolean);
  if(buttons.some(b=>b.disabled))return;
  const labels=buttons.map(b=>b.textContent);
- buttons.forEach(b=>{b.disabled=true;b.textContent='⟳ Проверяю…'});
+ buttons.forEach(b=>{b.disabled=true;b.textContent='⟳ Проверяю версию…'});
  try{
+  // One tap checks the APP version first; a newer build reloads this open page
+  // and load() then picks up the newest verified draw archive as well.
+  const version=typeof window.comboCheckAppUpdate==='function'?await window.comboCheckAppUpdate(true):{checked:false,error:new Error('Проверка версии ещё не готова')};
+  if(version?.updated)return;
+  buttons.forEach(b=>{b.textContent='⟳ Проверяю тиражи…'});
   const result=await autoRefreshLive(true);
   if(result?.error)throw result.error;
-  const message=result.changed?'Загружен тираж №'+result.latest:'Новых опубликованных тиражей нет · последний №'+result.latest;
+  const suffix=version?.error?' · Версию проверить не удалось: '+version.error.message:' · Версия актуальна';
+  const message=(result.changed?'Загружен тираж №'+result.latest:'Новых опубликованных тиражей нет · последний №'+result.latest)+suffix;
   const status=$('dbline');if(status){updateDbLine();status.textContent+=' · '+message;status.title=message;}
   buttons.forEach(b=>b.title=message);
-  if(!result.changed)alert(message);
- }catch(error){alert('Не удалось обновить данные: '+error.message);}
- finally{buttons.forEach((b,i)=>{b.disabled=false;if(b.textContent==='⟳ Проверяю…')b.textContent=labels[i]});}
+ }catch(error){
+  const status=$('dbline');if(status){status.textContent='Ошибка обновления: '+error.message;status.title=error.message;}
+  console.warn('COMBO refresh',error);
+ }finally{
+  buttons.forEach((b,i)=>{b.disabled=false;b.textContent=labels[i]});
+ }
 }
 
 // Official Moscow schedule; derived from the Stoloto ingestion schedule, not a browser prediction.
@@ -474,7 +483,43 @@ function updateTableNextDraw(){
 
 function startAutoRefresh(){window.setTimeout(()=>autoRefreshLive(false),1000);window.setInterval(()=>autoRefreshLive(false),AUTO_REFRESH_MS);document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshLive(true)});window.addEventListener('focus',()=>autoRefreshLive(false));window.addEventListener('pageshow',()=>autoRefreshLive(false));window.addEventListener('online',()=>autoRefreshLive(true));}
 async function forceUpdate(){return refreshAllFromTable();}
-async function load(){let d,p,s,pay;try{[d,p,s,pay]=await Promise.all([loadComboHistory(),fetchJSONLive('combo-presets-v1.json'),fetchJSONLive('combo-status-v1.json').catch(()=>null),fetchJSONLive('keno-payouts-v1.json')]);if(!Array.isArray(d)||!d.length)throw new Error('combo-history-v1.json пуст');DRAWS=d.sort((a,b)=>a.draw-b.draw);PRESETS=p;PAYOUTS=pay;syncMeta=s;}catch(e){$('dbline').textContent='Ошибка загрузки базы';console.error('COMBO DB LOAD',e);window.setTimeout(load,AUTO_REFRESH_MS);return}try{updateDbLine();if(syncMeta?.verification==='archive-restored-2026-10-20')$('dbline').textContent+=' · АРХИВ (ожидает обновления)';updateTableNextDraw();renderGroups();renderCombos();renderPick();}catch(e){console.error('COMBO UI RENDER',e)}startAutoRefresh();notifyComboXray();openIntervalHistory();}
+
+/* Restore the open tab and matrix after an in-place app upgrade. */
+function restoreComboUpgradeView(){
+ const key='combo-upgrade-view-v1';let saved;
+ try{const raw=sessionStorage.getItem(key);if(!raw)return;saved=JSON.parse(raw);sessionStorage.removeItem(key)}catch(e){return;}
+ if(!saved||saved.path!==location.pathname||Date.now()-saved.at>5*60*1000)return;
+ try{
+  if(typeof saved.group==='string'&&PRESETS.groups?.includes(saved.group)){group=saved.group;renderGroups();renderCombos();}
+  if(Array.isArray(saved.selected)){selected=saved.selected.map(Number).filter(n=>Number.isInteger(n)&&n>=1&&n<=80);renderPick();}
+  if(Array.isArray(saved.activeDraws))tableActiveDrawIds=saved.activeDraws.filter(Number.isSafeInteger);
+  if(saved.parity==='even'||saved.parity==='odd'||saved.parity==='all')tableParityFilter=saved.parity;
+  if(saved.matrix&&typeof saved.matrix==='object'){
+   cmCount=[20,50,100,200,500].includes(saved.matrix.count)?saved.matrix.count:cmCount;
+   cmReverse=!!saved.matrix.reverse;cmTemperature=!!saved.matrix.temperature;
+   cmTrg=!!saved.matrix.trg;
+   cmSum=!!saved.matrix.sum;
+   cmNumbers=!!saved.matrix.numbers;
+   cmEmpty=Math.min(10,Math.max(0,Number(saved.matrix.empty)||0));
+   cmReduce=Math.min(20,Math.max(0,Number(saved.matrix.reduce)||0));
+   cmSelected=saved.matrix.selected||null;
+  }
+  if(saved.section&&document.getElementById(saved.section)?.classList.contains('section')){
+   document.querySelectorAll('.section').forEach(el=>el.classList.toggle('on',el.id===saved.section));
+   document.querySelectorAll('.nav[data-sec]').forEach(el=>el.classList.toggle('on',el.dataset.sec===saved.section));
+   if(saved.section==='xray')notifyComboXray();
+  }
+  if(saved.tableOpen)openTableDrawer();else if(saved.savedOpen)openSavedDrawer();
+  requestAnimationFrame(()=>{
+   const drawer=$('tableDrawer'),scroller=document.querySelector('#tableMatrixPanel .cm-scroll');
+   if(drawer)drawer.scrollTop=Number(saved.tableScroll)||0;
+   if(scroller){scroller.scrollTop=Number(saved.matrixScroll)||0;scroller.scrollLeft=Number(saved.matrixLeft)||0;}
+   window.scrollTo(Number(saved.scrollX)||0,Number(saved.scrollY)||0);
+  });
+ }catch(e){console.warn('COMBO restore view after upgrade',e)}
+}
+
+async function load(){let d,p,s,pay;try{[d,p,s,pay]=await Promise.all([loadComboHistory(),fetchJSONLive('combo-presets-v1.json'),fetchJSONLive('combo-status-v1.json').catch(()=>null),fetchJSONLive('keno-payouts-v1.json')]);if(!Array.isArray(d)||!d.length)throw new Error('combo-history-v1.json пуст');DRAWS=d.sort((a,b)=>a.draw-b.draw);PRESETS=p;PAYOUTS=pay;syncMeta=s;}catch(e){$('dbline').textContent='Ошибка загрузки базы';console.error('COMBO DB LOAD',e);window.setTimeout(load,AUTO_REFRESH_MS);return}try{updateDbLine();if(syncMeta?.verification==='archive-restored-2026-10-20')$('dbline').textContent+=' · АРХИВ (ожидает обновления)';updateTableNextDraw();renderGroups();renderCombos();renderPick();}catch(e){console.error('COMBO UI RENDER',e)}startAutoRefresh();notifyComboXray();openIntervalHistory();restoreComboUpgradeView();}
 
 document.querySelectorAll('.nav[data-sec]').forEach(b=>b.onclick=()=>{closeSavedDrawer();closeTableDrawer();switchSec(b.dataset.sec)});
 $('anyParams').innerHTML=paramsHTML('anyP');bindParams(document);renderFields('anyP');$('checkAny').onclick=()=>runCheck(selected,'Любая комба');$('refreshBtn').onclick=forceUpdate;
@@ -488,43 +533,66 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=sum20261121a',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=ca112621a001',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=sum20261121a"></script>
-<script src="combo-search-v1.js?v=sum20261121a"></script>
-<script id="appVersionOwner">(()=>{const fix=()=>{const el=document.querySelector('.version');if(el)el.textContent='Версия v4.8.50'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix()})()</script>
-<script src="combo-max-details-v1.js?v=sum20261121a"></script>
+<script src="combo-table-lock-v1.js?v=ca112621a001"></script>
+<script src="combo-search-v1.js?v=ca112621a001"></script>
+<script id="appVersionOwner">(()=>{const fix=()=>{const el=document.querySelector('.version');if(el)el.textContent='Версия v4.8.51'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix()})()</script>
+<script src="combo-max-details-v1.js?v=ca112621a001"></script>
 <script id="comboAutoUpdate">
 (()=>{
- const current=document.querySelector('meta[name="app-build"]')?.content;
- let busy=false,reloading=false;
- const check=async()=>{
-  if(busy||reloading||document.hidden)return;
-  busy=true;
-  try{
-   const {build}=await fetchJSONLive('app-version.json');
-   if(!/^[a-f0-9]{12}$/.test(build)||build===current)return;
+ const current=document.querySelector('meta[name="app-build"]')?.content||'';
+ let pending=null,navigating=false;
+ const check=(manual=false)=>{
+  if(pending)return pending;
+  if(navigating||(!manual&&document.hidden))return Promise.resolve({checked:false});
+  pending=(async()=>{
+   // app-version.json is always fetched from the network (not the SW cache).
+   const info=await fetchJSONLive('app-version.json');
+   const build=String(info?.build||'');
+   if(!/^[A-Za-z0-9_-]{6,40}$/.test(build))throw new Error('Не удалось прочитать версию приложения');
+   if(build===current)return {checked:true,updated:false,build};
    const url=new URL(location.href);
-   const key='combo-app-reloaded:'+url.pathname+':'+build;
-   if(sessionStorage.getItem(key)||url.searchParams.get('v')===build)return;
-   if('caches' in window){
-    const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k.startsWith('combo-keno-shell-')).map(k=>caches.delete(k)));
+   // Guard a stale hosting response from making the page reload forever.
+   if(url.searchParams.get('v')===build){
+    throw new Error('Новая версия ещё не опубликована на сервере');
    }
-   if('serviceWorker' in navigator){
-    const reg=await navigator.serviceWorker.getRegistration();
-    if(reg)await reg.update().catch(e=>console.warn('SW update',e));
-   }
-   // Install the new service worker in the background, but never navigate
-   // away from the user's current section or discard in-memory table state.
-   sessionStorage.setItem(key,'1');
-   reloading=true;
-  }catch(e){console.warn('COMBO app update',e)}finally{busy=false}
+   const view={
+    at:Date.now(),path:location.pathname,
+    section:document.querySelector('.section.on')?.id||'our',
+    tableOpen:!document.getElementById('tableDrawer')?.classList.contains('hidden'),
+    savedOpen:!document.getElementById('savedDrawer')?.classList.contains('hidden'),
+    scrollX:window.scrollX,scrollY:window.scrollY,
+    tableScroll:document.getElementById('tableDrawer')?.scrollTop||0,
+    matrixScroll:document.querySelector('#tableMatrixPanel .cm-scroll')?.scrollTop||0,
+    matrixLeft:document.querySelector('#tableMatrixPanel .cm-scroll')?.scrollLeft||0,
+    group:typeof group==='string'?group:'КУ-КУ',
+    selected:Array.isArray(selected)?selected:[],
+    activeDraws:Array.isArray(tableActiveDrawIds)?tableActiveDrawIds:[],
+    parity:tableParityFilter,
+    matrix:{count:cmCount,reverse:cmReverse,temperature:cmTemperature,
+      trg:cmTrg,sum:cmSum,numbers:cmNumbers,empty:cmEmpty,reduce:cmReduce,selected:cmSelected}
+   };
+   try{sessionStorage.setItem('combo-upgrade-view-v1',JSON.stringify(view));}catch(e){}
+   // The old service worker already uses network-first navigation; the
+   // versioned URL forces a fresh document while keeping the PWA open.
+   url.searchParams.set('v',build);
+   navigating=true;
+   location.replace(url.href);
+   return {checked:true,updated:true,build};
+  })().catch(error=>{console.warn('COMBO app update',error);return {checked:false,updated:false,error};})
+    .finally(()=>{pending=null});
+  return pending;
  };
- if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',check);
- addEventListener('load',check);addEventListener('focus',check);addEventListener('pageshow',check);addEventListener('online',check);
+ window.comboCheckAppUpdate=check;
+ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',()=>check());
+ addEventListener('load',()=>check());
+ addEventListener('focus',()=>check());
+ addEventListener('pageshow',()=>check());
+ addEventListener('online',()=>check());
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
- setInterval(check,600000);check();
+ setInterval(()=>check(),600000);
+ check();
 })();
 </script>
 </body></html>
