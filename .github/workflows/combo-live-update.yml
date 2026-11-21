@@ -1,12 +1,6 @@
 name: COMBO KENO · official archive backfill and live
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - scripts/combo-backfill-v1.mjs
-      - .github/workflows/combo-live-update.yml
-  schedule:
-    - cron: '7,37 * * * *'
+  workflow_dispatch: # CronJob.org via authenticated POST, or manual GitHub dispatch
 permissions:
   contents: write
 concurrency:
