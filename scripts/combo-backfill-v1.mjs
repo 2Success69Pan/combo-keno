@@ -51,43 +51,45 @@ function parseOfficial(item){
  record.column=Number.isInteger(col)&&col>=1&&col<=10?col:inferColumn(balls);
  return validRecord(record);
 }
-async function fetchArchivePage(day,page){
+// Live update reads at most five latest KENO draws from one official API page.
+// Date range starts at the last saved draw ONLY to cover midnight boundaries;
+// we never iterate through a day's archive or fetch yesterday's full results.
+const RECENT_LIMIT=5;
+async function fetchLatestFive(fromDate,toDate){
  const failures=[];
  for(const endpoint of ENDPOINTS){
   for(let attempt=1;attempt<=2;attempt++){
-   const u=new URL(endpoint);
-   for(const [key,value] of Object.entries({game:'keno2',count:'50',date_from:day,date_to:day,page:String(page)}))u.searchParams.set(key,value);
+   const url=new URL(endpoint);
+   for(const [key,value] of Object.entries({
+    game:'keno2',count:String(RECENT_LIMIT),
+    date_from:fromDate,date_to:toDate,page:'1'
+   }))url.searchParams.set(key,value);
    try{
-    const control=new AbortController();const timeout=setTimeout(()=>control.abort(),25000);
-    let response;try{response=await fetch(u,{headers:HEADERS,signal:control.signal})}finally{clearTimeout(timeout)}
+    const control=new AbortController(),timeout=setTimeout(()=>control.abort(),25000);
+    let response;try{response=await fetch(url,{headers:HEADERS,signal:control.signal})}finally{clearTimeout(timeout)}
     if(!response.ok)throw Error('HTTP '+response.status);
     const json=await response.json();
-    if(!Array.isArray(json.draws)||typeof json.hasMore!=='boolean')throw Error('Unexpected official pagination schema');
-    return json;
-   }catch(error){failures.push(`${endpoint} page=${page} try=${attempt}: ${error.message}`);
+    if(!Array.isArray(json.draws))throw Error('Unexpected official schema: draws is missing');
+    if(json.draws.length>RECENT_LIMIT)throw Error('Official API ignored the five-draw limit');
+    const results=new Map();
+    for(const item of json.draws){
+     const record=parseOfficial(item);
+     const day=isoDate(record.date);
+     if(day<fromDate||day>toDate)throw Error('OFF-DATE draw '+record.draw);
+     const previous=results.get(record.draw);
+     if(previous&&!same(previous,record))throw Error('Duplicate conflict for draw '+record.draw);
+     results.set(record.draw,record);
+    }
+    const recent=[...results.values()].sort((a,b)=>a.draw-b.draw);
+    console.log('OFFICIAL LATEST FIVE: '+recent.map(x=>x.draw).join(', ')+'; API returned '+json.draws.length);
+    return recent;
+   }catch(error){
+    failures.push(endpoint+' attempt='+attempt+' '+error.message);
     if(attempt<2)await new Promise(resolve=>setTimeout(resolve,750*attempt));
    }
   }
  }
- throw Error(`${day} page ${page}: ${failures.join(' | ')}`);
-}
-async function fetchDay(day){
- const results=new Map();let hasMore=true;
- for(let page=1;hasMore;page++){
-  if(page>12)throw Error(`PAGE OVERFLOW ${day}: official archive exceeded 12 pages`);
-  const json=await fetchArchivePage(day,page);
-  if(json.hasMore&&json.draws.length===0)throw Error(`EMPTY PAGE with hasMore=true: ${day} page=${page}`);
-  for(const item of json.draws){
-   const record=parseOfficial(item);
-   if(isoDate(record.date)!==day)throw Error(`OFF-DATE draw ${record.draw}: expected ${day} got ${record.date}`);
-   const existing=results.get(record.draw);
-   if(existing&&!same(existing,record))throw Error(`Page-overlap conflict on ${record.draw}`);
-   results.set(record.draw,record);
-  }
-  hasMore=json.hasMore;
-  if(page>1&&json.draws.length===50&&page===12)throw Error('Pagination appears endless');
- }
- return [...results.values()].sort((a,b)=>a.draw-b.draw);
+ throw Error('Failed to fetch five latest: '+failures.join(' | '));
 }
 async function main(){
  const base=JSON.parse(await fs.readFile(BASE,'utf8'));
@@ -96,18 +98,21 @@ async function main(){
  const initial=mergeVerified(base,tail);
  const missingOfficialColumns=initial.filter(row=>String(row.source||'').startsWith('Столото ·')&&!Number.isInteger(row.column)).length;
  const archivedWithColumns=initial.map(row=>String(row.source||'').startsWith('Столото ·')&&!Number.isInteger(row.column)?{...row,column:inferColumn(row.balls)}:row);
- const last=initial.at(-1),today=localToday(),before=isoDate(last.date);
- if(before>today)throw Error('Last archive record is in future');
- const prev=new Date(Date.parse(before+'T00:00:00Z')-86400000).toISOString().slice(0,10);
- const dates=daysBetween(prev,today);
- console.log(`COMBO: ${initial.length} draws, last #${last.draw} ${last.date} ${last.time}; verify ${dates.length} dates through ${today}`);
- let official=[];
- for(const day of dates){const rows=await fetchDay(day);if(day!==today&&rows.length===0)throw Error('Official archive empty on '+day);official.push(...rows);console.log(`DATE ${day}: ${rows.length}`)}
+ const last=initial.at(-1),today=localToday(),from=isoDate(last.date);
+ if(from>today)throw Error('Last archive record is in future');
+ console.log(`COMBO: ${initial.length} stored, last #${last.draw} ${last.date} ${last.time}; request only five latest`);
+ const official=await fetchLatestFive(from,today);
+ if(!official.length)throw Error('Official API returned no latest KENO draws');
+ // A five-draw window cannot heal a larger outage; fail safely instead of skipping history.
+ const firstNew=official.find(r=>r.draw>last.draw);
+ if(firstNew&&firstNew.draw!==last.draw+1)throw Error('GAP: newest five start at #'+firstNew.draw+' but next expected #'+(last.draw+1));
  const merged=mergeVerified(archivedWithColumns,official);
  // Require a matching overlap and never silently trust a disjoint API history.
  const oldById=new Map(initial.map(x=>[x.draw,x]));
  const anchor=official.filter(x=>oldById.has(x.draw));
- if(!anchor.length)throw Error('NO ANCHOR: official API has no overlapping draw; do not write');
+ if(!anchor.length&&!firstNew)throw Error('NO ANCHOR: latest official five do not overlap local history');
+ // No overlap is also valid when exactly five consecutive new draws fill the window.
+ if(!anchor.length&&official[0]?.draw!==last.draw+1)throw Error('NO ANCHOR: disjoint official window');
  for(const r of anchor)if(!same(r,oldById.get(r.draw)))throw Error('ANCHOR conflict '+r.draw);
  const fresh=merged.length-initial.length;
  if(fresh===0)console.log('No new official draws.');
@@ -115,14 +120,14 @@ async function main(){
  if(CHECK_ONLY){console.log('CHECK ONLY validated '+merged.length);return}
  if(fresh===0&&missingOfficialColumns===0)return;
  const lastNew=merged.at(-1);
- const status={version:'restored-live-v1',source:ENDPOINTS[0],updatedAt:new Date().toISOString(),drawsStored:merged.length,latestDraw:lastNew.draw,latestDate:lastNew.date,latestTime:lastNew.time,verification:'official-api-contiguous',checkedFrom:prev,checkedThrough:today,added:fresh,columnsRestored:missingOfficialColumns,mode:dates.length>2?'backfill':'recent-days'};
+ const status={version:'restored-live-v1',source:ENDPOINTS[0],updatedAt:new Date().toISOString(),drawsStored:merged.length,latestDraw:lastNew.draw,latestDate:lastNew.date,latestTime:lastNew.time,verification:'official-api-contiguous',checkedFrom:from,checkedThrough:today,requestedLatest:RECENT_LIMIT,receivedLatest:official.length,added:fresh,columnsRestored:missingOfficialColumns,mode:'latest-five'};
  await fs.writeFile(BASE+'.tmp',JSON.stringify(merged)+'\n');
  await fs.writeFile(STATUS+'.tmp',JSON.stringify(status,null,2)+'\n');
  // Crash-safe rename after all checks; snapshot remains reconstructable from git history.
  await fs.rename(BASE+'.tmp',BASE);
  await fs.rename(STATUS+'.tmp',STATUS);
  await fs.writeFile(TAIL,'[]\n');
- console.log(`PASS: ${initial.length} + ${fresh} = ${merged.length}; latest ${lastNew.draw}. Switching to recent-day mode next run.`);
+ console.log(`PASS latest-five: ${initial.length} + ${fresh} = ${merged.length}; latest ${lastNew.draw}.`);
 }
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){main().catch(e=>{console.error('SAFE STOP:',e.message);process.exitCode=1})}
-export {isoDate,formatDate,daysBetween,validRecord,same,mergeVerified,parseOfficial,fetchDay};
+export {isoDate,formatDate,daysBetween,validRecord,same,mergeVerified,parseOfficial,fetchLatestFive};
