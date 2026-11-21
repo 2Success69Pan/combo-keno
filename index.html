@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="ca112621a001">
-<link rel="manifest" href="manifest.webmanifest?v=ca112621a001">
+<meta name="app-build" content="layout112621a">
+<link rel="manifest" href="manifest.webmanifest?v=layout112621a">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=ca112621a001">
+<link rel="stylesheet" href="xray-v1.css?v=layout112621a">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -105,11 +105,25 @@ button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff
 #tableMatrixPanel .cm-inline-a{position:absolute;right:1px;top:1px;min-width:12px;height:12px;padding:0 1px;border:1px solid #647d93;border-radius:2px;background:#183449;color:#e2eaf0;font-size:9px;line-height:10px;cursor:pointer;z-index:2}
 #tableMatrixPanel .cm-inline-a.active{background:#188a45;color:white;border-color:#8cf5aa}
 .tableNextDraw{display:block!important;visibility:visible!important;position:relative;z-index:2;margin:10px 0 12px;padding:17px 12px;border:2px solid #4ade80;border-radius:15px;background:#0e1b2d;color:#f4f8ff;text-align:center;font-weight:950;font-size:clamp(21px,5vw,29px);line-height:1.25;min-height:94px;font-variant-numeric:tabular-nums}.tableNextDraw .nextDrawTime{display:block;color:#72df95;font-size:clamp(25px,6vw,34px);margin-top:2px}.tableNextDraw .nextDrawLabel{color:#e7f0fa}
+
+/* COMBO mobile refresh: prevent long live-status text from changing the layout viewport. */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.app{width:100%;min-width:0}
+.top{width:100%;max-width:100%;min-width:0;grid-template-columns:52px minmax(0,1fr)}
+.top>div{min-width:0;max-width:100%}
+.top .title,.top .dbline{max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.top .title{white-space:nowrap}
+.topmeta{min-width:0;max-width:100%}
+.topmeta .version{flex:0 0 auto}
+.topmeta .refresh{min-width:0;max-width:55%;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
+.refresh-status{position:fixed;left:12px;right:12px;bottom:calc(150px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;padding:10px 12px;border:1px solid #327a81;border-radius:12px;background:#102c42;color:#e6f9f7;font-size:12px;line-height:1.4;overflow-wrap:anywhere;z-index:80;box-shadow:0 8px 25px rgba(0,0,0,.4)}
+.refresh-status.error{border-color:#9a515a;color:#ffd3d3}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.51</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.52</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
  <div class="card"><h2>Наши комбы</h2><div class="muted">45 комбинаций · К16 и ТС7 считаются отдельно</div><div id="groups" class="groups" style="margin-top:8px"></div><div id="comboList" class="comboList" style="margin-top:8px"></div></div>
@@ -150,14 +164,14 @@ button{border:1px solid #315677;border-radius:12px;background:#132e48;color:#fff
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=ca112621a001'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=layout112621a'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=ca112621a001"></script>
-<script src="xray-ui-v1.js?v=ca112621a001"></script>
-<script src="xray-archive-tools-v1.js?v=ca112621a001"></script>
-<script src="xray-analog-columns-v1.js?v=ca112621a001"></script>
+<script src="xray-engine-v1.js?v=layout112621a"></script>
+<script src="xray-ui-v1.js?v=layout112621a"></script>
+<script src="xray-archive-tools-v1.js?v=layout112621a"></script>
+<script src="xray-analog-columns-v1.js?v=layout112621a"></script>
 <script>
 'use strict';
 
@@ -325,7 +339,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=ca112621a001">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=layout112621a">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -433,6 +447,15 @@ async function autoRefreshLive(force=false){
  })().catch(error=>{console.warn('COMBO LIVE AUTO',error);return {error};}).finally(()=>{autoRefreshBusy=false;liveRefreshTask=null;});
  return liveRefreshTask;
 }
+let refreshStatusTimer=null;
+function showRefreshStatus(message,error=false){
+ const notice=$('refreshStatus');if(!notice)return;
+ if(refreshStatusTimer)clearTimeout(refreshStatusTimer);
+ notice.textContent=message;
+ notice.classList.toggle('error',error);
+ notice.classList.remove('hidden');
+ refreshStatusTimer=setTimeout(()=>{notice.classList.add('hidden');refreshStatusTimer=null;},error?10000:5500);
+}
 async function refreshAllFromTable(){
  const buttons=[$('refreshBtn'),$('tableRefreshBtn'),...document.querySelectorAll('[data-cm-action="refresh"]')].filter(Boolean);
  if(buttons.some(b=>b.disabled))return;
@@ -448,10 +471,10 @@ async function refreshAllFromTable(){
   if(result?.error)throw result.error;
   const suffix=version?.error?' · Версию проверить не удалось: '+version.error.message:' · Версия актуальна';
   const message=(result.changed?'Загружен тираж №'+result.latest:'Новых опубликованных тиражей нет · последний №'+result.latest)+suffix;
-  const status=$('dbline');if(status){updateDbLine();status.textContent+=' · '+message;status.title=message;}
+  const status=$('dbline');if(status){updateDbLine();status.title=message;}showRefreshStatus(message);
   buttons.forEach(b=>b.title=message);
  }catch(error){
-  const status=$('dbline');if(status){status.textContent='Ошибка обновления: '+error.message;status.title=error.message;}
+  const status=$('dbline');if(status){updateDbLine();status.title=error.message;}showRefreshStatus('Ошибка обновления: '+error.message,true);
   console.warn('COMBO refresh',error);
  }finally{
   buttons.forEach((b,i)=>{b.disabled=false;b.textContent=labels[i]});
@@ -533,12 +556,12 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=ca112621a001',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=layout112621a',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=ca112621a001"></script>
-<script src="combo-search-v1.js?v=ca112621a001"></script>
-<script id="appVersionOwner">(()=>{const fix=()=>{const el=document.querySelector('.version');if(el)el.textContent='Версия v4.8.51'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix()})()</script>
-<script src="combo-max-details-v1.js?v=ca112621a001"></script>
+<script src="combo-table-lock-v1.js?v=layout112621a"></script>
+<script src="combo-search-v1.js?v=layout112621a"></script>
+<script id="appVersionOwner">(()=>{const fix=()=>{const el=document.querySelector('.version');if(el)el.textContent='Версия v4.8.52'};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fix,{once:true});else fix()})()</script>
+<script src="combo-max-details-v1.js?v=layout112621a"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
