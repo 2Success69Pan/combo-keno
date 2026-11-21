@@ -24,6 +24,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Diagnose official archive access (read-only)
+        run: |
+          for host in www.stoloto.ru m.stoloto.ru tli.stoloto.ru; do
+            for path in "keno2/archive/" "p/api/mobile/api/v35/service/draws/archive?count=10&game=keno2"; do
+              url="https://${host}/${path}"
+              echo "Checking ${url}"
+              curl -sSL --max-time 12 -o /dev/null -w "RESULT %{http_code}, bytes %{size_download}, IP %{remote_ip}\n" "$url" || true
+            done
+          done
       - name: Validate and catch up official KENO results
         run: node scripts/combo-backfill-v1.mjs
       - name: Commit verified draw archive only
