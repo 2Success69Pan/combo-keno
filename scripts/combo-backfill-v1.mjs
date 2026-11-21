@@ -37,13 +37,17 @@ function inferColumn(balls){
  for(let c=0;c<10;c++)if(count[c]===maximum&&last[c]<completed){result=c;completed=last[c]}
  return result+1;
 }
+// Only a newest not-yet-published draw can be postponed; malformed completed draws remain fatal.
+class DrawNotReady extends Error {
+ constructor(draw){super('Winning combination lacks 20 balls: '+draw);this.draw=draw}
+}
 function parseOfficial(item){
  const draw=Number(item.number??item.draw??item.id);
  const iso=isoDate(item.date??item.drawDate);
  const match=String(item.date??item.drawDate).match(/T(\d{2}):(\d{2})/);
  if(!match)throw Error(`Official date lacks time for ${draw}`);
  const nums=item.winningCombination??item.numbers??item.balls;
- if(!Array.isArray(nums)||nums.length<20)throw Error('Winning combination lacks 20 balls: '+draw);
+ if(!Array.isArray(nums)||nums.length<20)throw new DrawNotReady(draw);
  // Official payload may prefix 9 column/bonus digits; only the final 20 are KENO balls.
  const balls=nums.slice(-20).map(Number);
  const record={draw,date:formatDate(iso),time:`${match[1]}:${match[2]}`,balls,source:'Столото · официальный API'};
@@ -55,7 +59,21 @@ function parseOfficial(item){
 // Date range starts at the last saved draw ONLY to cover midnight boundaries;
 // we never iterate through a day's archive or fetch yesterday's full results.
 const RECENT_LIMIT=5;
-async function fetchLatestFive(fromDate,toDate){
+// A pending result must be newer than every completed result. Never conceal a gap.
+function validatePendingWindow(recent,pending,lastSavedDraw){
+ const ids=[...pending].sort((a,b)=>a-b);
+ const latestComplete=recent.at(-1)?.draw??lastSavedDraw;
+ if(ids.some(draw=>draw<=latestComplete))
+  throw Error('INCONSISTENT: unfinished draw precedes a completed draw');
+ const known=new Set([...recent.filter(r=>r.draw>lastSavedDraw).map(r=>r.draw),...ids]);
+ const highest=Math.max(lastSavedDraw,...known);
+ if(highest-lastSavedDraw>RECENT_LIMIT)
+  throw Error('GAP: official latest-five window cannot cover missing draws after #'+lastSavedDraw);
+ for(let draw=lastSavedDraw+1;draw<=highest;draw++)
+  if(!known.has(draw))throw Error('GAP: official results missing draw #'+draw);
+ return ids;
+}
+async function fetchLatestFive(fromDate,toDate,lastSavedDraw=null){
  const failures=[];
  for(const endpoint of ENDPOINTS){
   for(let attempt=1;attempt<=2;attempt++){
@@ -71,9 +89,19 @@ async function fetchLatestFive(fromDate,toDate){
     const json=await response.json();
     if(!Array.isArray(json.draws))throw Error('Unexpected official schema: draws is missing');
     if(json.draws.length>RECENT_LIMIT)throw Error('Official API ignored the five-draw limit');
-    const results=new Map();
+    const results=new Map(),pending=new Set();
     for(const item of json.draws){
-     const record=parseOfficial(item);
+     let record;
+     try{record=parseOfficial(item)}
+     catch(error){
+      // Stoloto can publish a draw number before its 20 balls are available.
+      // Wait only for draws newer than our last verified one; do not mask older corruption.
+      if(error instanceof DrawNotReady&&lastSavedDraw!==null
+       &&Number.isSafeInteger(error.draw)&&error.draw>lastSavedDraw){
+       pending.add(error.draw);continue;
+      }
+      throw error;
+     }
      const day=isoDate(record.date);
      if(day<fromDate||day>toDate)throw Error('OFF-DATE draw '+record.draw);
      const previous=results.get(record.draw);
@@ -81,8 +109,11 @@ async function fetchLatestFive(fromDate,toDate){
      results.set(record.draw,record);
     }
     const recent=[...results.values()].sort((a,b)=>a.draw-b.draw);
+    const pendingDraws=pending.size?validatePendingWindow(recent,pending,lastSavedDraw):[];
+    if(!recent.length&&!pendingDraws.length)throw Error('Official API returned an empty draw page');
     console.log('OFFICIAL LATEST FIVE: '+recent.map(x=>x.draw).join(', ')+'; API returned '+json.draws.length);
-    return recent;
+    if(pendingDraws.length)console.log('WAIT: draw(s) '+pendingDraws.join(', ')+' not yet published with 20 balls; retry at next scheduled check.');
+    return {draws:recent,pending:pendingDraws};
    }catch(error){
     failures.push(endpoint+' attempt='+attempt+' '+error.message);
     if(attempt<2)await new Promise(resolve=>setTimeout(resolve,750*attempt));
@@ -101,8 +132,11 @@ async function main(){
  const last=initial.at(-1),today=localToday(),from=isoDate(last.date);
  if(from>today)throw Error('Last archive record is in future');
  console.log(`COMBO: ${initial.length} stored, last #${last.draw} ${last.date} ${last.time}; request only five latest`);
- const official=await fetchLatestFive(from,today);
- if(!official.length)throw Error('Official API returned no latest KENO draws');
+ const {draws:official,pending}=await fetchLatestFive(from,today,last.draw);
+ if(!official.length){
+  if(pending.length){console.log('WAIT: all returned new draws are unfinished; no archive changes.');return}
+  throw Error('Official API returned no latest KENO draws');
+ }
  // A five-draw window cannot heal a larger outage; fail safely instead of skipping history.
  const firstNew=official.find(r=>r.draw>last.draw);
  if(firstNew&&firstNew.draw!==last.draw+1)throw Error('GAP: newest five start at #'+firstNew.draw+' but next expected #'+(last.draw+1));
@@ -130,4 +164,4 @@ async function main(){
  console.log(`PASS latest-five: ${initial.length} + ${fresh} = ${merged.length}; latest ${lastNew.draw}.`);
 }
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){main().catch(e=>{console.error('SAFE STOP:',e.message);process.exitCode=1})}
-export {isoDate,formatDate,daysBetween,validRecord,same,mergeVerified,parseOfficial,fetchLatestFive};
+export {isoDate,formatDate,daysBetween,validRecord,same,mergeVerified,parseOfficial,fetchLatestFive,validatePendingWindow,DrawNotReady};
