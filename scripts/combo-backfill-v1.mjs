@@ -30,6 +30,13 @@ function daysBetween(start,end){const out=[];let t=Date.parse(start+'T00:00:00Z'
 function validRecord(x){const n=Number(x.draw);if(!Number.isSafeInteger(n)||n<=0||!/^\d{2}\.\d{2}\.\d{2}$/.test(String(x.date))||!/^\d{2}:\d{2}$/.test(String(x.time))||!Array.isArray(x.balls)||x.balls.length!==20||new Set(x.balls).size!==20||x.balls.some(v=>!Number.isInteger(v)||v<1||v>80))throw Error('Invalid draw record '+n);return x}
 function same(a,b){return a.draw===b.draw&&a.date===b.date&&a.time===b.time&&JSON.stringify(a.balls)===JSON.stringify(b.balls)}
 function mergeVerified(base,extra){const m=new Map();for(const r of [...base,...extra]){validRecord(r);const previous=m.get(r.draw);if(previous&&!same(previous,r))throw Error('CONFLICT on draw '+r.draw);if(!previous)m.set(r.draw,r)}const out=[...m.values()].sort((a,b)=>a.draw-b.draw);for(let i=1;i<out.length;i++)if(out[i].draw!==out[i-1].draw+1)throw Error('MISSING draw '+(out[i-1].draw+1));return out}
+function inferColumn(balls){
+ const count=Array(10).fill(0),last=Array(10).fill(-1);
+ for(let i=0;i<balls.length;i++){const c=(Number(balls[i])-1)%10;count[c]++;last[c]=i}
+ const maximum=Math.max(...count);let result=0,completed=Infinity;
+ for(let c=0;c<10;c++)if(count[c]===maximum&&last[c]<completed){result=c;completed=last[c]}
+ return result+1;
+}
 function parseOfficial(item){
  const draw=Number(item.number??item.draw??item.id);
  const iso=isoDate(item.date??item.drawDate);
@@ -41,7 +48,7 @@ function parseOfficial(item){
  const balls=nums.slice(-20).map(Number);
  const record={draw,date:formatDate(iso),time:`${match[1]}:${match[2]}`,balls,source:'Столото · официальный API'};
  const col=Number(item.column??item.columnNumber);
- if(Number.isInteger(col)&&col>=1&&col<=10)record.column=col;
+ record.column=Number.isInteger(col)&&col>=1&&col<=10?col:inferColumn(balls);
  return validRecord(record);
 }
 async function fetchArchivePage(day,page){
@@ -87,6 +94,8 @@ async function main(){
  const tail=JSON.parse(await fs.readFile(TAIL,'utf8'));
  if(!Array.isArray(base)||!Array.isArray(tail))throw Error('Base or tail not an array');
  const initial=mergeVerified(base,tail);
+ const missingOfficialColumns=initial.filter(row=>String(row.source||'').startsWith('Столото ·')&&!Number.isInteger(row.column)).length;
+ const archivedWithColumns=initial.map(row=>String(row.source||'').startsWith('Столото ·')&&!Number.isInteger(row.column)?{...row,column:inferColumn(row.balls)}:row);
  const last=initial.at(-1),today=localToday(),before=isoDate(last.date);
  if(before>today)throw Error('Last archive record is in future');
  const prev=new Date(Date.parse(before+'T00:00:00Z')-86400000).toISOString().slice(0,10);
@@ -94,7 +103,7 @@ async function main(){
  console.log(`COMBO: ${initial.length} draws, last #${last.draw} ${last.date} ${last.time}; verify ${dates.length} dates through ${today}`);
  let official=[];
  for(const day of dates){const rows=await fetchDay(day);if(day!==today&&rows.length===0)throw Error('Official archive empty on '+day);official.push(...rows);console.log(`DATE ${day}: ${rows.length}`)}
- const merged=mergeVerified(initial,official);
+ const merged=mergeVerified(archivedWithColumns,official);
  // Require a matching overlap and never silently trust a disjoint API history.
  const oldById=new Map(initial.map(x=>[x.draw,x]));
  const anchor=official.filter(x=>oldById.has(x.draw));
@@ -102,10 +111,11 @@ async function main(){
  for(const r of anchor)if(!same(r,oldById.get(r.draw)))throw Error('ANCHOR conflict '+r.draw);
  const fresh=merged.length-initial.length;
  if(fresh===0)console.log('No new official draws.');
+ if(missingOfficialColumns)console.log('COMBO: derived RETIE columns for '+missingOfficialColumns+' official records with missing column metadata');
  if(CHECK_ONLY){console.log('CHECK ONLY validated '+merged.length);return}
- if(fresh===0)return;
+ if(fresh===0&&missingOfficialColumns===0)return;
  const lastNew=merged.at(-1);
- const status={version:'restored-live-v1',source:ENDPOINTS[0],updatedAt:new Date().toISOString(),drawsStored:merged.length,latestDraw:lastNew.draw,latestDate:lastNew.date,latestTime:lastNew.time,verification:'official-api-contiguous',checkedFrom:prev,checkedThrough:today,added:fresh,mode:dates.length>2?'backfill':'recent-days'};
+ const status={version:'restored-live-v1',source:ENDPOINTS[0],updatedAt:new Date().toISOString(),drawsStored:merged.length,latestDraw:lastNew.draw,latestDate:lastNew.date,latestTime:lastNew.time,verification:'official-api-contiguous',checkedFrom:prev,checkedThrough:today,added:fresh,columnsRestored:missingOfficialColumns,mode:dates.length>2?'backfill':'recent-days'};
  await fs.writeFile(BASE+'.tmp',JSON.stringify(merged)+'\n');
  await fs.writeFile(STATUS+'.tmp',JSON.stringify(status,null,2)+'\n');
  // Crash-safe rename after all checks; snapshot remains reconstructable from git history.
