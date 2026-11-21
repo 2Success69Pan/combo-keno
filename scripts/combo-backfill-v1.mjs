@@ -44,22 +44,43 @@ function parseOfficial(item){
  if(Number.isInteger(col)&&col>=1&&col<=10)record.column=col;
  return validRecord(record);
 }
-async function fetchDay(day){
+async function fetchArchivePage(day,page){
  const failures=[];
  for(const endpoint of ENDPOINTS){
-  const u=new URL(endpoint);for(const [k,v] of Object.entries({game:'keno2',count:'200',date_from:day,date_to:day}))u.searchParams.set(k,v);
-  try{
-   const control=new AbortController();const timeout=setTimeout(()=>control.abort(),20000);
-   let response;try{response=await fetch(u,{headers:HEADERS,signal:control.signal})}finally{clearTimeout(timeout)}
-   if(!response.ok)throw Error('HTTP '+response.status);
-   const j=await response.json();if(!Array.isArray(j.draws))throw Error('Expected draws array');
-   const dayRows=j.draws.map(parseOfficial).filter(x=>isoDate(x.date)===day);
-   const m=new Map();for(const d of dayRows){if(m.has(d.draw)&&!same(m.get(d.draw),d))throw Error('Duplicate conflict '+d.draw);m.set(d.draw,d)}
-   if(dayRows.length===200)throw Error('API returned maximum count; pagination needs verification');
-   return [...m.values()].sort((a,b)=>a.draw-b.draw);
-  }catch(e){failures.push(endpoint+' '+e.message)}
+  for(let attempt=1;attempt<=2;attempt++){
+   const u=new URL(endpoint);
+   for(const [key,value] of Object.entries({game:'keno2',count:'50',date_from:day,date_to:day,page:String(page)}))u.searchParams.set(key,value);
+   try{
+    const control=new AbortController();const timeout=setTimeout(()=>control.abort(),25000);
+    let response;try{response=await fetch(u,{headers:HEADERS,signal:control.signal})}finally{clearTimeout(timeout)}
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const json=await response.json();
+    if(!Array.isArray(json.draws)||typeof json.hasMore!=='boolean')throw Error('Unexpected official pagination schema');
+    return json;
+   }catch(error){failures.push(`${endpoint} page=${page} try=${attempt}: ${error.message}`);
+    if(attempt<2)await new Promise(resolve=>setTimeout(resolve,750*attempt));
+   }
+  }
  }
- throw Error(day+': '+failures.join(' | '));
+ throw Error(`${day} page ${page}: ${failures.join(' | ')}`);
+}
+async function fetchDay(day){
+ const results=new Map();let hasMore=true;
+ for(let page=1;hasMore;page++){
+  if(page>12)throw Error(`PAGE OVERFLOW ${day}: official archive exceeded 12 pages`);
+  const json=await fetchArchivePage(day,page);
+  if(json.hasMore&&json.draws.length===0)throw Error(`EMPTY PAGE with hasMore=true: ${day} page=${page}`);
+  for(const item of json.draws){
+   const record=parseOfficial(item);
+   if(isoDate(record.date)!==day)throw Error(`OFF-DATE draw ${record.draw}: expected ${day} got ${record.date}`);
+   const existing=results.get(record.draw);
+   if(existing&&!same(existing,record))throw Error(`Page-overlap conflict on ${record.draw}`);
+   results.set(record.draw,record);
+  }
+  hasMore=json.hasMore;
+  if(page>1&&json.draws.length===50&&page===12)throw Error('Pagination appears endless');
+ }
+ return [...results.values()].sort((a,b)=>a.draw-b.draw);
 }
 async function main(){
  const base=JSON.parse(await fs.readFile(BASE,'utf8'));
