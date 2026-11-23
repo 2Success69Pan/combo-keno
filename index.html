@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="m3vertical112326a">
-<meta name="app-version" content="4.8.58">
-<link rel="manifest" href="manifest.webmanifest?v=m3vertical112326a">
+<meta name="app-build" content="concslots112326b">
+<meta name="app-version" content="4.8.59">
+<link rel="manifest" href="manifest.webmanifest?v=concslots112326b">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=m3vertical112326a">
+<link rel="stylesheet" href="xray-v1.css?v=concslots112326b">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -151,11 +151,15 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #tableDrawerBody .tableMatrixColumn .tcell{width:100%;min-width:0;height:32px;padding:5px 0;border-radius:7px;font-size:clamp(10px,2.7vw,14px)}
 #tableDrawerBody .tableMatrixGap{width:100%;height:100%;pointer-events:none}
 @media(min-width:900px) and (pointer:fine){#tableDrawerBody .tableMatrixColumn .tcell{height:36px}}
+/* Concentration presets appear only while КОНЦ is enabled. */
+#tableMatrixPanel .cm-conc-slots{display:inline-flex;flex-wrap:wrap;align-items:center;gap:5px}
+#tableMatrixPanel .cm-conc-slots button{min-width:43px;padding:7px 9px;font-weight:900;white-space:nowrap}
+#tableMatrixPanel .cm-conc-slots button.active{background:linear-gradient(180deg,#2c7d40,#1e5b32);border-color:#55c876;color:#fff}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.58</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.59</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -198,14 +202,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=m3vertical112326a'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=concslots112326b'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=m3vertical112326a"></script>
-<script src="xray-ui-v1.js?v=m3vertical112326a"></script>
-<script src="xray-archive-tools-v1.js?v=m3vertical112326a"></script>
-<script src="xray-analog-columns-v1.js?v=m3vertical112326a"></script>
+<script src="xray-engine-v1.js?v=concslots112326b"></script>
+<script src="xray-ui-v1.js?v=concslots112326b"></script>
+<script src="xray-archive-tools-v1.js?v=concslots112326b"></script>
+<script src="xray-analog-columns-v1.js?v=concslots112326b"></script>
 <script>
 'use strict';
 
@@ -291,8 +295,10 @@ function toggleTableDrawer(){const d=$('tableDrawer');if(!d)return;if(d.classLis
 const cmStateKey='combo-matrix-state-v1';
 let cmSaved={};try{cmSaved=JSON.parse(sessionStorage.getItem(cmStateKey)||'{}')||{}}catch(e){}
 let cmOpen=cmSaved.open===true,cmCount=50,cmReverse=false,cmTemperature=false,cmEmpty=0,cmReduce=0,cmSelected=null,cmTrg=false,cmNumbers=cmSaved.numbers===true,cmSum=cmSaved.sum===true,cmConcentration=cmSaved.concentration===true;
+// K1–K4 are UI placeholders for future independent concentration algorithms.
+let cmConcSlot=[1,2,3,4].includes(Number(cmSaved.concSlot))?Number(cmSaved.concSlot):0;
 const cmIndividual=new Set((Array.isArray(cmSaved.individual)?cmSaved.individual:[]).map(Number).filter(n=>Number.isSafeInteger(n)&&n>0));
-function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,individual:[...cmIndividual]}))}catch(e){}}
+function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,concSlot:cmConcSlot,individual:[...cmIndividual]}))}catch(e){}}
 const cmFutureMarks=new Map(),cmConcMarks=new Map();
 function cmConcGroup(n){return ((Number(n)-1)%9)+1}
 function cmConcCounts(d){const counts=Array(10).fill(0);for(const n of d?.balls||[])counts[cmConcGroup(n)]++;return counts}
@@ -371,9 +377,10 @@ function cmRender(updateTableOnly=false){
   if(table.tFoot.innerHTML!==footer)table.tFoot.innerHTML=footer;return;
  }
  const card=cmSelected?(()=>{const d=DRAWS.find(x=>x.draw===cmSelected.draw);if(!d)return '';const g=cmGroups(d),previous=DRAWS[DRAWS.findIndex(z=>z.draw===d.draw)-1],previousCounts=cmShownCounts(previous),selectedCount=previousCounts[cmSelected.col]||0,selectedGroup=comboGroupLabel(selectedCount),groupCols=Array.from({length:cmColumns},(_,i)=>i+1).filter(i=>selectedCount>=4?previousCounts[i]>=4:previousCounts[i]===selectedCount),selectedNumbers=(previous?.balls||[]).filter(n=>cmShownGroup(n)===cmSelected.col);return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>ст'+cmSelected.col+'</b><p>Тираж: №'+d.draw+'</p><p>Дата: '+(d.date||'—')+' · Время: '+(d.time||'—')+'</p><p>Вышел из группы: '+selectedGroup+'</p><p>В этой группе были: '+(groupCols.map(v=>'ст'+v).join(' · ')||'—')+'</p><p>Числа выбранного столба в предыдущем тираже: '+(selectedNumbers.join(' · ')||'—')+'</p><b>Группы сейчас</b>'+g.map((a,i)=>'<div>ГР '+(i===4?'4+':i)+': '+(a.join(' · ')||'—')+'</div>').join('')+'</div>'})():'';
- panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button></div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button></div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':'')+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
+ panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button></div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button>'+(cmConcentration?'<span class="cm-conc-slots" role="group" aria-label="Варианты концентрации К1–К4">'+[1,2,3,4].map(k=>'<button type="button" data-cm-action="conc-slot" data-cm-slot="'+k+'" aria-pressed="'+(cmConcSlot===k)+'" class="'+(cmConcSlot===k?'active':'')+'" title="Отдельная концентрация К'+k+' — схема будет добавлена позже">К'+k+'</button>').join('')+'</span>':'')+'</div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':'')+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
 }
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmConcentration?cmConcMarks:cmFutureMarks,marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;if(!cmConcentration)cmConcSlot=0;}
+if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k))cmConcSlot=cmConcSlot===k?0:k;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmConcentration?cmConcMarks:cmFutureMarks,marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
 document.addEventListener('change',e=>{if(e.target.id==='cmCount'){cmCount=Number(e.target.value);cmRender()}});
 document.addEventListener('input',e=>{if(e.target.id==='cmEmpty'||e.target.id==='cmReduce'){const n=Number(e.target.value);if(e.target.id==='cmEmpty')cmEmpty=n;else cmReduce=n;const output=e.target.parentElement?.querySelector('output');if(output)output.textContent=n;cmRender(true);}});
 
@@ -484,7 +491,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=m3vertical112326a">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=concslots112326b">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -701,11 +708,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=m3vertical112326a',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=concslots112326b',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=m3vertical112326a"></script>
-<script src="combo-search-v1.js?v=m3vertical112326a"></script>
-<script src="combo-max-details-v1.js?v=m3vertical112326a"></script>
+<script src="combo-table-lock-v1.js?v=concslots112326b"></script>
+<script src="combo-search-v1.js?v=concslots112326b"></script>
+<script src="combo-max-details-v1.js?v=concslots112326b"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
