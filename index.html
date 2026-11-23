@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="k2kon112326e">
-<meta name="app-version" content="4.8.62">
-<link rel="manifest" href="manifest.webmanifest?v=k2kon112326e">
+<meta name="app-build" content="occ10groups112326f">
+<meta name="app-version" content="4.8.63">
+<link rel="manifest" href="manifest.webmanifest?v=occ10groups112326f">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=k2kon112326e">
+<link rel="stylesheet" href="xray-v1.css?v=occ10groups112326f">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -167,11 +167,34 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #tableMatrixPanel .cm-k2-mode .cm-k2-sum{font-size:clamp(8px,1.8vw,11px);font-weight:950;color:#ffe28a}
 #tableMatrixPanel .cm-k2-mode .cm-k2-none{font-size:11px;color:#91a9bd}
 #tableMatrixPanel .cm-k2-mode .cm-conc-bubble{width:18px;height:18px;font-size:10px;margin:1px auto}
+/* Original 10-column matrix: colored group selectors, as separate controls from concentration K1/K2. */
+#tableMatrixPanel .cm-occ-controls{display:grid;grid-template-columns:repeat(3,minmax(44px,1fr));gap:4px;margin-left:auto;align-items:center}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn{min-width:44px;padding:5px 7px;border-radius:9px;line-height:1.12;font-size:12px;font-weight:950;background:#162c43}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-0{border:2px solid #a86adf;color:#e7c7ff}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-1{border:2px solid #48a7fa;color:#c6e8ff}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-2{border:2px solid #2ecb85;color:#b7f9d1}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-3{border:2px solid #e56cb9;color:#ffd0f2}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-4{border:2px solid #ea626c;color:#ffd9de}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-all{border:2px solid #91a4b5;color:#f0f4f8}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn.active{color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.32),0 0 0 1px rgba(255,255,255,.13)}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-0.active{background:#7044a2}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-1.active{background:#2066a7}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-2.active{background:#19774b}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-3.active{background:#8e3176}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-4.active{background:#a72c39}
+#tableMatrixPanel .cm-occ-controls .cm-occ-btn-all.active{background:#405568}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected{color:#fff!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)!important;font-weight:950}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-0{background:#7044a2!important}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-1{background:#2066a7!important}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-2{background:#19774b!important}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-3{background:#8e3176!important}
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-4{background:#a72c39!important}
+@media(max-width:600px){#tableMatrixPanel .cm-occ-controls{margin-left:0;grid-template-columns:repeat(3,44px)}#tableMatrixPanel .cm-occ-controls .cm-occ-btn{padding:5px 2px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.62</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.63</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -214,14 +237,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=k2kon112326e'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=occ10groups112326f'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=k2kon112326e"></script>
-<script src="xray-ui-v1.js?v=k2kon112326e"></script>
-<script src="xray-archive-tools-v1.js?v=k2kon112326e"></script>
-<script src="xray-analog-columns-v1.js?v=k2kon112326e"></script>
+<script src="xray-engine-v1.js?v=occ10groups112326f"></script>
+<script src="xray-ui-v1.js?v=occ10groups112326f"></script>
+<script src="xray-archive-tools-v1.js?v=occ10groups112326f"></script>
+<script src="xray-analog-columns-v1.js?v=occ10groups112326f"></script>
 <script>
 'use strict';
 
@@ -309,8 +332,10 @@ let cmSaved={};try{cmSaved=JSON.parse(sessionStorage.getItem(cmStateKey)||'{}')|
 let cmOpen=cmSaved.open===true,cmCount=50,cmReverse=false,cmTemperature=false,cmEmpty=0,cmReduce=0,cmSelected=null,cmTrg=false,cmNumbers=cmSaved.numbers===true,cmSum=cmSaved.sum===true,cmConcentration=cmSaved.concentration===true;
 // K1 reorders concentration columns; K2 regroups nine original concentration columns by their per-draw occupancy.
 let cmConcSlot=[1,2,3,4].includes(Number(cmSaved.concSlot))?Number(cmSaved.concSlot):0;
+// Ten-column number-count selector: 0, 1, 2, 3, 4+ and all.
+let cmGroupFilter=cmSaved.groupFilter==='all'?'all':([0,1,2,3,4].includes(cmSaved.groupFilter)?cmSaved.groupFilter:null);
 const cmIndividual=new Set((Array.isArray(cmSaved.individual)?cmSaved.individual:[]).map(Number).filter(n=>Number.isSafeInteger(n)&&n>0));
-function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,concSlot:cmConcSlot,individual:[...cmIndividual]}))}catch(e){}}
+function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,concSlot:cmConcSlot,groupFilter:cmGroupFilter,individual:[...cmIndividual]}))}catch(e){}}
 const cmFutureMarks=new Map(),cmConcMarks=new Map(),cmK2FutureMarks=new Map();
 function cmConcGroup(n){return ((Number(n)-1)%9)+1}
 function cmConcCounts(d){const counts=Array(10).fill(0);for(const n of d?.balls||[])counts[cmConcGroup(n)]++;return counts}
@@ -333,6 +358,18 @@ function cmShownGroup(n){return cmConcentration?cmConcGroup(n):comboColOf(n)}
 function cmShownCounts(d){return cmConcentration?cmConcCounts(d):comboColumnCounts(d)}
 function cmData(){return DRAWS.slice(-cmCount).filter(d=>drawColumn(d)).slice().sort((a,b)=>cmReverse?b.draw-a.draw:a.draw-b.draw);}
 function cmGroups(d){const counts=cmShownCounts(d),out=[[],[],[],[],[]];for(let i=1;i<=cmCols();i++)out[Math.min(counts[i],4)].push('ст'+i);return out;}
+// Groups use the original ten columns, not modulo-nine concentration positions.
+function cmOccupancyBucket(count){return count>=4?4:Math.max(0,Math.floor(count))}
+function cmOccupancySelected(bucket){return !cmConcentration&&(cmGroupFilter==='all'||cmGroupFilter===bucket)}
+function cmOccupancyControlsHTML(){
+ if(cmConcentration)return '';
+ const groups=[{value:0,label:'0'},{value:1,label:'1'},{value:2,label:'2'},{value:3,label:'3'},{value:4,label:'4+'},{value:'all',label:'ВСЕ'}];
+ return '<span class="cm-occ-controls" role="group" aria-label="Группы по количеству чисел в десяти столбцах">'+groups.map(g=>{
+  const on=cmGroupFilter===g.value;
+  const info=g.value==='all'?'Подсветить все группы':'Группа '+g.label+': '+(g.value===4?'четыре и более':g.value)+' чисел в столбце';
+  return '<button type="button" class="cm-occ-btn cm-occ-btn-'+g.value+(on?' active':'')+'" data-cm-action="occ-group" data-cm-group="'+g.value+'" aria-pressed="'+on+'" title="'+info+'">'+g.label+'</button>';
+ }).join('')+'</span>';
+}
 // K2: classify each of the nine modulo-9 concentration columns by count in this draw.
 function cmIsK2(){return cmConcentration&&cmConcSlot===2}
 function cmK2Bucket(count){return count>=5?5:Math.max(0,count)}
@@ -384,9 +421,16 @@ function cmRender(updateTableOnly=false){
 });
  const maxFreq=Math.max(1,...freq.slice(1)),rows=[];
  const heatColor=n=>'#75591f';
- const renderCell=(col,hit,last,trail,mark,draw,content=null,title='')=>{const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'" class="'+cls+'"'+heat+(title?' title="'+title+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';};
+ const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null)=>{
+  const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';
+  const selected=occupancy!==null&&cmOccupancySelected(occupancy);
+  const groupClass=selected?' cm-occ-selected cm-occ-'+occupancy:'';
+  const data=occupancy===null?'':' data-cm-occupancy="'+occupancy+'"';
+  const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';
+  return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'"'+data+' class="'+cls+groupClass+'"'+heat+(title?' title="'+title+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';
+ };
  all.forEach((d,idx)=>{
-  const col=cmShownWinner(d),official=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I';
+  const col=cmShownWinner(d),official=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I',normalCounts=!cmConcentration?comboColumnCounts(d):null;
   const cells=k2?cmOrder.map(n=>{
    const members=k2Rows.get(d.draw)[n],hit=members.length>0&&n===cmK2WinnerBucket(d);
    const badge=hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
@@ -400,6 +444,12 @@ function cmRender(updateTableOnly=false){
    if(cmSum){const sum=nums.filter(tableParityVisible).reduce((acc,num)=>acc+num,0);content=badge+'<span class="cm-cell-sum">'+sum+'</span>';title='Сумма: '+sum}
    else if(cmNumbers||cmIndividual.has(Number(d.draw))){content=badge+'<span class="cm-cell-numbers">'+nums.join(' ')+'</span>';title=nums.join(', ')}
    else if(badge)content=badge;
+   if(normalCounts){
+    const occupancy=cmOccupancyBucket(normalCounts[n]);
+    if(cmOccupancySelected(occupancy)&&occupancy===0&&content===null)content='0';
+    const desc='Группа '+(occupancy===4?'4+':occupancy)+': '+normalCounts[n]+' чисел';
+    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,(title?title+' · ':'')+desc,occupancy);
+   }
    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
   }).join('');
   rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="Показать числа только этого тиража">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
@@ -441,10 +491,11 @@ function cmRender(updateTableOnly=false){
   return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>'+cmK2Label(g)+'</b><p>Тираж №'+d.draw+' · '+(d.date||'—')+' '+(d.time||'—')+'</p><b>Концентрации в этом тираже ('+current.length+')</b>'+details(current)+'<p><b>В предыдущем тираже</b></p>'+details(prev)+'</div>';
  }
  const g=cmGroups(d),previous=DRAWS[DRAWS.findIndex(z=>z.draw===d.draw)-1],previousCounts=cmShownCounts(previous),selectedCount=previousCounts[cmSelected.col]||0,selectedGroup=comboGroupLabel(selectedCount),groupCols=Array.from({length:cmColumns},(_,i)=>i+1).filter(i=>selectedCount>=4?previousCounts[i]>=4:previousCounts[i]===selectedCount),selectedNumbers=(previous?.balls||[]).filter(n=>cmShownGroup(n)===cmSelected.col);return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>ст'+cmSelected.col+'</b><p>Тираж: №'+d.draw+'</p><p>Дата: '+(d.date||'—')+' · Время: '+(d.time||'—')+'</p><p>Вышел из группы: '+selectedGroup+'</p><p>В этой группе были: '+(groupCols.map(v=>'ст'+v).join(' · ')||'—')+'</p><p>Числа выбранного столба в предыдущем тираже: '+(selectedNumbers.join(' · ')||'—')+'</p><b>Группы сейчас</b>'+g.map((a,i)=>'<div>ГР '+(i===4?'4+':i)+': '+(a.join(' · ')||'—')+'</div>').join('')+'</div>'})():'';
- panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+(k2?' cm-k2-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button></div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button>'+(cmConcentration?'<span class="cm-conc-slots" role="group" aria-label="Варианты концентрации К1–К4">'+[1,2,3,4].map(k=>'<button type="button" data-cm-action="conc-slot" data-cm-slot="'+k+'" aria-pressed="'+(cmConcSlot===k)+'" class="'+(cmConcSlot===k?'active':'')+'" title="'+(k===1?'К1: порядок столбцов 1 2 4 8 7 5 9 6 3':(k===2?'К2: группы ГР0, ГР1, ГР2, ГР3, ГР4, ГР4+':'Отдельная концентрация К'+k+' — схема будет добавлена позже'))+'">К'+k+'</button>').join('')+'</span>':'')+'</div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(k2?' · К2: 9 столбцов распределены по ГР0/1/2/3/4/4+. В клетках номера концентраций, А показывает их числа.':(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':''))+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
+ panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+(k2?' cm-k2-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button>'+cmOccupancyControlsHTML()+'</div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button>'+(cmConcentration?'<span class="cm-conc-slots" role="group" aria-label="Варианты концентрации К1–К4">'+[1,2,3,4].map(k=>'<button type="button" data-cm-action="conc-slot" data-cm-slot="'+k+'" aria-pressed="'+(cmConcSlot===k)+'" class="'+(cmConcSlot===k?'active':'')+'" title="'+(k===1?'К1: порядок столбцов 1 2 4 8 7 5 9 6 3':(k===2?'К2: группы ГР0, ГР1, ГР2, ГР3, ГР4, ГР4+':'Отдельная концентрация К'+k+' — схема будет добавлена позже'))+'">К'+k+'</button>').join('')+'</span>':'')+'</div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(k2?' · К2: 9 столбцов распределены по ГР0/1/2/3/4/4+. В клетках номера концентраций, А показывает их числа.':(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':''))+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
 }
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;if(!cmConcentration)cmConcSlot=0;}
-if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k)){cmConcSlot=cmConcSlot===k?0:k;cmSelected=null;}}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
+if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k)){cmConcSlot=cmConcSlot===k?0:k;cmSelected=null;}}
+if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
 document.addEventListener('change',e=>{if(e.target.id==='cmCount'){cmCount=Number(e.target.value);cmRender()}});
 document.addEventListener('input',e=>{if(e.target.id==='cmEmpty'||e.target.id==='cmReduce'){const n=Number(e.target.value);if(e.target.id==='cmEmpty')cmEmpty=n;else cmReduce=n;const output=e.target.parentElement?.querySelector('output');if(output)output.textContent=n;cmRender(true);}});
 
@@ -555,7 +606,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=k2kon112326e">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=occ10groups112326f">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -772,11 +823,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=k2kon112326e',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=occ10groups112326f',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=k2kon112326e"></script>
-<script src="combo-search-v1.js?v=k2kon112326e"></script>
-<script src="combo-max-details-v1.js?v=k2kon112326e"></script>
+<script src="combo-table-lock-v1.js?v=occ10groups112326f"></script>
+<script src="combo-search-v1.js?v=occ10groups112326f"></script>
+<script src="combo-max-details-v1.js?v=occ10groups112326f"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
