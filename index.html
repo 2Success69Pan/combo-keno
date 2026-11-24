@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="draworderflat112426f">
-<meta name="app-version" content="4.8.71">
-<link rel="manifest" href="manifest.webmanifest?v=draworderflat112426f">
+<meta name="app-build" content="matrixslots112426g">
+<meta name="app-version" content="4.8.72">
+<link rel="manifest" href="manifest.webmanifest?v=matrixslots112426g">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=draworderflat112426f">
+<link rel="stylesheet" href="xray-v1.css?v=matrixslots112426g">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -206,11 +206,16 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #tableMatrixPanel .cm-table td.cm-draw-with-a{position:relative!important}
 #tableMatrixPanel .cm-inline-b{position:absolute;left:1px;top:1px;min-width:12px;height:12px;padding:0 1px;border:1px solid #647d93;border-radius:2px;background:#183449;color:#e2eaf0;font-size:9px;line-height:10px;cursor:pointer;z-index:2}
 #tableMatrixPanel .cm-inline-b.active{background:#17709b;color:white;border-color:#76d5ff}
+/* Dedicated future matrix slots below T1–T5, before waterfall controls. */
+#tableDrawer .tableMatrixSlotRow{display:grid;grid-template-columns:minmax(54px,1fr) minmax(0,1fr);align-items:stretch;gap:6px;margin:0 0 5px}
+#tableDrawer .tableMatrixSlotRow .tableSlotCaption{display:flex;align-items:center;justify-content:center;padding:5px 2px;border:1px solid #406783;background:#123047;color:#d4e5f3;border-radius:8px;font-size:clamp(9px,2.3vw,12px);font-weight:850}
+#tableDrawer .tableMatrixSlotRow .tableLayoutModes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px}
+@media(min-width:900px) and (pointer:fine){#tableDrawer .tableMatrixSlotRow{max-width:1480px;margin:0 auto 5px;grid-template-columns:minmax(65px,200px) minmax(180px,260px)}}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.71</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.72</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -241,6 +246,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div id="tableDrawer" class="tableDrawer hidden">
   <div class="tableDrawerHead"><b>📊 Таблица</b><button id="tableRefreshBtn" type="button" aria-label="Обновить все данные" title="Обновить тиражи и все данные">⟳</button><button id="tableLockBtn" class="tableHeadToggle tableLockBtn" type="button" aria-pressed="false" aria-label="Закрепить цветные числа" title="Закрепить цветные числа">🔒</button><button id="tableActiveBtn" class="tableHeadToggle" type="button" aria-pressed="false">Актив</button><button id="tableOrderBtn" class="tableHeadToggle" type="button" aria-pressed="false">Воз</button></div>
   <div class="tableMatrixSwitchRow"><button id="closeTableDrawer" type="button">▼</button><div id="tableLayoutModes" class="tableLayoutModes" role="group" aria-label="Виды таблицы"><button type="button" data-table-layout="1" aria-pressed="false" title="Т1: стандартная таблица 10 × 8">Т1</button><button type="button" data-table-layout="2" aria-pressed="false" title="Т2: зеркальная таблица, пары чисел">Т2</button><button type="button" data-table-layout="3" aria-pressed="false" title="Т3: девять вертикальных столбцов 1, 2, 4, 8, 7, 5 | 3, 6, 9">Т3</button><button type="button" data-table-layout="4" aria-pressed="false" title="Т4: место для следующей таблицы">Т4</button><button type="button" data-table-layout="5" aria-pressed="false" title="Т5: место для следующей таблицы">Т5</button></div></div>
+  <div class="tableMatrixSlotRow"><span class="tableSlotCaption">Матрицы</span><div id="tableMatrixModes" class="tableLayoutModes" role="group" aria-label="Будущие матрицы М1–М5"><button type="button" data-matrix-slot="1" aria-pressed="false" title="М1: место для новой матрицы">М1</button><button type="button" data-matrix-slot="2" aria-pressed="false" title="М2: место для новой матрицы">М2</button><button type="button" data-matrix-slot="3" aria-pressed="false" title="М3: место для новой матрицы">М3</button><button type="button" data-matrix-slot="4" aria-pressed="false" title="М4: место для новой матрицы">М4</button><button type="button" data-matrix-slot="5" aria-pressed="false" title="М5: место для новой матрицы">М5</button></div></div>
   <div class="tableFeatureControls"><button id="tableMatrixBtn" type="button" aria-pressed="false" title="Открыть или закрыть матрицу столбов">МАТР</button><button id="tableTrgBtn" type="button" aria-pressed="false" title="Режим малых треугольников">🔺 TRG</button></div>
   <div id="tableNextDraw" class="tableNextDraw" aria-live="polite">Ожидание данных последнего тиража</div>
   <div id="tableDrawerBody"></div><div id="tableMatrixPanel" class="hidden"></div>
@@ -253,14 +259,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=draworderflat112426f'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=matrixslots112426g'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=draworderflat112426f"></script>
-<script src="xray-ui-v1.js?v=draworderflat112426f"></script>
-<script src="xray-archive-tools-v1.js?v=draworderflat112426f"></script>
-<script src="xray-analog-columns-v1.js?v=draworderflat112426f"></script>
+<script src="xray-engine-v1.js?v=matrixslots112426g"></script>
+<script src="xray-ui-v1.js?v=matrixslots112426g"></script>
+<script src="xray-archive-tools-v1.js?v=matrixslots112426g"></script>
+<script src="xray-analog-columns-v1.js?v=matrixslots112426g"></script>
 <script>
 'use strict';
 
@@ -616,6 +622,26 @@ function tableRestoreMirrorPairs(){
  tableManualSelected=[...present].sort((a,b)=>a-b);
  renderTableDrawer();
 }
+// Separate future matrix slots: they do not replace existing T1–T5 or waterfall K1–K4.
+const MATRIX_SLOT_KEY='combo-matrix-slots-v1';
+let matrixSlotMode=0;
+try{const n=Number(sessionStorage.getItem(MATRIX_SLOT_KEY));if(Number.isInteger(n)&&n>=1&&n<=5)matrixSlotMode=n}catch(e){}
+function syncMatrixSlotButtons(){
+ $('tableMatrixModes')?.querySelectorAll('[data-matrix-slot]').forEach(b=>{
+  const active=Number(b.dataset.matrixSlot)===matrixSlotMode;
+  b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));
+ });
+}
+function setMatrixSlotMode(mode){
+ if(!Number.isInteger(mode)||mode<1||mode>5)return;
+ matrixSlotMode=matrixSlotMode===mode?0:mode;
+ try{sessionStorage.setItem(MATRIX_SLOT_KEY,String(matrixSlotMode))}catch(e){}
+ syncMatrixSlotButtons();
+ // Future schemes will be connected here without changing table data.
+}
+$('tableMatrixModes')?.addEventListener('click',e=>{
+ const b=e.target.closest('[data-matrix-slot]');if(b)setMatrixSlotMode(Number(b.dataset.matrixSlot));
+});
 function syncTableLayoutButtons(){
  $('tableLayoutModes')?.querySelectorAll('[data-table-layout]').forEach(b=>{
   const active=Number(b.dataset.tableLayout)===tableLayoutMode;
@@ -663,7 +689,7 @@ function restoreTableScroll(saved){
   else drawer.scrollTop+=delta;
  }
 }
-function renderTableDrawer(live=false){const preservedScroll=captureTableScroll();updateTableNextDraw();cmRender(live);const box=$('tableDrawerBody');if(!box)return;syncTableHeadButtons();syncTableLayoutButtons();const nums=getTableEffectiveSelected().filter(tableParityVisible);const recent=getRecentVisibleDraws();const numberMap=getTableNumberMap(recent);const overlaps=getTableOverlapNumbers(recent).filter(tableParityVisible);const legend=`<div class="tableLegend">
+function renderTableDrawer(live=false){const preservedScroll=captureTableScroll();updateTableNextDraw();cmRender(live);const box=$('tableDrawerBody');if(!box)return;syncTableHeadButtons();syncTableLayoutButtons();syncMatrixSlotButtons();const nums=getTableEffectiveSelected().filter(tableParityVisible);const recent=getRecentVisibleDraws();const numberMap=getTableNumberMap(recent);const overlaps=getTableOverlapNumbers(recent).filter(tableParityVisible);const legend=`<div class="tableLegend">
 <button type="button" class="lg c1 ${tablePaintColor==='c1'?'paintOn':''}" data-paint="c1">1 зел</button>
 <button type="button" class="lg c2 ${tablePaintColor==='c2'?'paintOn':''}" data-paint="c2">2 жёлт</button>
 <button type="button" class="lg c3 ${tablePaintColor==='c3'?'paintOn':''}" data-paint="c3">3 красн</button>
@@ -686,7 +712,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=draworderflat112426f">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=matrixslots112426g">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -903,11 +929,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=draworderflat112426f',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=matrixslots112426g',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=draworderflat112426f"></script>
-<script src="combo-search-v1.js?v=draworderflat112426f"></script>
-<script src="combo-max-details-v1.js?v=draworderflat112426f"></script>
+<script src="combo-table-lock-v1.js?v=matrixslots112426g"></script>
+<script src="combo-search-v1.js?v=matrixslots112426g"></script>
+<script src="combo-max-details-v1.js?v=matrixslots112426g"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
