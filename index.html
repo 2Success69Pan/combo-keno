@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="matrixparity112426d">
-<meta name="app-version" content="4.8.69">
-<link rel="manifest" href="manifest.webmanifest?v=matrixparity112426d">
+<meta name="app-build" content="draworderb112426e">
+<meta name="app-version" content="4.8.70">
+<link rel="manifest" href="manifest.webmanifest?v=draworderb112426e">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=matrixparity112426d">
+<link rel="stylesheet" href="xray-v1.css?v=draworderb112426e">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -202,11 +202,15 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #tableMatrixPanel .cm-parity-controls{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
 #tableMatrixPanel .cm-parity-controls button{border:1px solid #52718c;border-radius:9px;padding:7px 10px;min-height:33px;font-weight:900}
 #tableMatrixPanel .cm-parity-controls button.active{background:#1f754a;border-color:#77e3a4;color:white}
+/* Per-draw order controls: В at left of draw number, А at right. */
+#tableMatrixPanel .cm-table td.cm-draw-with-a{position:relative!important}
+#tableMatrixPanel .cm-inline-b{position:absolute;left:1px;top:1px;min-width:12px;height:12px;padding:0 1px;border:1px solid #647d93;border-radius:2px;background:#183449;color:#e2eaf0;font-size:9px;line-height:10px;cursor:pointer;z-index:2}
+#tableMatrixPanel .cm-inline-b.active{background:#17709b;color:white;border-color:#76d5ff}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.69</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.70</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -249,14 +253,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=matrixparity112426d'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=draworderb112426e'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=matrixparity112426d"></script>
-<script src="xray-ui-v1.js?v=matrixparity112426d"></script>
-<script src="xray-archive-tools-v1.js?v=matrixparity112426d"></script>
-<script src="xray-analog-columns-v1.js?v=matrixparity112426d"></script>
+<script src="xray-engine-v1.js?v=draworderb112426e"></script>
+<script src="xray-ui-v1.js?v=draworderb112426e"></script>
+<script src="xray-archive-tools-v1.js?v=draworderb112426e"></script>
+<script src="xray-analog-columns-v1.js?v=draworderb112426e"></script>
 <script>
 'use strict';
 
@@ -349,7 +353,8 @@ let cmParity=['even','odd'].includes(cmSaved.parity)?cmSaved.parity:'all';
 // Ten-column number-count selector: 0, 1, 2, 3, 4+ and all.
 let cmGroupFilter=cmSaved.groupFilter==='all'?'all':([0,1,2,3,4].includes(cmSaved.groupFilter)?cmSaved.groupFilter:null);
 const cmIndividual=new Set((Array.isArray(cmSaved.individual)?cmSaved.individual:[]).map(Number).filter(n=>Number.isSafeInteger(n)&&n>0));
-function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,concSlot:cmConcSlot,groupFilter:cmGroupFilter,fort:cmFort,parity:cmParity,individual:[...cmIndividual]}))}catch(e){}}
+const cmDrawOrder=new Set((Array.isArray(cmSaved.drawOrder)?cmSaved.drawOrder:[]).map(Number).filter(n=>Number.isSafeInteger(n)&&n>0));
+function cmSaveState(){try{sessionStorage.setItem(cmStateKey,JSON.stringify({open:cmOpen,numbers:cmNumbers,sum:cmSum,concentration:cmConcentration,concSlot:cmConcSlot,groupFilter:cmGroupFilter,fort:cmFort,parity:cmParity,individual:[...cmIndividual],drawOrder:[...cmDrawOrder]}))}catch(e){}}
 const cmFutureMarks=new Map(),cmConcMarks=new Map(),cmK2FutureMarks=new Map();
 function cmConcGroup(n){return ((Number(n)-1)%9)+1}
 function cmConcCounts(d){const counts=Array(10).fill(0);for(const n of d?.balls||[])counts[cmConcGroup(n)]++;return counts}
@@ -388,14 +393,14 @@ function cmOccupancyControlsHTML(){
 function cmIsK2(){return cmConcentration&&cmConcSlot===2}
 function cmK2Bucket(count){return count>=5?5:Math.max(0,count)}
 function cmK2Label(bucket){return 'ГР'+(bucket===5?'4+':bucket)}
-function cmK2Buckets(d){
+function cmK2Buckets(d,orderByDraw=false){
  const byColumn=Array.from({length:10},()=>[]);
  for(const raw of d?.balls||[]){
   const n=Number(raw);if(Number.isInteger(n)&&n>=1&&n<=80)byColumn[cmConcGroup(n)].push(n);
  }
  const buckets=Array.from({length:6},()=>[]);
  for(let col=1;col<=9;col++){
-  const nums=byColumn[col].sort((a,b)=>a-b);
+  const nums=orderByDraw?byColumn[col]:byColumn[col].sort((a,b)=>a-b);
   buckets[cmK2Bucket(nums.length)].push({col,nums});
  }
  return buckets;
@@ -463,17 +468,17 @@ function cmRender(updateTableOnly=false){
  all.forEach((d,idx)=>{
   const col=cmShownWinner(d),official=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I',normalCounts=!cmConcentration?comboColumnCounts(d):null,mirrors=tableMirrorPairs?getTableMirrorPairNumbers(d):new Set(),forts=cmFort?cmFortPairNumbers(d):new Set();
   const cells=k2?cmOrder.map(n=>{
-   const members=k2Rows.get(d.draw)[n],hit=members.length>0&&n===cmK2WinnerBucket(d);
+   const members=(cmDrawOrder.has(Number(d.draw))?cmK2Buckets(d,true):k2Rows.get(d.draw))[n],hit=members.length>0&&n===cmK2WinnerBucket(d);
    const badge=hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
-   const content=cmK2CellContent(members,cmNumbers||cmIndividual.has(Number(d.draw)),cmSum,badge,mirrors,forts);
+   const content=cmK2CellContent(members,cmNumbers||cmIndividual.has(Number(d.draw))||cmDrawOrder.has(Number(d.draw)),cmSum&&!cmDrawOrder.has(Number(d.draw)),badge,mirrors,forts);
    const title=cmK2Label(n)+': '+(members.length?members.map(m=>'кон'+m.col+': '+(m.nums.join(', ')||'—')).join(' · '):'нет столбцов');
    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
   }).join(''):cmOrder.map(n=>{
-   const hit=n===col,nums=(d.balls||[]).map(Number).filter(v=>cmShownGroup(v)===n).sort((a,b)=>a-b);
+   const hit=n===col,nums=(d.balls||[]).map(Number).filter(v=>cmShownGroup(v)===n);if(!cmDrawOrder.has(Number(d.draw)))nums.sort((a,b)=>a-b);
    const badge=cmConcentration&&hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
    let content=null,title='';
-   if(cmSum){const sum=nums.filter(cmParityVisible).reduce((acc,num)=>acc+num,0);content=badge+'<span class="cm-cell-sum">'+sum+'</span>';title='Сумма: '+sum}
-   else if(cmNumbers||cmIndividual.has(Number(d.draw))){content=badge+'<span class="cm-cell-numbers">'+cmMirrorNumbersHTML(nums,mirrors,forts)+'</span>';title=nums.filter(cmParityVisible).join(', ')}
+   if(cmSum&&!cmDrawOrder.has(Number(d.draw))){const sum=nums.filter(cmParityVisible).reduce((acc,num)=>acc+num,0);content=badge+'<span class="cm-cell-sum">'+sum+'</span>';title='Сумма: '+sum}
+   else if(cmNumbers||cmIndividual.has(Number(d.draw))||cmDrawOrder.has(Number(d.draw))){content=badge+'<span class="cm-cell-numbers">'+cmMirrorNumbersHTML(nums,mirrors,forts)+'</span>';title=nums.filter(cmParityVisible).join(', ')}
    else if(badge)content=badge;
    if(normalCounts){
     const occupancy=cmOccupancyBucket(normalCounts[n]);
@@ -483,7 +488,7 @@ function cmRender(updateTableOnly=false){
    }
    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
   }).join('');
-  rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="Показать числа только этого тиража">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
+  rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-b'+(cmDrawOrder.has(Number(d.draw))?' active':'')+'" data-cm-action="row-draw-order" data-cm-row="'+d.draw+'" aria-pressed="'+cmDrawOrder.has(Number(d.draw))+'" title="В: числа этого тиража по порядку выпадения">В</button><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="А: числа этого тиража по возрастанию">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
  });
  const lastDraw=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));
  for(let gap=1;gap<=cmEmpty;gap++){
@@ -526,7 +531,8 @@ function cmRender(updateTableOnly=false){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;if(!cmConcentration)cmConcSlot=0;}
 if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k)){cmConcSlot=cmConcSlot===k?0:k;cmSelected=null;}}
-if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='parity'){const mode=b.dataset.cmParity;if(['even','odd'].includes(mode))cmParity=cmParity===mode?'all':mode;}if(action==='mirror'){tableMirrorPairs=!tableMirrorPairs;renderTableDrawer();return;}if(action==='fort'){cmFort=!cmFort;cmSaveState();cmRender();return;}if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
+if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='parity'){const mode=b.dataset.cmParity;if(['even','odd'].includes(mode))cmParity=cmParity===mode?'all':mode;}if(action==='mirror'){tableMirrorPairs=!tableMirrorPairs;renderTableDrawer();return;}if(action==='fort'){cmFort=!cmFort;cmSaveState();cmRender();return;}if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmDrawOrder.has(id)){cmDrawOrder.delete(id);cmIndividual.add(id)}else if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}
+if(action==='row-draw-order'){const id=Number(b.dataset.cmRow);if(cmDrawOrder.has(id))cmDrawOrder.delete(id);else{cmDrawOrder.add(id);cmIndividual.delete(id)}}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
 document.addEventListener('change',e=>{if(e.target.id==='cmCount'){cmCount=Number(e.target.value);cmRender()}});
 document.addEventListener('input',e=>{if(e.target.id==='cmEmpty'||e.target.id==='cmReduce'){const n=Number(e.target.value);if(e.target.id==='cmEmpty')cmEmpty=n;else cmReduce=n;const output=e.target.parentElement?.querySelector('output');if(output)output.textContent=n;cmRender(true);}});
 
@@ -669,7 +675,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=matrixparity112426d">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=draworderb112426e">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -886,11 +892,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=matrixparity112426d',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=draworderb112426e',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=matrixparity112426d"></script>
-<script src="combo-search-v1.js?v=matrixparity112426d"></script>
-<script src="combo-max-details-v1.js?v=matrixparity112426d"></script>
+<script src="combo-table-lock-v1.js?v=draworderb112426e"></script>
+<script src="combo-search-v1.js?v=draworderb112426e"></script>
+<script src="combo-max-details-v1.js?v=draworderb112426e"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
