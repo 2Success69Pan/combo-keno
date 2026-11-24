@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="matrixmirror112426a">
-<meta name="app-version" content="4.8.66">
-<link rel="manifest" href="manifest.webmanifest?v=matrixmirror112426a">
+<meta name="app-build" content="mirrornumsonly112426b">
+<meta name="app-version" content="4.8.67">
+<link rel="manifest" href="manifest.webmanifest?v=mirrornumsonly112426b">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=matrixmirror112426a">
+<link rel="stylesheet" href="xray-v1.css?v=mirrornumsonly112426b">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -192,15 +192,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:600px){#tableMatrixPanel .cm-occ-controls{margin-left:0;grid-template-columns:repeat(3,44px)}#tableMatrixPanel .cm-occ-controls .cm-occ-btn{padding:5px 2px}}
 /* Prevent browser scroll anchoring from fighting restored position during draw selection. */
 #tableDrawer,#tableDrawerBody .recentDraws{overflow-anchor:none}
-/* Same reversed-digit pairs as upper table; highlight on waterfall without removing winner bubbles. */
-#tableMatrixPanel .cm-table td.cm-mirror-cell{outline:2px solid #fa4b53!important;outline-offset:-2px}
+/* Highlight only mirrored number labels, keeping all cell backgrounds and winner bubbles unchanged. */
 #tableMatrixPanel .cm-mirror-number{display:inline-block;background:#a81420!important;color:#fff!important;border:1px solid #ff7277;border-radius:3px;padding:0 2px;line-height:1.15;font-weight:950}
 #tableMatrixPanel .cm-k2-member .cm-mirror-number{font-size:inherit}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.66</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.67</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -243,14 +242,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=matrixmirror112426a'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=mirrornumsonly112426b'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=matrixmirror112426a"></script>
-<script src="xray-ui-v1.js?v=matrixmirror112426a"></script>
-<script src="xray-archive-tools-v1.js?v=matrixmirror112426a"></script>
-<script src="xray-analog-columns-v1.js?v=matrixmirror112426a"></script>
+<script src="xray-engine-v1.js?v=mirrornumsonly112426b"></script>
+<script src="xray-ui-v1.js?v=mirrornumsonly112426b"></script>
+<script src="xray-archive-tools-v1.js?v=mirrornumsonly112426b"></script>
+<script src="xray-analog-columns-v1.js?v=mirrornumsonly112426b"></script>
 <script>
 'use strict';
 
@@ -399,7 +398,6 @@ function cmK2WinnerBucket(d){
 function cmMirrorNumbersHTML(nums,mirrors){
  return nums.map(n=>mirrors.has(Number(n))?'<span class="cm-mirror-number">'+n+'</span>':String(n)).join(' ');
 }
-function cmMirrorCellHits(nums,mirrors){return nums.some(n=>mirrors.has(Number(n)))}
 function cmK2CellContent(members,showNumbers,sumMode,badge,mirrors){
  if(!members.length)return '<span class="cm-k2-none">—</span>';
  const columns=members.map(x=>showNumbers
@@ -432,10 +430,10 @@ function cmRender(updateTableOnly=false){
 });
  const maxFreq=Math.max(1,...freq.slice(1)),rows=[];
  const heatColor=n=>'#75591f';
- const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null,mirrorHit=false)=>{
+ const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null)=>{
   const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';
   const selected=occupancy!==null&&cmOccupancySelected(occupancy);
-  const groupClass=(selected?' cm-occ-selected cm-occ-'+occupancy:'')+(mirrorHit?' cm-mirror-cell':'');
+  const groupClass=selected?' cm-occ-selected cm-occ-'+occupancy:'';
   const data=occupancy===null?'':' data-cm-occupancy="'+occupancy+'"';
   const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';
   return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'"'+data+' class="'+cls+groupClass+'"'+heat+(title?' title="'+title+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';
@@ -447,7 +445,7 @@ function cmRender(updateTableOnly=false){
    const badge=hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
    const content=cmK2CellContent(members,cmNumbers||cmIndividual.has(Number(d.draw)),cmSum,badge,mirrors);
    const title=cmK2Label(n)+': '+(members.length?members.map(m=>'кон'+m.col+': '+(m.nums.join(', ')||'—')).join(' · '):'нет столбцов');
-   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title,null,members.some(m=>cmMirrorCellHits(m.nums,mirrors)));
+   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
   }).join(''):cmOrder.map(n=>{
    const hit=n===col,nums=(d.balls||[]).map(Number).filter(v=>cmShownGroup(v)===n).sort((a,b)=>a-b);
    const badge=cmConcentration&&hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
@@ -459,9 +457,9 @@ function cmRender(updateTableOnly=false){
     const occupancy=cmOccupancyBucket(normalCounts[n]);
     if(cmOccupancySelected(occupancy)&&occupancy===0&&content===null)content='0';
     const desc='Группа '+(occupancy===4?'4+':occupancy)+': '+normalCounts[n]+' чисел';
-    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,(title?title+' · ':'')+desc,occupancy,cmMirrorCellHits(nums,mirrors));
+    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,(title?title+' · ':'')+desc,occupancy);
    }
-   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title,null,cmMirrorCellHits(nums,mirrors));
+   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
   }).join('');
   rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="Показать числа только этого тиража">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
  });
@@ -649,7 +647,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=matrixmirror112426a">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=mirrornumsonly112426b">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -866,11 +864,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=matrixmirror112426a',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=mirrornumsonly112426b',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=matrixmirror112426a"></script>
-<script src="combo-search-v1.js?v=matrixmirror112426a"></script>
-<script src="combo-max-details-v1.js?v=matrixmirror112426a"></script>
+<script src="combo-table-lock-v1.js?v=mirrornumsonly112426b"></script>
+<script src="combo-search-v1.js?v=mirrornumsonly112426b"></script>
+<script src="combo-max-details-v1.js?v=mirrornumsonly112426b"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
