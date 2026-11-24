@@ -90,11 +90,13 @@ function render(){
  const frequency='<div class="m1-toolbar"><label>Сократить частоту <input id="m1Reduce" type="range" min="0" max="20" value="'+(Number(state.reduce)||0)+'"><output>'+(Number(state.reduce)||0)+'</output></label><span class="m1-info">Строк: '+selected.length+'</span></div>';
  const reference='<label class="m1-info">Св: <select id="m1Reference"><option value="previous"'+(state.ref==='previous'?' selected':'')+'>Предыдущий тираж</option><option value="selected"'+(state.ref==='selected'?' selected':'')+'>Выбранная строка</option></select></label>'+(state.ref==='selected'?'<span class="m1-info"> Эталон №'+(state.refId||'—')+' (нажми номер тиража)</span>':'');
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
- const lastWinners=new Set();
+ const recency=Array(10).fill(999);
  const rows=selected.map(d=>{
   const winner=typeof cmConcWinner==='function'?cmConcWinner(d):c(d.balls[19]);
-  const rowHtml=row(d,refFor(d),new Set(lastWinners));
-  lastWinners.add(winner);
+  const trails=new Set(Array.from({length:9},(_,i)=>i+1).filter(k=>recency[k]>=1&&recency[k]<=7));
+  const rowHtml=row(d,refFor(d),trails);
+  for(let k=1;k<=9;k++)recency[k]++;
+  recency[winner]=0;
   return rowHtml;
  }).join('');
  const freq=Array.from({length:9},(_,i)=>Math.max(0,selected.filter(d=>count(d)[i+1]>0).length-(Number(state.reduce)||0)));
