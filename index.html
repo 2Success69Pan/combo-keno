@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#061321">
-<meta name="app-build" content="drawscroll112326h">
-<meta name="app-version" content="4.8.65">
-<link rel="manifest" href="manifest.webmanifest?v=drawscroll112326h">
+<meta name="app-build" content="matrixmirror112426a">
+<meta name="app-version" content="4.8.66">
+<link rel="manifest" href="manifest.webmanifest?v=matrixmirror112426a">
 <link rel="icon" href="icon-192.png">
-<link rel="stylesheet" href="xray-v1.css?v=drawscroll112326h">
+<link rel="stylesheet" href="xray-v1.css?v=matrixmirror112426a">
 <title>COMBO KENO</title>
 <style>
 :root{--bg:#04111e;--p:#0c2135;--p2:#102a43;--line:#274863;--text:#f3f8fc;--muted:#9eb0c1;--green:#6fd33f;--green2:#2e8f2b;--gold:#ffbd23;--red:#ff453a;--blue:#35a9ff}
@@ -192,11 +192,15 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 @media(max-width:600px){#tableMatrixPanel .cm-occ-controls{margin-left:0;grid-template-columns:repeat(3,44px)}#tableMatrixPanel .cm-occ-controls .cm-occ-btn{padding:5px 2px}}
 /* Prevent browser scroll anchoring from fighting restored position during draw selection. */
 #tableDrawer,#tableDrawerBody .recentDraws{overflow-anchor:none}
+/* Same reversed-digit pairs as upper table; highlight on waterfall without removing winner bubbles. */
+#tableMatrixPanel .cm-table td.cm-mirror-cell{outline:2px solid #fa4b53!important;outline-offset:-2px}
+#tableMatrixPanel .cm-mirror-number{display:inline-block;background:#a81420!important;color:#fff!important;border:1px solid #ff7277;border-radius:3px;padding:0 2px;line-height:1.15;font-weight:950}
+#tableMatrixPanel .cm-k2-member .cm-mirror-number{font-size:inherit}
 </style>
 </head>
 <body>
 <div class="app">
-<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.65</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
+<header class="top"><img class="logo" src="icon-192.png" alt=""><div><div class="title">COMBO KENO</div><div id="dbline" class="dbline">База загружается…</div><div class="topmeta"><span class="version">Версия v4.8.66</span><button id="refreshBtn" class="refresh" type="button">↻ Обновить</button></div></div></header>
 <div id="refreshStatus" class="refresh-status hidden" role="status" aria-live="polite"></div>
 
 <section id="our" class="section on">
@@ -239,14 +243,14 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <button class="nav" data-sec="history"><b>◷</b>История</button>
 </div><div class="footrow2">
 <button id="tableDrawerBtn" class="nav" type="button"><b>📊</b>Таблица</button>
-<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=drawscroll112326h'"><b>🔁</b>Интервалы</button>
+<button id="intervalsBtn" class="nav" type="button" onclick="location.href='./k7-interval-builder.html?v=matrixmirror112426a'"><b>🔁</b>Интервалы</button>
 <div class="navSpacer"></div><div class="navSpacer"></div>
 </div></div></nav>
 
-<script src="xray-engine-v1.js?v=drawscroll112326h"></script>
-<script src="xray-ui-v1.js?v=drawscroll112326h"></script>
-<script src="xray-archive-tools-v1.js?v=drawscroll112326h"></script>
-<script src="xray-analog-columns-v1.js?v=drawscroll112326h"></script>
+<script src="xray-engine-v1.js?v=matrixmirror112426a"></script>
+<script src="xray-ui-v1.js?v=matrixmirror112426a"></script>
+<script src="xray-archive-tools-v1.js?v=matrixmirror112426a"></script>
+<script src="xray-analog-columns-v1.js?v=matrixmirror112426a"></script>
 <script>
 'use strict';
 
@@ -391,10 +395,15 @@ function cmK2Buckets(d){
 function cmK2WinnerBucket(d){
  const winner=cmConcWinner(d);return winner===null?null:cmK2Bucket(cmConcCounts(d)[winner]);
 }
-function cmK2CellContent(members,showNumbers,sumMode,badge){
+// Shared reversible-number mirror: both partners must occur in the SAME draw.
+function cmMirrorNumbersHTML(nums,mirrors){
+ return nums.map(n=>mirrors.has(Number(n))?'<span class="cm-mirror-number">'+n+'</span>':String(n)).join(' ');
+}
+function cmMirrorCellHits(nums,mirrors){return nums.some(n=>mirrors.has(Number(n)))}
+function cmK2CellContent(members,showNumbers,sumMode,badge,mirrors){
  if(!members.length)return '<span class="cm-k2-none">—</span>';
  const columns=members.map(x=>showNumbers
-  ?'<div class="cm-k2-member cm-k2-expanded"><b>кон'+x.col+'</b><span>'+(x.nums.join(' ')||'—')+'</span></div>'
+  ?'<div class="cm-k2-member cm-k2-expanded"><b>кон'+x.col+'</b><span>'+(cmMirrorNumbersHTML(x.nums,mirrors)||'—')+'</span></div>'
   :'<span class="cm-k2-member"><b>кон'+x.col+'</b></span>').join('');
  const sum=sumMode?'<div class="cm-k2-sum">Σ '+members.reduce((acc,x)=>acc+x.nums.filter(tableParityVisible).reduce((a,n)=>a+n,0),0)+'</div>':'';
  return '<div class="cm-k2-cell">'+badge+'<div class="cm-k2-members">'+columns+'</div>'+sum+'</div>';
@@ -423,36 +432,36 @@ function cmRender(updateTableOnly=false){
 });
  const maxFreq=Math.max(1,...freq.slice(1)),rows=[];
  const heatColor=n=>'#75591f';
- const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null)=>{
+ const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null,mirrorHit=false)=>{
   const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';
   const selected=occupancy!==null&&cmOccupancySelected(occupancy);
-  const groupClass=selected?' cm-occ-selected cm-occ-'+occupancy:'';
+  const groupClass=(selected?' cm-occ-selected cm-occ-'+occupancy:'')+(mirrorHit?' cm-mirror-cell':'');
   const data=occupancy===null?'':' data-cm-occupancy="'+occupancy+'"';
   const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';
   return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'"'+data+' class="'+cls+groupClass+'"'+heat+(title?' title="'+title+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';
  };
  all.forEach((d,idx)=>{
-  const col=cmShownWinner(d),official=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I',normalCounts=!cmConcentration?comboColumnCounts(d):null;
+  const col=cmShownWinner(d),official=drawColumn(d),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I',normalCounts=!cmConcentration?comboColumnCounts(d):null,mirrors=tableMirrorPairs?getTableMirrorPairNumbers(d):new Set();
   const cells=k2?cmOrder.map(n=>{
    const members=k2Rows.get(d.draw)[n],hit=members.length>0&&n===cmK2WinnerBucket(d);
    const badge=hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
-   const content=cmK2CellContent(members,cmNumbers||cmIndividual.has(Number(d.draw)),cmSum,badge);
+   const content=cmK2CellContent(members,cmNumbers||cmIndividual.has(Number(d.draw)),cmSum,badge,mirrors);
    const title=cmK2Label(n)+': '+(members.length?members.map(m=>'кон'+m.col+': '+(m.nums.join(', ')||'—')).join(' · '):'нет столбцов');
-   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
+   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title,null,members.some(m=>cmMirrorCellHits(m.nums,mirrors)));
   }).join(''):cmOrder.map(n=>{
    const hit=n===col,nums=(d.balls||[]).map(Number).filter(v=>cmShownGroup(v)===n).sort((a,b)=>a-b);
    const badge=cmConcentration&&hit?'<span class="cm-conc-bubble">'+official+'</span>':'';
    let content=null,title='';
    if(cmSum){const sum=nums.filter(tableParityVisible).reduce((acc,num)=>acc+num,0);content=badge+'<span class="cm-cell-sum">'+sum+'</span>';title='Сумма: '+sum}
-   else if(cmNumbers||cmIndividual.has(Number(d.draw))){content=badge+'<span class="cm-cell-numbers">'+nums.join(' ')+'</span>';title=nums.join(', ')}
+   else if(cmNumbers||cmIndividual.has(Number(d.draw))){content=badge+'<span class="cm-cell-numbers">'+cmMirrorNumbersHTML(nums,mirrors)+'</span>';title=nums.join(', ')}
    else if(badge)content=badge;
    if(normalCounts){
     const occupancy=cmOccupancyBucket(normalCounts[n]);
     if(cmOccupancySelected(occupancy)&&occupancy===0&&content===null)content='0';
     const desc='Группа '+(occupancy===4?'4+':occupancy)+': '+normalCounts[n]+' чисел';
-    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,(title?title+' · ':'')+desc,occupancy);
+    return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,(title?title+' · ':'')+desc,occupancy,cmMirrorCellHits(nums,mirrors));
    }
-   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title);
+   return renderCell(n,hit,hit&&idx===latestByCol[n],!hit&&latestByCol[n]>=0&&(cmReverse?idx<latestByCol[n]:idx>latestByCol[n]),false,d.draw,content,title,null,cmMirrorCellHits(nums,mirrors));
   }).join('');
   rows.push('<tr><td class="cm-draw cm-draw-with-a"><span>'+d.draw+'</span><button type="button" class="cm-inline-a'+(cmIndividual.has(Number(d.draw))?' active':'')+'" data-cm-action="row-numbers" data-cm-row="'+d.draw+'" aria-pressed="'+cmIndividual.has(Number(d.draw))+'" title="Показать числа только этого тиража">А</button></td>'+cells+'<td class="cm-parity">'+sign+'</td><td class="cm-date">'+String(d.date||'').slice(0,5)+' '+String(d.time||'').slice(0,5)+'</td></tr>');
  });
@@ -493,11 +502,11 @@ function cmRender(updateTableOnly=false){
   return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>'+cmK2Label(g)+'</b><p>Тираж №'+d.draw+' · '+(d.date||'—')+' '+(d.time||'—')+'</p><b>Концентрации в этом тираже ('+current.length+')</b>'+details(current)+'<p><b>В предыдущем тираже</b></p>'+details(prev)+'</div>';
  }
  const g=cmGroups(d),previous=DRAWS[DRAWS.findIndex(z=>z.draw===d.draw)-1],previousCounts=cmShownCounts(previous),selectedCount=previousCounts[cmSelected.col]||0,selectedGroup=comboGroupLabel(selectedCount),groupCols=Array.from({length:cmColumns},(_,i)=>i+1).filter(i=>selectedCount>=4?previousCounts[i]>=4:previousCounts[i]===selectedCount),selectedNumbers=(previous?.balls||[]).filter(n=>cmShownGroup(n)===cmSelected.col);return '<div class="cm-card"><button type="button" data-cm-close="1">✕</button><b>ст'+cmSelected.col+'</b><p>Тираж: №'+d.draw+'</p><p>Дата: '+(d.date||'—')+' · Время: '+(d.time||'—')+'</p><p>Вышел из группы: '+selectedGroup+'</p><p>В этой группе были: '+(groupCols.map(v=>'ст'+v).join(' · ')||'—')+'</p><p>Числа выбранного столба в предыдущем тираже: '+(selectedNumbers.join(' · ')||'—')+'</p><b>Группы сейчас</b>'+g.map((a,i)=>'<div>ГР '+(i===4?'4+':i)+': '+(a.join(' · ')||'—')+'</div>').join('')+'</div>'})():'';
- panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+(k2?' cm-k2-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button>'+cmOccupancyControlsHTML()+'</div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button>'+(cmConcentration?'<span class="cm-conc-slots" role="group" aria-label="Варианты концентрации К1–К4">'+[1,2,3,4].map(k=>'<button type="button" data-cm-action="conc-slot" data-cm-slot="'+k+'" aria-pressed="'+(cmConcSlot===k)+'" class="'+(cmConcSlot===k?'active':'')+'" title="'+(k===1?'К1: порядок столбцов 1 2 4 8 7 5 9 6 3':(k===2?'К2: группы ГР0, ГР1, ГР2, ГР3, ГР4, ГР4+':'Отдельная концентрация К'+k+' — схема будет добавлена позже'))+'">К'+k+'</button>').join('')+'</span>':'')+'</div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(k2?' · К2: 9 столбцов распределены по ГР0/1/2/3/4/4+. В клетках номера концентраций, А показывает их числа.':(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':''))+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
+ panel.innerHTML='<section class="cm-panel'+(cmConcentration?' cm-conc-mode':'')+(k2?' cm-k2-mode':'')+'"><div class="cm-toolbar"><b>Матрица столбов</b><button type="button" data-cm-action="numbers" aria-pressed="'+cmNumbers+'" class="'+(cmNumbers?'active':'')+'" title="Показать числа тиражей">А</button><select id="cmCount">'+[20,50,100,200,500].map(n=>'<option value="'+n+'" '+(cmCount===n?'selected':'')+'>'+n+'</option>').join('')+'</select><button data-cm-action="close">✕</button><button type="button" data-cm-action="sum" aria-pressed="'+cmSum+'" class="'+(cmSum?'active':'')+'" title="Сумма чисел по столбцам с учётом ЧЁТ / НЕЧЁТ">СУМ</button><button type="button" data-cm-action="mirror" aria-pressed="'+tableMirrorPairs+'" class="'+(tableMirrorPairs?'active':'')+'" title="🪞 Подсветить зеркальные пары в тиражах и матрице">🪞</button><button data-cm-action="refresh">⟳ Обновить</button><button data-cm-action="reverse">↑↓ Перевернуть</button><button data-cm-action="temp" class="'+(cmTemperature?'active':'')+'">🌡 Температура</button><button data-cm-action="trg" class="'+(cmTrg?'active':'')+'">🔺 TRG</button>'+cmOccupancyControlsHTML()+'</div><div class="cm-toolbar"><button type="button" data-cm-action="concentration" aria-pressed="'+cmConcentration+'" class="'+(cmConcentration?'active':'')+'" title="КОНЦ: 9 групп, шаг 9; кружок — официальный столб 1–10">▦ КОНЦ</button>'+(cmConcentration?'<span class="cm-conc-slots" role="group" aria-label="Варианты концентрации К1–К4">'+[1,2,3,4].map(k=>'<button type="button" data-cm-action="conc-slot" data-cm-slot="'+k+'" aria-pressed="'+(cmConcSlot===k)+'" class="'+(cmConcSlot===k?'active':'')+'" title="'+(k===1?'К1: порядок столбцов 1 2 4 8 7 5 9 6 3':(k===2?'К2: группы ГР0, ГР1, ГР2, ГР3, ГР4, ГР4+':'Отдельная концентрация К'+k+' — схема будет добавлена позже'))+'">К'+k+'</button>').join('')+'</span>':'')+'</div><div class="cm-toolbar"><label>Пустые строки <input id="cmEmpty" type="range" min="0" max="10" value="'+cmEmpty+'"><output>'+cmEmpty+'</output></label><label>Сократить частоту <input id="cmReduce" type="range" min="0" max="20" value="'+cmReduce+'"><output>'+cmReduce+'</output></label></div><div class="cm-note">Новые тиражи '+(cmReverse?'наверху':'внизу')+' · серый — история · жёлтый — последний столб · зелёный — отметка'+(k2?' · К2: 9 столбцов распределены по ГР0/1/2/3/4/4+. В клетках номера концентраций, А показывает их числа.':(cmConcentration?' · КОНЦ: 9 групп, кружок — ст1–10':''))+'</div><div class="cm-scroll"><table class="cm-table"><thead><tr><th class="cm-draw">Тираж</th>'+heads+'<th>⚖</th><th class="cm-date">Дата / время</th></tr></thead><tbody>'+rows.join('')+'</tbody><tfoot>'+footer+'</tfoot></table></div>'+card+'</section>';
 }
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.id==='tableMatrixBtn'){cmOpen=!cmOpen;cmSaveState();cmRender();return}if(b?.id==='tableTrgBtn'){cmTrg=!cmTrg;cmOpen=true;cmSaveState();cmRender();return}if(!cmOpen)return;const action=b?.dataset.cmAction;if(action){if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;if(!cmConcentration)cmConcSlot=0;}
 if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k)){cmConcSlot=cmConcSlot===k?0:k;cmSelected=null;}}
-if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
+if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='mirror'){tableMirrorPairs=!tableMirrorPairs;renderTableDrawer();return;}if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}cmSaveState();if(action==='trg')cmTrg=!cmTrg;if(action==='refresh'){const refresh=$('tableRefreshBtn');refresh?.click();return}cmRender();return}if(b?.dataset.cmClose){cmSelected=null;cmRender();return}const cell=e.target.closest('[data-cm-draw]');if(cell){const draw=Number(cell.dataset.cmDraw),col=Number(cell.dataset.cmCol),latest=Math.max(0,...DRAWS.map(d=>Number(d.draw)||0));if(draw>latest){const storage=cmIsK2()?cmK2FutureMarks:(cmConcentration?cmConcMarks:cmFutureMarks),marks=storage.get(draw)||new Set();if(marks.has(col))marks.delete(col);else marks.add(col);storage.set(draw,marks);cmRender();return}cmSelected={draw,col};cmRender()}});
 document.addEventListener('change',e=>{if(e.target.id==='cmCount'){cmCount=Number(e.target.value);cmRender()}});
 document.addEventListener('input',e=>{if(e.target.id==='cmEmpty'||e.target.id==='cmReduce'){const n=Number(e.target.value);if(e.target.id==='cmEmpty')cmEmpty=n;else cmReduce=n;const output=e.target.parentElement?.querySelector('output');if(output)output.textContent=n;cmRender(true);}});
 
@@ -640,7 +649,7 @@ function renderPick(){$('pickgrid').innerHTML=Array.from({length:80},(_,i)=>i+1)
 function hitCell(h,selectedCount){const prize=prizeForHits(selectedCount,h);if(prize){return `<div class="hitbox"><div class="hits fire"><span class="flame">🔥</span><span>${h}</span></div><div class="prize">Сумма<br>${money(prize)}</div></div>`}const cl=h===0?'z':h>=2?'h':'o';return `<div class="hitbox"><div class="hits ${cl}">${h}</div></div>`}
 function historyBalls(d){return historyOrder==='asc'?[...d.balls].sort((a,b)=>a-b):d.balls}
 function histRow(d,nums){const balls=historyBalls(d);const transitions=historyTransitions&&window.ComboHistoryTransitions?window.ComboHistoryTransitions(d):new Set();return `<div class="hrow"><div class="hcell"><div class="hdraw">${d.draw}</div><div class="hsub">Столб ${drawColumn(d)??'—'}</div><div class="hdate">${d.date} ${d.time}</div></div><div class="hcell">${hitCell(hitsFor(nums,d),nums.length)}</div><div class="hcell drawnums">${balls.map(n=>`<span class="dn ${nums.includes(n)?'hit':''} ${historyMarks.has(n)?'mark':''} ${transitions.has(Number(n))?'transition':''}" data-hn="${n}" role="button" tabindex="0" aria-pressed="${historyMarks.has(n)?'true':'false'}">${fmt(n)}</span>`).join('')}</div></div>`}
-function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=drawscroll112326h">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
+function orderSwitchHTML(){return `${new URLSearchParams(location.search).has('intervalK7')?'<a href="./k7-interval-builder.html?v=matrixmirror112426a">← Сохранённые K7 · Интервалы</a>':''}<div class="historyTools"><button type="button" data-history-order="draw" class="${historyOrder==='draw'?'active':''}">🎲 Выпадение</button><button type="button" data-history-order="asc" class="${historyOrder==='asc'?'active':''}">➡️ Возрастание</button><button id="historyTransitionsBtn" type="button" class="${historyTransitions?'active':''}" aria-pressed="${historyTransitions}">🔸 Переходы</button></div>`}
 function bindHistoryOrder(){const transitions=$('historyTransitionsBtn');if(transitions)transitions.onclick=()=>{historyTransitions=!historyTransitions;renderHistory()};document.querySelectorAll('#historyBox [data-history-order]').forEach(b=>b.onclick=()=>{historyOrder=b.dataset.historyOrder;renderHistory()})}
 function markBarHTML(){const a=[...historyMarks].sort((x,y)=>x-y);return `<div class="markHelp">Нажмите на любое число в тираже — это же число подсветится во всех показанных тиражах. Можно отметить несколько.</div>${a.length?`<div class="markBar"><span class="muted">Подсвечено:</span>${a.map(n=>`<span class="markChip">${fmt(n)}</span>`).join('')}<button id="markClear" class="markClear" type="button">Снять всё</button></div>`:''}`}
 function toggleHistoryMark(n){n=Number(n);if(!Number.isInteger(n)||n<1||n>80)return;if(historyMarks.has(n)){historyMarks.delete(n);selected=selected.filter(x=>x!==n);}else{if(!selected.includes(n) && selected.length>=10){alert('Максимум 10 чисел в комбинации');return}historyMarks.add(n);if(!selected.includes(n))selected=[...selected,n];}renderPick();renderHistory();}
@@ -857,11 +866,11 @@ if($('closeTableDrawer'))$('closeTableDrawer').onclick=closeTableDrawer;
 if($('tableActiveBtn'))$('tableActiveBtn').onclick=toggleTableHighlight;
 if($('tableOrderBtn'))$('tableOrderBtn').onclick=toggleTableRecentOrder;
 loadSavedAnyCombos();renderSavedCombos();renderPick();syncTableHeadButtons();load();
-if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=drawscroll112326h',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
+if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('sw.js?v=matrixmirror112426a',{updateViaCache:'none'});await reg.update();}catch(e){console.warn('SW update',e)}});}
 </script>
-<script src="combo-table-lock-v1.js?v=drawscroll112326h"></script>
-<script src="combo-search-v1.js?v=drawscroll112326h"></script>
-<script src="combo-max-details-v1.js?v=drawscroll112326h"></script>
+<script src="combo-table-lock-v1.js?v=matrixmirror112426a"></script>
+<script src="combo-search-v1.js?v=matrixmirror112426a"></script>
+<script src="combo-max-details-v1.js?v=matrixmirror112426a"></script>
 <script id="comboAutoUpdate">
 (()=>{
  const current=document.querySelector('meta[name="app-build"]')?.content||'';
