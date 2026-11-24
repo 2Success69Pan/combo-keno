@@ -3,7 +3,7 @@
 const KEY='combo-m1-config-v1',ARCH='combo-m1-archive-v1',PENDING='combo-m1-pending-v1';
 const el=id=>document.getElementById(id);
 const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-const state=Object.assign({depth:50,reverse:true,filter:'all',focus:0,ref:'previous',refId:0,archive:false,fort:true,parity:'all',sum:false,marks:[]},read(KEY,{}));
+const state=Object.assign({depth:50,reverse:true,filter:'all',focus:0,ref:'previous',refId:0,archive:false,fort:true,parity:'all',sum:false,numbers:true,reduce:0,marks:[]},read(KEY,{}));
 let records=Array.isArray(read(ARCH,[]))?read(ARCH,[]):[],pending=read(PENDING,null);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}};
 const saveRecords=()=>{try{localStorage.setItem(ARCH,JSON.stringify(records));localStorage.setItem(PENDING,JSON.stringify(pending))}catch{}};
@@ -66,7 +66,7 @@ function row(d,ref){
   const k=i+1,ns=bg[k].filter(visible),key=d.draw+':'+k;
   const cls=(last===k?' m1-last':'')+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
   const bubble=winner===k?'<span class="m1-bubble" title="Выпавший столб ст'+official+'">'+official+'</span>':'';
-  const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join(' ');
+  const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join(' '):'<span>'+cs[k]+'</span>';
   return '<td data-m1-cell="'+key+'" class="'+cls+'" title="к'+k+': '+cs[k]+' чисел">'+bubble+text+'</td>';
  }).join('');
  const result=verdict(d,ref),cls=result==='КЧ'?'m1-kch':result==='Ч'?'m1-ch':result==='К'?'m1-k':'m1-x';
@@ -83,18 +83,21 @@ function render(){
  const selectedReference=all.find(x=>Number(x.draw)===Number(state.refId));
  const refFor=d=>state.ref==='selected'&&selectedReference&&Number(d.draw)!==Number(selectedReference.draw)?selectedReference:all[all.findIndex(x=>x.draw===d.draw)-1];
  const button=(action,label,on=false,extra='')=>'<button type="button" data-m1="'+action+'" class="'+(on?'on':'')+'" '+extra+'>'+label+'</button>';
- const toolbar='<div class="m1-toolbar"><strong>М1 · Концентрации 1–9</strong>'+button('close','✕')+button('sum','СУМ',state.sum)+button('fort','ФОРТ',state.fort)+button('reverse','↑↓')+button('refresh','⟳')+
+ const toolbar='<div class="m1-toolbar"><strong>М1 · Концентрации 1–9</strong>'+button('close','✕')+button('numbers','А',state.numbers)+button('sum','СУМ',state.sum)+button('fort','ФОРТ',state.fort)+button('reverse','↑↓')+button('refresh','⟳')+
  '<select id="m1Depth">'+[20,50,100,500,999999].map(n=>'<option value="'+n+'"'+(Number(state.depth)===n?' selected':'')+'>'+(n===999999?'Все':n+' тир')+'</option>').join('')+'</select>'+
  button('parity','ЧЁТ',state.parity==='even','data-value="even"')+button('parity','НЕЧЁТ',state.parity==='odd','data-value="odd"')+'</div>';
  const filter='<div class="m1-filter">'+[0,1,2,3,4,'all'].map(x=>button('filter',x==='all'?'ВСЕ':lbl(x),String(state.filter)===String(x),'data-value="'+x+'"')).join('')+'</div>';
+ const frequency='<div class="m1-toolbar"><label>Сократить частоту <input id="m1Reduce" type="range" min="0" max="20" value="'+(Number(state.reduce)||0)+'"><output>'+(Number(state.reduce)||0)+'</output></label><span class="m1-info">Строк: '+selected.length+'</span></div>';
  const reference='<label class="m1-info">Св: <select id="m1Reference"><option value="previous"'+(state.ref==='previous'?' selected':'')+'>Предыдущий тираж</option><option value="selected"'+(state.ref==='selected'?' selected':'')+'>Выбранная строка</option></select></label>'+(state.ref==='selected'?'<span class="m1-info"> Эталон №'+(state.refId||'—')+' (нажми номер тиража)</span>':'');
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
  const rows=selected.map(d=>row(d,refFor(d))).join('');
+ const freq=Array.from({length:9},(_,i)=>Math.max(0,selected.filter(d=>count(d)[i+1]>0).length-(Number(state.reduce)||0)));
+ const footer='<tfoot><tr><th>Частота</th>'+freq.map(n=>'<td>'+n+'</td>').join('')+'<td>—</td><td>'+selected.length+' строк</td></tr></tfoot>';
  const baseline=state.filter==='all'?'Выбери группу 0/1/2/3/4+ для сравнения со случайной базой.':'Случайная база: концентрации к1–к8 (9 чисел): '+(chance(9,state.filter)*100).toFixed(2)+'%; к9 (8 чисел): '+(chance(8,state.filter)*100).toFixed(2)+'% (гипергеометрическая модель 20 из 80).';
  const entries=records.slice().sort((x,y)=>y.target-x.target).slice(0,250).map(r=>'<tr><td>'+Number(r.target)+'</td><td>№'+Number(r.source)+' · '+esc((r.ks||[]).map(n=>'к'+n).join(' '))+' · '+esc((r.proposed||[]).map(fmt).join(' '))+'</td><td>'+esc((r.actual||[]).map(fmt).join(' '))+'</td><td>'+esc(r.result)+'</td></tr>').join('');
  const pendingText=pending?'Следующий замороженный: №'+pending.target+' из №'+pending.source+' · '+pending.ks.map(n=>'к'+n).join(' '):'Нет замороженного прогноза. Выбери группу 0/1/2/3/4+.';
  const arch='<div class="m1-archive">'+button('archive','Архив анализа '+(state.archive?'▴':'▾')+' ('+records.length+')')+(state.archive?'<p class="m1-info">'+esc(pendingText)+'</p><pre>'+esc(stats())+'</pre><div class="m1-toolbar">'+button('json','Экспорт JSON')+button('csv','Экспорт CSV')+'<label>Импорт JSON / CSV<input type="file" id="m1Import" accept=".json,.csv"></label></div><div class="m1-archive-scroll"><table><thead><tr><th>Тираж</th><th>Предлагал</th><th>Вышло</th><th>Итог</th></tr></thead><tbody>'+entries+'</tbody></table></div><p class="m1-info">Исторические тиражи не записываются как прогнозы. Сохраняется только заранее замороженный выбор, локально в браузере. Итоги Ч/К — совпадения, не выигрыш.</p>':'')+'</div>';
- panel.innerHTML=toolbar+filter+reference+'<div class="m1-scroll"><table>'+header+'<tbody>'+rows+'</tbody></table></div><p class="m1-info">Концентрация = цифровой корень: к1…к9. Жёлтый — концентрация последнего числа; зелёный — отметка; оранжевый — пара ФОРТ; кружок — фактический столб 1–10 в концентрации-победителе. Нажми заголовок к1–к9, чтобы отфильтровать строки по количеству.</p><p class="m1-info">Св: Ч — есть общее число; К — совпало ненулевое количество хотя бы в одной концентрации; КЧ — оба; ✗ — нет. По умолчанию сравнение с предыдущим тиражом.</p><p class="m1-info">'+esc(baseline)+'</p>'+arch;
+ panel.innerHTML=toolbar+filter+frequency+reference+'<div class="m1-scroll"><table>'+header+'<tbody>'+rows+'</tbody>'+footer+'</table></div><p class="m1-info">Концентрация = цифровой корень: к1…к9. Жёлтый — концентрация последнего числа; зелёный — отметка; оранжевый — пара ФОРТ; кружок — фактический столб 1–10 в концентрации-победителе. Нажми заголовок к1–к9, чтобы отфильтровать строки по количеству.</p><p class="m1-info">Св: Ч — есть общее число; К — совпало ненулевое количество хотя бы в одной концентрации; КЧ — оба; ✗ — нет. По умолчанию сравнение с предыдущим тиражом.</p><p class="m1-info">'+esc(baseline)+'</p>'+arch;
 }
 function download(name,mime,value){const url=URL.createObjectURL(new Blob([value],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 const csvQuote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
@@ -135,6 +138,7 @@ document.addEventListener('click',e=>{
  if(action==='close'){setMatrixSlotMode(1);return}
  if(action==='filter'){state.filter=String(state.filter)===String(value)?'all':value;state.focus=0;pending=null;saveRecords()}
  if(action==='sum')state.sum=!state.sum;
+ if(action==='numbers')state.numbers=!state.numbers;
  if(action==='fort')state.fort=!state.fort;
  if(action==='reverse')state.reverse=!state.reverse;
  if(action==='parity')state.parity=state.parity===value?'all':value;
@@ -146,6 +150,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
  const root=el('m1Panel');if(!root||!root.contains(e.target))return;
  if(e.target.id==='m1Depth'){state.depth=Number(e.target.value);save();render()}
+ if(e.target.id==='m1Reduce'){state.reduce=Number(e.target.value);save();render()}
  if(e.target.id==='m1Reference'){state.ref=e.target.value;save();render()}
  if(e.target.id==='m1Import')importData(e.target.files&&e.target.files[0]);
 });
