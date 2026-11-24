@@ -136,7 +136,7 @@ document.addEventListener('click',e=>{
  if(!btn)return;
  const action=btn.dataset.m1,value=btn.dataset.value;
  if(action==='close'){setMatrixSlotMode(1);return}
- if(action==='filter'){state.filter=String(state.filter)===String(value)?'all':value;state.focus=0;pending=null;saveRecords()}
+ if(action==='filter'){state.filter=String(state.filter)===String(value)?'all':value;state.focus=0;/* already frozen prediction stays unchanged until verified */}
  if(action==='sum')state.sum=!state.sum;
  if(action==='numbers')state.numbers=!state.numbers;
  if(action==='fort')state.fort=!state.fort;
