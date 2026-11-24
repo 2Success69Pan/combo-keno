@@ -58,19 +58,19 @@ function stats(){
  let streak=0;for(let i=records.length-1;i>=0&&records[i].result!=='✗';i--)streak++;
  return [get(records,'Все'),...[20,50,100].map(n=>get(records.slice(-n),'Окно '+n)),'Серия без ✗: '+streak].join('\n');
 }
-function row(d,ref){
+function row(d,ref,trailConcs=new Set()){
  const cs=count(d),bg=buckets(d),last=c(d.balls[19]),winner=typeof cmConcWinner==='function'?cmConcWinner(d):0,official=typeof drawColumn==='function'?drawColumn(d):0,fort=new Set();
  if(state.fort){const set=new Set(nums(d));for(const n of set)if(set.has(81-n))fort.add(n)}
  const tr='<tr><th data-m1-ref="'+d.draw+'">'+d.draw+'</th>';
  const cells=Array.from({length:9},(_,i)=>{
   const k=i+1,ns=bg[k].filter(visible),key=d.draw+':'+k;
-  const cls=(last===k?' m1-last':'')+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
+  const cls=(trailConcs.has(k)?' m1-trail':'')+(last===k?' m1-last':'')+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
   const bubble=winner===k?'<span class="m1-bubble" title="Выпавший столб ст'+official+'">'+official+'</span>':'';
-  const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join(' '):'<span>'+cs[k]+'</span>';
+  const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?'<span class="m1-nums">'+ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join('')+'</span>':'<span>'+cs[k]+'</span>';
   return '<td data-m1-cell="'+key+'" class="'+cls+'" title="к'+k+': '+cs[k]+' чисел">'+bubble+text+'</td>';
  }).join('');
  const result=verdict(d,ref),cls=result==='КЧ'?'m1-kch':result==='Ч'?'m1-ch':result==='К'?'m1-k':'m1-x';
- return tr+cells+'<td class="'+cls+'">'+result+'</td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
+ return tr+cells+'<td class="m1-check"><span class="m1-check-pill '+cls+'">'+result+'</span></td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
 }
 function render(){
  const panel=el('m1Panel');if(!panel)return;
@@ -90,7 +90,13 @@ function render(){
  const frequency='<div class="m1-toolbar"><label>Сократить частоту <input id="m1Reduce" type="range" min="0" max="20" value="'+(Number(state.reduce)||0)+'"><output>'+(Number(state.reduce)||0)+'</output></label><span class="m1-info">Строк: '+selected.length+'</span></div>';
  const reference='<label class="m1-info">Св: <select id="m1Reference"><option value="previous"'+(state.ref==='previous'?' selected':'')+'>Предыдущий тираж</option><option value="selected"'+(state.ref==='selected'?' selected':'')+'>Выбранная строка</option></select></label>'+(state.ref==='selected'?'<span class="m1-info"> Эталон №'+(state.refId||'—')+' (нажми номер тиража)</span>':'');
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
- const rows=selected.map(d=>row(d,refFor(d))).join('');
+ const lastWinners=new Set();
+ const rows=selected.map(d=>{
+  const winner=typeof cmConcWinner==='function'?cmConcWinner(d):c(d.balls[19]);
+  const rowHtml=row(d,refFor(d),new Set(lastWinners));
+  lastWinners.add(winner);
+  return rowHtml;
+ }).join('');
  const freq=Array.from({length:9},(_,i)=>Math.max(0,selected.filter(d=>count(d)[i+1]>0).length-(Number(state.reduce)||0)));
  const footer='<tfoot><tr><th>Частота</th>'+freq.map(n=>'<td>'+n+'</td>').join('')+'<td>—</td><td>'+selected.length+' строк</td></tr></tfoot>';
  const baseline=state.filter==='all'?'Выбери группу 0/1/2/3/4+ для сравнения со случайной базой.':'Случайная база: концентрации к1–к8 (9 чисел): '+(chance(9,state.filter)*100).toFixed(2)+'%; к9 (8 чисел): '+(chance(8,state.filter)*100).toFixed(2)+'% (гипергеометрическая модель 20 из 80).';
@@ -162,17 +168,17 @@ const style=document.createElement('style');style.id='m1-styles';style.textConte
 '#m1Panel button.on{background:#23774c;border-color:#64e39b}',
 '#m1Panel .m1-filter{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}',
 '#m1Panel .m1-filter button{min-width:0;padding:6px 1px}',
-'#m1Panel .m1-scroll{overflow-x:auto;max-width:100%}',
-'#m1Panel table{border-collapse:collapse;table-layout:fixed;width:100%;font-size:clamp(7px,2vw,12px)}',
-'#m1Panel td,#m1Panel th{border:1px solid #3b5871;text-align:center;padding:3px 1px;overflow-wrap:anywhere}',
-'#m1Panel th:first-child{width:16%}#m1Panel .m1-date{width:15%;font-size:clamp(7px,1.65vw,10px)}',
-'#m1Panel tbody td{height:43px;background:#3d5369}#m1Panel tbody td.m1-last{background:#ffd13d;color:#102030}',
-'#m1Panel tbody td.m1-active{box-shadow:inset 0 0 0 2px #4eb4ff}',
-'#m1Panel tbody td.m1-mark{background:#237849!important;color:white}',
-'#m1Panel tbody td span{display:inline-block;margin:0 1px;font-weight:700}',
+'#m1Panel .m1-scroll{overflow-x:auto;max-width:100%;overscroll-behavior-x:contain}',
+'#m1Panel .m1-scroll table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:580px;font-size:clamp(7px,1.2vw,10px)}',
+'#m1Panel .m1-scroll td,#m1Panel .m1-scroll th{border:1px solid #304d66;text-align:center;padding:1px;overflow-wrap:anywhere}',
+'#m1Panel .m1-scroll th:first-child{width:14%;white-space:nowrap;background:#0a2236;color:#eef5ff}#m1Panel .m1-date{width:12%;font-size:9px!important;color:#d7e8f5;background:#102b42!important}#m1Panel .m1-scroll th{background:#15405b;color:#fff}',
+'#m1Panel .m1-scroll tbody tr{height:48px}#m1Panel .m1-scroll tbody td{height:48px;max-height:56px;background:#071e32;color:#edf5fa;vertical-align:middle;overflow:hidden}#m1Panel .m1-scroll tbody td.m1-trail{background:#72551c;color:#fff}#m1Panel .m1-scroll tbody td.m1-last{background:#ffcb39;color:#152633}',
+'#m1Panel .m1-scroll tbody td.m1-active{box-shadow:inset 0 0 0 2px #4eb4ff}',
+'#m1Panel .m1-scroll tbody td.m1-mark{background:#237849!important;color:white}',
+'#m1Panel .m1-nums{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1px;line-height:1.08;font-size:clamp(7px,1.25vw,10px);font-weight:700}#m1Panel .m1-nums>span{display:inline-block;min-width:0;white-space:nowrap}#m1Panel .m1-scroll tbody td .m1-nums span{margin:0}',
 '#m1Panel .m1-fort{background:#ba6816;color:white;border-radius:4px;padding:1px 2px}',
-'#m1Panel .m1-bubble{display:flex;align-items:center;justify-content:center;width:19px;height:19px;margin:0 auto 2px;border-radius:50%;background:#23cd6a;border:2px solid #008d46;color:#07291a;font-size:11px}',
-'#m1Panel .m1-kch{background:#e7c13c}#m1Panel .m1-ch{background:#1e9953}#m1Panel .m1-k{background:#287bae}#m1Panel .m1-x{color:#ff8294}',
+'#m1Panel .m1-bubble{display:flex;align-items:center;justify-content:center;width:17px;height:17px;margin:0 auto 1px;border-radius:50%;background:#23cd6a;border:2px solid #008d46;color:#07291a;font-size:11px;font-weight:900}',
+'#m1Panel .m1-check{width:7%;background:#0a2236!important}#m1Panel .m1-check-pill{display:inline-flex;align-items:center;justify-content:center;min-width:20px;padding:3px 2px;border-radius:7px;font-size:9px;font-weight:900;color:white}#m1Panel .m1-check-pill.m1-kch{background:#e7c13c;color:#102030}#m1Panel .m1-check-pill.m1-ch{background:#1e9953}#m1Panel .m1-check-pill.m1-k{background:#287bae}#m1Panel .m1-check-pill.m1-x{background:transparent;color:#ff8294}',
 '#m1Panel .m1-info{font-size:12px;color:#bdd1df;line-height:1.5}',
 '#m1Panel .m1-archive{border-top:1px solid #41617a;margin-top:10px;padding-top:8px}',
 '#m1Panel .m1-archive pre{white-space:pre-wrap;font:11px/1.6 monospace}',
