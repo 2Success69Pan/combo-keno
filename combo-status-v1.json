@@ -1,17 +1,17 @@
 {
   "version": "restored-live-v1",
   "source": "https://www.stoloto.ru/p/api/mobile/api/v35/service/draws/archive",
-  "updatedAt": "2026-11-25T04:08:22.731Z",
-  "drawsStored": 37656,
-  "latestDraw": 332237,
+  "updatedAt": "2026-11-25T05:05:31.860Z",
+  "drawsStored": 37658,
+  "latestDraw": 332239,
   "latestDate": "25.11.26",
-  "latestTime": "07:02",
+  "latestTime": "08:02",
   "verification": "official-api-contiguous",
   "checkedFrom": "2026-11-25",
   "checkedThrough": "2026-11-25",
   "requestedLatest": 5,
   "receivedLatest": 5,
-  "added": 1,
+  "added": 2,
   "columnsRestored": 0,
   "mode": "latest-five"
 }
