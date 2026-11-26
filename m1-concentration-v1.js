@@ -3,7 +3,7 @@
 const KEY='combo-m1-config-v1',ARCH='combo-m1-archive-v1',PENDING='combo-m1-pending-v1';
 const el=id=>document.getElementById(id);
 const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
-const state=Object.assign({depth:50,reverse:true,filter:'all',focus:0,ref:'previous',refId:0,archive:false,fort:true,parity:'all',sum:false,numbers:true,reduce:0,marks:[]},read(KEY,{}));
+const state=Object.assign({depth:50,reverse:true,filter:'all',focus:0,svMode:'columns',archive:false,fort:true,parity:'all',sum:false,numbers:true,reduce:0,marks:[]},read(KEY,{}));
 let records=Array.isArray(read(ARCH,[]))?read(ARCH,[]):[],pending=read(PENDING,null);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}};
 const saveRecords=()=>{try{localStorage.setItem(ARCH,JSON.stringify(records));localStorage.setItem(PENDING,JSON.stringify(pending))}catch{}};
@@ -58,10 +58,17 @@ function stats(){
  let streak=0;for(let i=records.length-1;i>=0&&records[i].result!=='✗';i--)streak++;
  return [get(records,'Все'),...[20,50,100].map(n=>get(records.slice(-n),'Окно '+n)),'Серия без ✗: '+streak].join('\n');
 }
-function row(d,ref,trailConcs=new Set()){
+function svData(d){
+ const counts=count(d),highest=Math.max(...counts.slice(1)),last=Array(10).fill(-1);
+ d.balls.forEach((v,i)=>{last[c(v)]=i});
+ const concentration=typeof cmConcWinner==='function'?cmConcWinner(d):Array.from({length:9},(_,i)=>i+1).filter(k=>counts[k]===highest).sort((a,b)=>last[a]-last[b])[0];
+ const columns=[...new Set(buckets(d)[concentration].map(n=>((n-1)%10)+1))].sort((a,b)=>a-b);
+ return {concentration,columns};
+}
+function row(d,trailConcs=new Set()){
  const cs=count(d),bg=buckets(d),last=c(d.balls[19]),winner=typeof cmConcWinner==='function'?cmConcWinner(d):0,official=typeof drawColumn==='function'?drawColumn(d):0,fort=new Set();
  if(state.fort){const set=new Set(nums(d));for(const n of set)if(set.has(81-n))fort.add(n)}
- const tr='<tr><th data-m1-ref="'+d.draw+'">'+d.draw+'</th>';
+ const tr='<tr><th>'+d.draw+'</th>';
  const cells=Array.from({length:9},(_,i)=>{
   const k=i+1,ns=bg[k].filter(visible),key=d.draw+':'+k;
   const cls=(trailConcs.has(k)?' m1-trail':'')+(last===k?' m1-last':'')+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
@@ -69,8 +76,8 @@ function row(d,ref,trailConcs=new Set()){
   const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?'<span class="m1-nums">'+ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join('')+'</span>':'<span>'+cs[k]+'</span>';
   return '<td data-m1-cell="'+key+'" class="'+cls+'" title="к'+k+': '+cs[k]+' чисел">'+bubble+text+'</td>';
  }).join('');
- const result=verdict(d,ref),cls=result==='КЧ'?'m1-kch':result==='Ч'?'m1-ch':result==='К'?'m1-k':'m1-x';
- return tr+cells+'<td class="m1-check"><span class="m1-check-pill '+cls+'">'+result+'</span></td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
+ const summary=svData(d),value=state.svMode==='concentration'?'к'+summary.concentration:summary.columns.map(n=>'ст'+n).join(' ');
+ return tr+cells+'<td class="m1-check"><span class="m1-sv-badge '+(state.svMode==='concentration'?'m1-sv-conc':'m1-sv-cols')+'">'+value+'</span></td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
 }
 function render(){
  const panel=el('m1Panel');if(!panel)return;
@@ -80,21 +87,19 @@ function render(){
  let selected=state.reverse?all.slice().reverse():all.slice();
  selected=selected.slice(0,Math.min(selected.length,Math.max(1,Number(state.depth)||50)));
  if(state.focus&&state.filter!=='all')selected=selected.filter(d=>b(count(d)[state.focus])===Number(state.filter));
- const selectedReference=all.find(x=>Number(x.draw)===Number(state.refId));
- const refFor=d=>state.ref==='selected'&&selectedReference&&Number(d.draw)!==Number(selectedReference.draw)?selectedReference:all[all.findIndex(x=>x.draw===d.draw)-1];
  const button=(action,label,on=false,extra='')=>'<button type="button" data-m1="'+action+'" class="'+(on?'on':'')+'" '+extra+'>'+label+'</button>';
  const toolbar='<div class="m1-toolbar"><strong>М1 · Концентрации 1–9</strong>'+button('close','✕')+button('numbers','А',state.numbers)+button('sum','СУМ',state.sum)+button('fort','ФОРТ',state.fort)+button('reverse','↑↓')+button('refresh','⟳')+
  '<select id="m1Depth">'+[20,50,100,500,999999].map(n=>'<option value="'+n+'"'+(Number(state.depth)===n?' selected':'')+'>'+(n===999999?'Все':n+' тир')+'</option>').join('')+'</select>'+
  button('parity','ЧЁТ',state.parity==='even','data-value="even"')+button('parity','НЕЧЁТ',state.parity==='odd','data-value="odd"')+'</div>';
  const filter='<div class="m1-filter">'+[0,1,2,3,4,'all'].map(x=>button('filter',x==='all'?'ВСЕ':lbl(x),String(state.filter)===String(x),'data-value="'+x+'"')).join('')+'</div>';
  const frequency='<div class="m1-toolbar"><label>Сократить частоту <input id="m1Reduce" type="range" min="0" max="20" value="'+(Number(state.reduce)||0)+'"><output>'+(Number(state.reduce)||0)+'</output></label><span class="m1-info">Строк: '+selected.length+'</span></div>';
- const reference='<label class="m1-info">Св: <select id="m1Reference"><option value="previous"'+(state.ref==='previous'?' selected':'')+'>Предыдущий тираж</option><option value="selected"'+(state.ref==='selected'?' selected':'')+'>Выбранная строка</option></select></label>'+(state.ref==='selected'?'<span class="m1-info"> Эталон №'+(state.refId||'—')+' (нажми номер тиража)</span>':'');
+ const reference='<div class="m1-toolbar"><span class="m1-info">Св:</span><button type="button" data-m1="sv" data-value="columns" class="'+(state.svMode==='columns'?'on':'')+'">Столбцы</button><button type="button" data-m1="sv" data-value="concentration" class="'+(state.svMode==='concentration'?'on':'')+'">Концентрация</button></div>';
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
  const recency=Array(10).fill(999);
  const rows=selected.map(d=>{
   const winner=typeof cmConcWinner==='function'?cmConcWinner(d):c(d.balls[19]);
   const trails=new Set(Array.from({length:9},(_,i)=>i+1).filter(k=>recency[k]>=1&&recency[k]<=7));
-  const rowHtml=row(d,refFor(d),trails);
+  const rowHtml=row(d,trails);
   for(let k=1;k<=9;k++)recency[k]++;
   recency[winner]=0;
   return rowHtml;
@@ -105,7 +110,7 @@ function render(){
  const entries=records.slice().sort((x,y)=>y.target-x.target).slice(0,250).map(r=>'<tr><td>'+Number(r.target)+'</td><td>№'+Number(r.source)+' · '+esc((r.ks||[]).map(n=>'к'+n).join(' '))+' · '+esc((r.proposed||[]).map(fmt).join(' '))+'</td><td>'+esc((r.actual||[]).map(fmt).join(' '))+'</td><td>'+esc(r.result)+'</td></tr>').join('');
  const pendingText=pending?'Следующий замороженный: №'+pending.target+' из №'+pending.source+' · '+pending.ks.map(n=>'к'+n).join(' '):'Нет замороженного прогноза. Выбери группу 0/1/2/3/4+.';
  const arch='<div class="m1-archive">'+button('archive','Архив анализа '+(state.archive?'▴':'▾')+' ('+records.length+')')+(state.archive?'<p class="m1-info">'+esc(pendingText)+'</p><pre>'+esc(stats())+'</pre><div class="m1-toolbar">'+button('json','Экспорт JSON')+button('csv','Экспорт CSV')+'<label>Импорт JSON / CSV<input type="file" id="m1Import" accept=".json,.csv"></label></div><div class="m1-archive-scroll"><table><thead><tr><th>Тираж</th><th>Предлагал</th><th>Вышло</th><th>Итог</th></tr></thead><tbody>'+entries+'</tbody></table></div><p class="m1-info">Исторические тиражи не записываются как прогнозы. Сохраняется только заранее замороженный выбор, локально в браузере. Итоги Ч/К — совпадения, не выигрыш.</p>':'')+'</div>';
- panel.innerHTML=toolbar+filter+frequency+reference+'<div class="m1-scroll"><table>'+header+'<tbody>'+rows+'</tbody>'+footer+'</table></div><p class="m1-info">Концентрация = цифровой корень: к1…к9. Жёлтый — концентрация последнего числа; зелёный — отметка; оранжевый — пара ФОРТ; кружок — фактический столб 1–10 в концентрации-победителе. Нажми заголовок к1–к9, чтобы отфильтровать строки по количеству.</p><p class="m1-info">Св: Ч — есть общее число; К — совпало ненулевое количество хотя бы в одной концентрации; КЧ — оба; ✗ — нет. По умолчанию сравнение с предыдущим тиражом.</p><p class="m1-info">'+esc(baseline)+'</p>'+arch;
+ panel.innerHTML=toolbar+filter+frequency+reference+'<div class="m1-scroll"><table>'+header+'<tbody>'+rows+'</tbody>'+footer+'</table></div><p class="m1-info">Св: фактические столбцы чисел основной концентрации или номер основной концентрации. Эталонов и сравнений нет.</p><p class="m1-info">'+esc(baseline)+'</p>'+arch;
 }
 function download(name,mime,value){const url=URL.createObjectURL(new Blob([value],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 const csvQuote=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
@@ -137,14 +142,14 @@ async function importData(file){
 }
 document.addEventListener('click',e=>{
  const root=el('m1Panel');if(!root||root.hidden||!root.contains(e.target))return;
- const head=e.target.closest('[data-m1-head]'),cell=e.target.closest('[data-m1-cell]'),row=e.target.closest('[data-m1-ref]'),btn=e.target.closest('[data-m1]');
+ const head=e.target.closest('[data-m1-head]'),cell=e.target.closest('[data-m1-cell]'),btn=e.target.closest('[data-m1]');
  if(head){const n=Number(head.dataset.m1Head);state.focus=state.focus===n?0:n;save();render();return}
  if(cell){const key=cell.dataset.m1Cell;state.marks=state.marks.includes(key)?state.marks.filter(x=>x!==key):[...state.marks,key];save();render();return}
- if(row){state.ref='selected';state.refId=Number(row.dataset.m1Ref);save();render();return}
  if(!btn)return;
  const action=btn.dataset.m1,value=btn.dataset.value;
  if(action==='close'){setMatrixSlotMode(1);return}
  if(action==='filter'){state.filter=String(state.filter)===String(value)?'all':value;state.focus=0;/* already frozen prediction stays unchanged until verified */}
+ if(action==='sv'&&['columns','concentration'].includes(value))state.svMode=value;
  if(action==='sum')state.sum=!state.sum;
  if(action==='numbers')state.numbers=!state.numbers;
  if(action==='fort')state.fort=!state.fort;
@@ -159,7 +164,6 @@ document.addEventListener('change',e=>{
  const root=el('m1Panel');if(!root||!root.contains(e.target))return;
  if(e.target.id==='m1Depth'){state.depth=Number(e.target.value);save();render()}
  if(e.target.id==='m1Reduce'){state.reduce=Number(e.target.value);save();render()}
- if(e.target.id==='m1Reference'){state.ref=e.target.value;save();render()}
  if(e.target.id==='m1Import')importData(e.target.files&&e.target.files[0]);
 });
 const style=document.createElement('style');style.id='m1-styles';style.textContent=[
@@ -187,7 +191,11 @@ const style=document.createElement('style');style.id='m1-styles';style.textConte
 '#m1Panel .m1-archive-scroll{max-height:330px;overflow:auto}',
 '#m1Panel .m1-archive-scroll table{min-width:600px;table-layout:auto}',
 '#m1Panel .m1-archive-scroll td{height:auto;background:transparent}',
-'#m1Panel input[type=file]{max-width:190px;font-size:11px}'
+'#m1Panel input[type=file]{max-width:190px;font-size:11px}',
+'#m1Panel .m1-check{width:12%;background:#092239!important;padding:2px!important}',
+'#m1Panel .m1-sv-badge{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;padding:3px;border-radius:6px;line-height:1.2;font-size:9px;font-weight:900}',
+'#m1Panel .m1-sv-conc{background:#1b9762;color:white}',
+'#m1Panel .m1-sv-cols{background:#236a9a;color:white}'
 ].join('\n');document.head.appendChild(style);
 window.comboM1Render=render;window.comboM1Refresh=settle;
 })();
