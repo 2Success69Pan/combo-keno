@@ -17,30 +17,17 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&
 const b=n=>Math.min(4,n),lbl=x=>x===4?'4+':String(x);
 const visible=n=>state.parity==='all'||(Number(n)%2===0)===(state.parity==='even');
 const chosen=d=>{const ct=count(d);return Array.from({length:9},(_,i)=>i+1).filter(k=>(state.filter==='all'||b(ct[k])===Number(state.filter))&&(!state.focus||k===state.focus))};
-function verdict(draw,ref){
- if(!ref)return '—';
- const n=new Set(nums(ref)),a=count(draw),z=count(ref);
- const hit=nums(draw).some(v=>n.has(v));
- const k=Array.from({length:9},(_,i)=>i+1).some(i=>a[i]>0&&a[i]===z[i]);
- return hit?(k?'КЧ':'Ч'):(k?'К':'✗');
-}
 function arm(d){
  if(!d||state.filter==='all')return null;
  const gr=buckets(d),ks=chosen(d);
  return {source:Number(d.draw),target:Number(d.draw)+1,ks,proposed:[...new Set(ks.flatMap(k=>gr[k]))],referenceCounts:count(d),filter:state.filter,createdAt:new Date().toISOString()};
-}
-function frozenVerdict(f,draw){
- const numbers=new Set(nums(draw)),ct=count(draw);
- const h=(f.proposed||[]).some(n=>numbers.has(n));
- const k=(f.ks||[]).some(i=>ct[i]===(f.referenceCounts||[])[i]);
- return h?(k?'КЧ':'Ч'):(k?'К':'✗');
 }
 function settle(){
  const all=draws();if(!all.length)return;
  if(pending&&Number.isInteger(Number(pending.target))){
   const d=all.find(x=>Number(x.draw)===Number(pending.target));
   if(d&&!records.some(r=>Number(r.target)===Number(d.draw))){
-   records.push({target:Number(d.draw),source:Number(pending.source),ks:pending.ks,proposed:pending.proposed,actual:nums(d),result:frozenVerdict(pending,d),createdAt:pending.createdAt,filter:pending.filter});
+   records.push({target:Number(d.draw),source:Number(pending.source),ks:pending.ks,proposed:pending.proposed,actual:nums(d),createdAt:pending.createdAt,filter:pending.filter});
    records.sort((a,b)=>a.target-b.target);records=records.slice(-5000);pending=null;saveRecords();
   }else if(!d&&Number(all[all.length-1].draw)>Number(pending.target))return;
  }
@@ -53,10 +40,8 @@ const combination=(n,k)=>{if(k<0||k>n)return 0;k=Math.min(k,n-k);let v=1;for(let
 const hprob=(g,k)=>combination(g,k)*combination(80-g,20-k)/combination(80,20);
 const chance=(g,f)=>Number(f)===4?Array.from({length:g-3},(_,i)=>hprob(g,i+4)).reduce((a,b)=>a+b,0):hprob(g,Number(f));
 function stats(){
- if(!records.length)return 'Нет подтверждённых замороженных прогнозов';
- const get=(a,label)=>{if(!a.length)return label+': —';return label+' ('+a.length+'): '+['Ч','К','КЧ','✗'].map(s=>s+' '+(100*a.filter(x=>x.result===s).length/a.length).toFixed(1)+'%').join(' · ')};
- let streak=0;for(let i=records.length-1;i>=0&&records[i].result!=='✗';i--)streak++;
- return [get(records,'Все'),...[20,50,100].map(n=>get(records.slice(-n),'Окно '+n)),'Серия без ✗: '+streak].join('\n');
+ if(!records.length)return 'Нет сохранённых фактических проверок.';
+ return 'Сохранено записей: '+records.length+'. Окна: последние 20 / 50 / 100 — '+[20,50,100].map(n=>Math.min(n,records.length)).join(' / ')+'. Старые результаты Ч/К/КЧ скрыты: их правило не подтверждено.';
 }
 function svData(d){
  const counts=count(d),highest=Math.max(...counts.slice(1)),last=Array(10).fill(-1);
@@ -107,9 +92,9 @@ function render(){
  const freq=Array.from({length:9},(_,i)=>Math.max(0,selected.filter(d=>count(d)[i+1]>0).length-(Number(state.reduce)||0)));
  const footer='<tfoot><tr><th>Частота</th>'+freq.map(n=>'<td>'+n+'</td>').join('')+'<td>—</td><td>'+selected.length+' строк</td></tr></tfoot>';
  const baseline=state.filter==='all'?'Выбери группу 0/1/2/3/4+ для сравнения со случайной базой.':'Случайная база: концентрации к1–к8 (9 чисел): '+(chance(9,state.filter)*100).toFixed(2)+'%; к9 (8 чисел): '+(chance(8,state.filter)*100).toFixed(2)+'% (гипергеометрическая модель 20 из 80).';
- const entries=records.slice().sort((x,y)=>y.target-x.target).slice(0,250).map(r=>'<tr><td>'+Number(r.target)+'</td><td>№'+Number(r.source)+' · '+esc((r.ks||[]).map(n=>'к'+n).join(' '))+' · '+esc((r.proposed||[]).map(fmt).join(' '))+'</td><td>'+esc((r.actual||[]).map(fmt).join(' '))+'</td><td>'+esc(r.result)+'</td></tr>').join('');
+ const entries=records.slice().sort((x,y)=>y.target-x.target).slice(0,250).map(r=>'<tr><td>'+Number(r.target)+'</td><td>№'+Number(r.source)+' · '+esc((r.ks||[]).map(n=>'к'+n).join(' '))+' · '+esc((r.proposed||[]).map(fmt).join(' '))+'</td><td>'+esc((r.actual||[]).map(fmt).join(' '))+'</td><td>Факт</td></tr>').join('');
  const pendingText=pending?'Следующий замороженный: №'+pending.target+' из №'+pending.source+' · '+pending.ks.map(n=>'к'+n).join(' '):'Нет замороженного прогноза. Выбери группу 0/1/2/3/4+.';
- const arch='<div class="m1-archive">'+button('archive','Архив анализа '+(state.archive?'▴':'▾')+' ('+records.length+')')+(state.archive?'<p class="m1-info">'+esc(pendingText)+'</p><pre>'+esc(stats())+'</pre><div class="m1-toolbar">'+button('json','Экспорт JSON')+button('csv','Экспорт CSV')+'<label>Импорт JSON / CSV<input type="file" id="m1Import" accept=".json,.csv"></label></div><div class="m1-archive-scroll"><table><thead><tr><th>Тираж</th><th>Предлагал</th><th>Вышло</th><th>Итог</th></tr></thead><tbody>'+entries+'</tbody></table></div><p class="m1-info">Исторические тиражи не записываются как прогнозы. Сохраняется только заранее замороженный выбор, локально в браузере. Итоги Ч/К — совпадения, не выигрыш.</p>':'')+'</div>';
+ const arch='<div class="m1-archive">'+button('archive','Архив анализа '+(state.archive?'▴':'▾')+' ('+records.length+')')+(state.archive?'<p class="m1-info">'+esc(pendingText)+'</p><pre>'+esc(stats())+'</pre><div class="m1-toolbar">'+button('json','Экспорт JSON')+button('csv','Экспорт CSV')+'<label>Импорт JSON / CSV<input type="file" id="m1Import" accept=".json,.csv"></label></div><div class="m1-archive-scroll"><table><thead><tr><th>Тираж</th><th>Предлагал</th><th>Вышло</th><th>Итог</th></tr></thead><tbody>'+entries+'</tbody></table></div><p class="m1-info">Исторические тиражи не записываются как прогнозы. Сохраняется только заранее замороженный выбор, локально в браузере. Старые оценки Ч/К/КЧ не подтверждены и не используются. Факты сохранены.</p>':'')+'</div>';
  panel.innerHTML=toolbar+filter+frequency+reference+'<div class="m1-scroll"><table>'+header+'<tbody>'+rows+'</tbody>'+footer+'</table></div><p class="m1-info">Св: фактические столбцы чисел основной концентрации или номер основной концентрации. Эталонов и сравнений нет.</p><p class="m1-info">'+esc(baseline)+'</p>'+arch;
 }
 function download(name,mime,value){const url=URL.createObjectURL(new Blob([value],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
