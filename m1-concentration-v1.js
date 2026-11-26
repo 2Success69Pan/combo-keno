@@ -61,13 +61,16 @@ function svTransition(current,previous){
  const ch=previousColumns.includes(winner),k=winner===previousConc;
  return {status:ch?(k?'КЧ':'Ч'):(k?'К':'✗'),winner,previousConc,previousColumns};
 }
-function row(d,previous,trailConcs=new Set()){
- const cs=count(d),bg=buckets(d),last=c(d.balls[19]),winner=typeof cmConcWinner==='function'?cmConcWinner(d):0,official=typeof drawColumn==='function'?drawColumn(d):0,fort=new Set();
+function row(d,previous,waterfall){
+ const cs=count(d),bg=buckets(d),winner=svData(d).concentration,official=typeof drawColumn==='function'?drawColumn(d):0,fort=new Set();
  if(state.fort){const set=new Set(nums(d));for(const n of set)if(set.has(81-n))fort.add(n)}
  const tr='<tr><th>'+d.draw+'</th>';
  const cells=Array.from({length:9},(_,i)=>{
   const k=i+1,ns=bg[k].filter(visible),key=d.draw+':'+k;
-  const cls=(trailConcs.has(k)?' m1-trail':'')+(last===k?' m1-last':'')+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
+  const isWinner=winner===k;
+  const isLatest=isWinner&&waterfall.latest[k]===waterfall.rowIndex;
+  const isTrail=!isWinner&&waterfall.latest[k]>=0&&(state.reverse?waterfall.rowIndex<waterfall.latest[k]:waterfall.rowIndex>waterfall.latest[k]);
+  const cls=(isWinner?(isLatest?' m1-last':' m1-history'):(isTrail?' m1-trail':''))+(state.marks.includes(key)?' m1-mark':'')+(state.filter!=='all'&&b(cs[k])===Number(state.filter)?' m1-active':'');
   const bubble=winner===k?'<span class="m1-bubble" title="Выпавший столб ст'+official+'">'+official+'</span>':'';
   const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?'<span class="m1-nums">'+ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join('')+'</span>':'<span>'+cs[k]+'</span>';
   return '<td data-m1-cell="'+key+'" class="'+cls+'" title="к'+k+': '+cs[k]+' чисел">'+bubble+text+'</td>';
@@ -94,15 +97,15 @@ function render(){
  const reference='<p class="m1-info">Св: текущий выпавший столб относительно предыдущей основной концентрации. Ч — по столбцам её чисел; К — по номеру концентрации; КЧ — оба; ✗ — ни одно.</p>';
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
  const previousByDraw=new Map(all.map((d,i)=>[Number(d.draw),i>0?all[i-1]:null]));
- const recency=Array(10).fill(999);
- const rows=selected.map(d=>{
-  const winner=typeof cmConcWinner==='function'?cmConcWinner(d):c(d.balls[19]);
-  const trails=new Set(Array.from({length:9},(_,i)=>i+1).filter(k=>recency[k]>=1&&recency[k]<=7));
-  const rowHtml=row(d,previousByDraw.get(Number(d.draw)),trails);
-  for(let k=1;k<=9;k++)recency[k]++;
-  recency[winner]=0;
-  return rowHtml;
- }).join('');
+ // Main matrix's chronological waterfall: latest win yellow, older win gray,
+ // uninterrupted trail from most recent win toward newer draws amber.
+ const latestWinByConc=Array(10).fill(-1);
+ selected.forEach((draw,i)=>{
+  const k=svData(draw).concentration;
+  if(state.reverse){if(latestWinByConc[k]<0)latestWinByConc[k]=i}
+  else latestWinByConc[k]=i;
+ });
+ const rows=selected.map((draw,i)=>row(draw,previousByDraw.get(Number(draw.draw)),{latest:latestWinByConc,rowIndex:i})).join('');
  const freq=Array.from({length:9},(_,i)=>Math.max(0,selected.filter(d=>count(d)[i+1]>0).length-(Number(state.reduce)||0)));
  const footer='<tfoot><tr><th>Частота</th>'+freq.map(n=>'<td>'+n+'</td>').join('')+'<td>—</td><td>'+selected.length+' строк</td></tr></tfoot>';
  const baseline=state.filter==='all'?'Выбери группу 0/1/2/3/4+ для сравнения со случайной базой.':'Случайная база: концентрации к1–к8 (9 чисел): '+(chance(9,state.filter)*100).toFixed(2)+'%; к9 (8 чисел): '+(chance(8,state.filter)*100).toFixed(2)+'% (гипергеометрическая модель 20 из 80).';
@@ -176,7 +179,7 @@ const style=document.createElement('style');style.id='m1-styles';style.textConte
 '#m1Panel .m1-scroll table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:580px;font-size:clamp(7px,1.2vw,10px)}',
 '#m1Panel .m1-scroll td,#m1Panel .m1-scroll th{border:1px solid #304d66;text-align:center;padding:1px;overflow-wrap:anywhere}',
 '#m1Panel .m1-scroll th:first-child{width:14%;white-space:nowrap;background:#0a2236;color:#eef5ff}#m1Panel .m1-date{width:12%;font-size:9px!important;color:#d7e8f5;background:#102b42!important}#m1Panel .m1-scroll th{background:#15405b;color:#fff}',
-'#m1Panel .m1-scroll tbody tr{height:48px}#m1Panel .m1-scroll tbody td{height:48px;max-height:56px;background:#071e32;color:#edf5fa;vertical-align:middle;overflow:hidden}#m1Panel .m1-scroll tbody td.m1-trail{background:#72551c;color:#fff}#m1Panel .m1-scroll tbody td.m1-last{background:#ffcb39;color:#152633}',
+'#m1Panel .m1-scroll tbody tr{height:48px}#m1Panel .m1-scroll tbody td{height:48px;max-height:56px;background:#071e32;color:#edf5fa;vertical-align:middle;overflow:hidden}#m1Panel .m1-scroll tbody td.m1-trail{background:#72551c;color:#fff}#m1Panel .m1-scroll tbody td.m1-history{background:#435a70;color:#fff}#m1Panel .m1-scroll tbody td.m1-last{background:#ffcb39;color:#152633}',
 '#m1Panel .m1-scroll tbody td.m1-active{box-shadow:inset 0 0 0 2px #4eb4ff}',
 '#m1Panel .m1-scroll tbody td.m1-mark{background:#237849!important;color:white}',
 '#m1Panel .m1-nums{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1px;line-height:1.08;font-size:clamp(7px,1.25vw,10px);font-weight:700}#m1Panel .m1-nums>span{display:inline-block;min-width:0;white-space:nowrap}#m1Panel .m1-scroll tbody td .m1-nums span{margin:0}',
