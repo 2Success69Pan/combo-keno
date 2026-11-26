@@ -50,7 +50,18 @@ function svData(d){
  const columns=[...new Set(buckets(d)[concentration].map(n=>((n-1)%10)+1))].sort((a,b)=>a-b);
  return {concentration,columns};
 }
-function row(d,trailConcs=new Set()){
+// Ч: current winning column among columns of numbers in previous main concentration.
+// К: current winning column equals previous concentration number.
+// КЧ: both. ✗: neither.
+function svTransition(current,previous){
+ if(!previous)return {status:'—',winner:null,previousConc:null,previousColumns:[]};
+ const data=svData(previous),previousConc=data.concentration,previousColumns=data.columns;
+ const winner=typeof drawColumn==='function'?drawColumn(current):null;
+ if(!Number.isInteger(winner)||winner<1||winner>10)return {status:'—',winner,previousConc,previousColumns};
+ const ch=previousColumns.includes(winner),k=winner===previousConc;
+ return {status:ch?(k?'КЧ':'Ч'):(k?'К':'✗'),winner,previousConc,previousColumns};
+}
+function row(d,previous,trailConcs=new Set()){
  const cs=count(d),bg=buckets(d),last=c(d.balls[19]),winner=typeof cmConcWinner==='function'?cmConcWinner(d):0,official=typeof drawColumn==='function'?drawColumn(d):0,fort=new Set();
  if(state.fort){const set=new Set(nums(d));for(const n of set)if(set.has(81-n))fort.add(n)}
  const tr='<tr><th>'+d.draw+'</th>';
@@ -61,8 +72,10 @@ function row(d,trailConcs=new Set()){
   const text=state.sum?'<span>'+ns.reduce((a,n)=>a+n,0)+'</span>':state.numbers?'<span class="m1-nums">'+ns.map(n=>'<span class="'+(fort.has(n)?'m1-fort':'')+'">'+fmt(n)+'</span>').join('')+'</span>':'<span>'+cs[k]+'</span>';
   return '<td data-m1-cell="'+key+'" class="'+cls+'" title="к'+k+': '+cs[k]+' чисел">'+bubble+text+'</td>';
  }).join('');
- const summary=svData(d),value=state.svMode==='concentration'?'к'+summary.concentration:summary.columns.map(n=>'ст'+n).join(' ');
- return tr+cells+'<td class="m1-check"><span class="m1-sv-badge '+(state.svMode==='concentration'?'m1-sv-conc':'m1-sv-cols')+'">'+value+'</span></td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
+ const relation=svTransition(d,previous),value=relation.status;
+ const hint=relation.previousConc===null?'Нет предыдущего тиража':'Предыдущая основная концентрация к'+relation.previousConc+'; столбцы её чисел: '+relation.previousColumns.map(n=>'ст'+n).join(', ')+'; текущий ст'+relation.winner;
+ const cls=value==='КЧ'?'m1-sv-kch':value==='Ч'?'m1-sv-ch':value==='К'?'m1-sv-k':'m1-sv-none';
+ return tr+cells+'<td class="m1-check" title="'+hint+'"><span class="m1-sv-badge '+cls+'">'+value+'</span></td><td class="m1-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
 }
 function render(){
  const panel=el('m1Panel');if(!panel)return;
@@ -78,13 +91,14 @@ function render(){
  button('parity','ЧЁТ',state.parity==='even','data-value="even"')+button('parity','НЕЧЁТ',state.parity==='odd','data-value="odd"')+'</div>';
  const filter='<div class="m1-filter">'+[0,1,2,3,4,'all'].map(x=>button('filter',x==='all'?'ВСЕ':lbl(x),String(state.filter)===String(x),'data-value="'+x+'"')).join('')+'</div>';
  const frequency='<div class="m1-toolbar"><label>Сократить частоту <input id="m1Reduce" type="range" min="0" max="20" value="'+(Number(state.reduce)||0)+'"><output>'+(Number(state.reduce)||0)+'</output></label><span class="m1-info">Строк: '+selected.length+'</span></div>';
- const reference='<div class="m1-toolbar"><span class="m1-info">Св:</span><button type="button" data-m1="sv" data-value="columns" class="'+(state.svMode==='columns'?'on':'')+'">Столбцы</button><button type="button" data-m1="sv" data-value="concentration" class="'+(state.svMode==='concentration'?'on':'')+'">Концентрация</button></div>';
+ const reference='<p class="m1-info">Св: текущий выпавший столб относительно предыдущей основной концентрации. Ч — по столбцам её чисел; К — по номеру концентрации; КЧ — оба; ✗ — ни одно.</p>';
  const header='<thead><tr><th>Тираж</th>'+Array.from({length:9},(_,i)=>'<th data-m1-head="'+(i+1)+'">к'+(i+1)+(state.focus===i+1?' •':'')+'</th>').join('')+'<th>Св</th><th>Дата/время</th></tr></thead>';
+ const previousByDraw=new Map(all.map((d,i)=>[Number(d.draw),i>0?all[i-1]:null]));
  const recency=Array(10).fill(999);
  const rows=selected.map(d=>{
   const winner=typeof cmConcWinner==='function'?cmConcWinner(d):c(d.balls[19]);
   const trails=new Set(Array.from({length:9},(_,i)=>i+1).filter(k=>recency[k]>=1&&recency[k]<=7));
-  const rowHtml=row(d,trails);
+  const rowHtml=row(d,previousByDraw.get(Number(d.draw)),trails);
   for(let k=1;k<=9;k++)recency[k]++;
   recency[winner]=0;
   return rowHtml;
@@ -134,7 +148,6 @@ document.addEventListener('click',e=>{
  const action=btn.dataset.m1,value=btn.dataset.value;
  if(action==='close'){setMatrixSlotMode(1);return}
  if(action==='filter'){state.filter=String(state.filter)===String(value)?'all':value;state.focus=0;/* already frozen prediction stays unchanged until verified */}
- if(action==='sv'&&['columns','concentration'].includes(value))state.svMode=value;
  if(action==='sum')state.sum=!state.sum;
  if(action==='numbers')state.numbers=!state.numbers;
  if(action==='fort')state.fort=!state.fort;
@@ -179,8 +192,10 @@ const style=document.createElement('style');style.id='m1-styles';style.textConte
 '#m1Panel input[type=file]{max-width:190px;font-size:11px}',
 '#m1Panel .m1-check{width:12%;background:#092239!important;padding:2px!important}',
 '#m1Panel .m1-sv-badge{display:inline-flex;flex-wrap:wrap;justify-content:center;max-width:100%;padding:3px;border-radius:6px;line-height:1.2;font-size:9px;font-weight:900}',
-'#m1Panel .m1-sv-conc{background:#1b9762;color:white}',
-'#m1Panel .m1-sv-cols{background:#236a9a;color:white}'
+'#m1Panel .m1-sv-ch{background:#19a85f;color:#052918}',
+'#m1Panel .m1-sv-k{background:#45c2f0;color:#08273a}',
+'#m1Panel .m1-sv-kch{background:#f0c83b;color:#342707}',
+'#m1Panel .m1-sv-none{background:transparent;color:#e1848f}'
 ].join('\n');document.head.appendChild(style);
 window.comboM1Render=render;window.comboM1Refresh=settle;
 })();
