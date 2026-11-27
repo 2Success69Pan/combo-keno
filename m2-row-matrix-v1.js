@@ -3,7 +3,7 @@
 const ID='m2RowsPanel',KEY='combo-m2-rows-v1';
 const q=id=>document.getElementById(id);
 const settings=(()=>{try{return JSON.parse(sessionStorage.getItem(KEY)||'{}')||{}}catch{return {}}})();
-const st=Object.assign({count:50,reverse:true,numbers:true,sum:false,fort:false,even:'all',empty:0,reduce:0,temp:false,filter:'all',marks:[],view:'rows',selected:0,perDraw:[],order:[],trg:false,mirror:false},settings);
+const st=Object.assign({count:50,reverse:true,numbers:true,sum:false,fort:false,even:'all',empty:0,reduce:0,temp:false,filter:'all',marks:[],view:'rows',selected:0,selectedWinner:0,perDraw:[],order:[],trg:false,mirror:false},settings);
 const marks=new Set(Array.isArray(st.marks)?st.marks:[]);
 const visibleRows=new Set(Array.isArray(st.perDraw)?st.perDraw.map(Number):[]);
 const orderedRows=new Set(Array.isArray(st.order)?st.order.map(Number):[]);
@@ -70,12 +70,13 @@ function markup(){
   }).join('');
   const parity=d.balls.filter(x=>x%2===0).length;
   const countLine=parity===10?'=':parity>10?'II':'I';
-  return '<tr><th class="m2-draw"><span>'+d.draw+'</span><button data-m2="order" data-draw="'+d.draw+'" class="'+(orderedRows.has(Number(d.draw))?'active':'')+'" title="В: порядок выпадения в своей строке">В</button><button data-m2="showrow" data-draw="'+d.draw+'" class="'+(visibleRows.has(Number(d.draw))?'active':'')+'" title="А: числа этого тиража">А</button></th>'+cells+'<td class="m2-winning" title="Фактический выпавший столб '+win+'"><span>'+win+'</span><small>'+countLine+'</small></td><td class="m2-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
+  return '<tr><th class="m2-draw"><span>'+d.draw+'</span><button data-m2="order" data-draw="'+d.draw+'" class="'+(orderedRows.has(Number(d.draw))?'active':'')+'" title="В: порядок выпадения в своей строке">В</button><button data-m2="showrow" data-draw="'+d.draw+'" class="'+(visibleRows.has(Number(d.draw))?'active':'')+'" title="А: числа этого тиража">А</button></th>'+cells+'<td class="m2-winning" data-m2-winning="'+win+'" tabindex="0" title="Показать все выпавшие ст'+win+' выше и ниже"><span>'+win+'</span><small>'+countLine+'</small></td><td class="m2-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
  }).join('');
  const lastDraw=draws.length?Math.max(...draws.map(d=>Number(d.draw))):0;
  const empty=Array.from({length:st.empty},(_,i)=>'<tr><th>'+(lastDraw+i+1)+'</th>'+Array.from({length:8},(_,k)=>'<td class="m2-empty" data-m2-cell="'+(lastDraw+i+1)+':'+(k+1)+'"></td>').join('')+'<td>—</td><td>—</td></tr>').join('');
  const footer='<tfoot><tr><th>Частота</th>'+Array.from({length:8},(_,i)=>'<td>'+Math.max(0,freq[i+1]-st.reduce)+'</td>').join('')+'<td>ст</td><td>'+draws.length+' тир.</td></tr></tfoot>';
  root.innerHTML=toolbar+filter+sliders+'<div class="m2-info">Каждый тираж: 20 чисел. стр1: 01–10 · стр2: 11–20 · … · стр8: 71–80. Зелёный — числа фактически выпавшего столба; красный — зеркало; голубой — ФОРТ.</div><div class="m2-scroll"><table class="m2-table">'+th+'<tbody>'+(st.reverse?empty+body:body+empty)+'</tbody>'+footer+'</table></div>';
+ applyColumnSelection(root);
  if(st.temp){
   root.querySelectorAll('.m2-table tfoot td').forEach((cell,i)=>{
    if(i<8){const f=Math.max(0,freq[i+1]-st.reduce),red=Math.round(255*f/fmax);cell.style.color='rgb('+red+',0,'+(255-red)+')'}
@@ -86,6 +87,12 @@ function persistRender(preserve=true){
  const root=q(ID),scroll=root?.querySelector('.m2-scroll'),left=scroll?.scrollLeft||0,top=window.scrollY;
  save();markup();
  if(preserve){const next=root?.querySelector('.m2-scroll');if(next)next.scrollLeft=left;/* never scroll page to top */}
+}
+function applyColumnSelection(root){
+ root.querySelectorAll('[data-m2-winning]').forEach(cell=>{
+  const match=st.selectedWinner>0&&Number(cell.dataset.m2Winning)===st.selectedWinner;
+  cell.classList.toggle('m2-winner-match',match);
+ });
 }
 function applyOccupancyFilter(root){
  root.querySelectorAll('[data-m2="filter"]').forEach(b=>{
@@ -100,7 +107,16 @@ function applyOccupancyFilter(root){
 }
 document.addEventListener('click',e=>{
  const root=q(ID);if(!root||root.hidden||!root.contains(e.target))return;
- const b=e.target.closest('[data-m2]'),cell=e.target.closest('[data-m2-cell]');
+ const b=e.target.closest('[data-m2]'),winnerCell=e.target.closest('[data-m2-winning]'),cell=e.target.closest('[data-m2-cell]');
+ if(winnerCell&&!b){
+  const selected=Number(winnerCell.dataset.m2Winning);
+  if(Number.isInteger(selected)&&selected>=1&&selected<=10){
+   st.selectedWinner=st.selectedWinner===selected?0:selected;
+   applyColumnSelection(root);
+   save();
+  }
+  return;
+ }
  if(cell&&!b){const key=cell.dataset.m2Cell;marks.has(key)?marks.delete(key):marks.add(key);persistRender();return}
  if(!b)return;
  const act=b.dataset.m2,val=b.dataset.value,id=Number(b.dataset.draw);
@@ -125,6 +141,13 @@ document.addEventListener('click',e=>{
  if(act==='showrow'){visibleRows.has(id)?visibleRows.delete(id):visibleRows.add(id)}
  if(act==='order'){orderedRows.has(id)?orderedRows.delete(id):orderedRows.add(id)}
  persistRender();
+});
+document.addEventListener('keydown',e=>{
+ const root=q(ID);if(!root||root.hidden||!root.contains(e.target))return;
+ const cell=e.target.closest('[data-m2-winning]');
+ if(cell&&(e.key==='Enter'||e.key===' ')){
+  e.preventDefault();cell.click();
+ }
 });
 document.addEventListener('change',e=>{
  const root=q(ID);if(!root||!root.contains(e.target))return;
@@ -172,7 +195,9 @@ const style=document.createElement('style');style.id='m2RowsStyle';style.textCon
  '#m2RowsPanel .m2-number.winner-number{background:#12844f;color:white;border:1px solid #60f5a3}',
  '#m2RowsPanel .m2-number.mirror-number{box-shadow:inset 0 0 0 2px #ff5a61}',
  '#m2RowsPanel .m2-number.fort-number{outline:1px solid #55c0ff;outline-offset:-1px}',
- '#m2RowsPanel .m2-winning{background:#072238!important}',
+ '#m2RowsPanel .m2-winning{background:#072238!important;cursor:pointer}',
+ '#m2RowsPanel .m2-winning.m2-winner-match{background:#135d42!important;box-shadow:inset 0 0 0 2px #8dfbb9!important}',
+ '#m2RowsPanel .m2-winning.m2-winner-match>span{outline:2px solid #b1ffcb;outline-offset:1px}',
  '#m2RowsPanel .m2-winning>span{display:inline-flex;background:#21ca72;color:#062b1b;border-radius:50%;min-width:24px;min-height:24px;align-items:center;justify-content:center;font-weight:900;font-size:14px}',
  '#m2RowsPanel .m2-winning small{display:block;font-size:8px}',
  '#m2RowsPanel .m2-date{background:#102b42!important;font-size:clamp(7px,1.8vw,10px);overflow-wrap:anywhere}',
