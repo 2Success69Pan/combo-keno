@@ -104,7 +104,7 @@ document.addEventListener('click',e=>{
  if(act==='trg')st.trg=!st.trg;
  if(act==='even')st.even=st.even==='even'?'all':'even';
  if(act==='odd')st.even=st.even==='odd'?'all':'odd';
- if(act==='filter')st.filter=val==='all'?'all':Number(val);
+ if(act==='filter'){const selected=val==='all'?'all':Number(val);st.filter=st.filter===selected&&selected!=='all'?'all':selected;}
  if(act==='showrow'){visibleRows.has(id)?visibleRows.delete(id):visibleRows.add(id)}
  if(act==='order'){orderedRows.has(id)?orderedRows.delete(id):orderedRows.add(id)}
  persistRender();
