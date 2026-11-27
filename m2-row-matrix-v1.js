@@ -66,7 +66,7 @@ function markup(){
     if(fort.has(n))classes.push('fort-number');
     return '<span class="m2-number '+classes.join(' ')+'" title="'+(orderedRows.has(Number(d.draw))?'Выпал №'+(d.balls.indexOf(n)+1)+': ':'')+n+'">'+(orderedRows.has(Number(d.draw))?'<sup>'+(d.balls.indexOf(n)+1)+'</sup>':'')+String(n).padStart(2,'0')+'</span>';
    }).join(' '):''));
-   return '<td data-m2-cell="'+d.draw+':'+k+'" data-m2-row="'+k+'" class="'+color+filtered+'">'+cellsText+'</td>';
+   return '<td data-m2-cell="'+d.draw+':'+k+'" data-m2-row="'+k+'" data-m2-count="'+occupied+'" class="'+color+filtered+'">'+cellsText+'</td>';
   }).join('');
   const parity=d.balls.filter(x=>x%2===0).length;
   const countLine=parity===10?'=':parity>10?'II':'I';
@@ -87,6 +87,17 @@ function persistRender(preserve=true){
  save();markup();
  if(preserve){const next=root?.querySelector('.m2-scroll');if(next)next.scrollLeft=left;/* never scroll page to top */}
 }
+function applyOccupancyFilter(root){
+ root.querySelectorAll('[data-m2="filter"]').forEach(b=>{
+  const value=b.dataset.value==='all'?'all':Number(b.dataset.value);
+  const active=st.filter===value;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-pressed',String(active));
+ });
+ root.querySelectorAll('[data-m2-count]').forEach(cell=>{
+  cell.classList.toggle('occupancy',st.filter!=='all'&&selectedOccupancy(Number(cell.dataset.m2Count)));
+ });
+}
 document.addEventListener('click',e=>{
  const root=q(ID);if(!root||root.hidden||!root.contains(e.target))return;
  const b=e.target.closest('[data-m2]'),cell=e.target.closest('[data-m2-cell]');
@@ -104,7 +115,13 @@ document.addEventListener('click',e=>{
  if(act==='trg')st.trg=!st.trg;
  if(act==='even')st.even=st.even==='even'?'all':'even';
  if(act==='odd')st.even=st.even==='odd'?'all':'odd';
- if(act==='filter'){const selected=val==='all'?'all':Number(val);st.filter=st.filter===selected&&selected!=='all'?'all':selected;}
+ if(act==='filter'){
+  const selected=val==='all'?'all':Number(val);
+  st.filter=st.filter===selected&&selected!=='all'?'all':selected;
+  applyOccupancyFilter(root);
+  save();
+  return;
+ }
  if(act==='showrow'){visibleRows.has(id)?visibleRows.delete(id):visibleRows.add(id)}
  if(act==='order'){orderedRows.has(id)?orderedRows.delete(id):orderedRows.add(id)}
  persistRender();
