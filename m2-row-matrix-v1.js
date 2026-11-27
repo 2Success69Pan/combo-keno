@@ -59,16 +59,18 @@ function markup(){
    const color=marks.has(d.draw+':'+k)?' marked':isLast?' latest':winRow?' past':trail?' trail':'';
    const filtered=st.filter!=='all'&&selectedOccupancy(occupied)?' occupancy':'';
    const list=numbers.filter(show);
-   const cellsText=(st.sum?'<span class="m2-sum">'+list.reduce((a,b)=>a+b,0)+'</span>':(st.numbers||visibleRows.has(Number(d.draw))||orderedRows.has(Number(d.draw))?'<span class="m2-numbers">'+list.map(n=>{
+   const cellsText=(st.sum?'<span class="m2-sum">'+list.reduce((a,b)=>a+b,0)+'</span>':(st.numbers||visibleRows.has(Number(d.draw))||orderedRows.has(Number(d.draw))?list.map(n=>{
     let classes=[];
     if(colOf(n)===win)classes.push('winner-number');
     if(mirrors.has(n))classes.push('mirror-number');
     if(fort.has(n))classes.push('fort-number');
     return '<span class="m2-number '+classes.join(' ')+'" title="'+(orderedRows.has(Number(d.draw))?'Выпал №'+(d.balls.indexOf(n)+1)+': ':'')+n+'">'+(orderedRows.has(Number(d.draw))?'<sup>'+(d.balls.indexOf(n)+1)+'</sup>':'')+String(n).padStart(2,'0')+'</span>';
-   }).join('')+'</span>':''));
+   }).join(' '):''));
    return '<td data-m2-cell="'+d.draw+':'+k+'" data-m2-row="'+k+'" class="'+color+filtered+'">'+cellsText+'</td>';
   }).join('');
-  return '<tr><th class="m2-draw"><span>'+d.draw+'</span><button data-m2="order" data-draw="'+d.draw+'" class="'+(orderedRows.has(Number(d.draw))?'active':'')+'" title="В: порядок выпадения в своей строке">В</button><button data-m2="showrow" data-draw="'+d.draw+'" class="'+(visibleRows.has(Number(d.draw))?'active':'')+'" title="А: числа этого тиража">А</button></th>'+cells+'<td class="m2-winning" title="Фактический выпавший столб '+win+'"><span>'+win+'</span></td><td class="m2-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
+  const parity=d.balls.filter(x=>x%2===0).length;
+  const countLine=parity===10?'=':parity>10?'II':'I';
+  return '<tr><th class="m2-draw"><span>'+d.draw+'</span><button data-m2="order" data-draw="'+d.draw+'" class="'+(orderedRows.has(Number(d.draw))?'active':'')+'" title="В: порядок выпадения в своей строке">В</button><button data-m2="showrow" data-draw="'+d.draw+'" class="'+(visibleRows.has(Number(d.draw))?'active':'')+'" title="А: числа этого тиража">А</button></th>'+cells+'<td class="m2-winning" title="Фактический выпавший столб '+win+'"><span>'+win+'</span><small>'+countLine+'</small></td><td class="m2-date">'+esc(String(d.date||'').slice(0,5))+' '+esc(String(d.time||'').slice(0,5))+'</td></tr>';
  }).join('');
  const lastDraw=draws.length?Math.max(...draws.map(d=>Number(d.draw))):0;
  const empty=Array.from({length:st.empty},(_,i)=>'<tr><th>'+(lastDraw+i+1)+'</th>'+Array.from({length:8},(_,k)=>'<td class="m2-empty" data-m2-cell="'+(lastDraw+i+1)+':'+(k+1)+'"></td>').join('')+'<td>—</td><td>—</td></tr>').join('');
@@ -131,14 +133,14 @@ const style=document.createElement('style');style.id='m2RowsStyle';style.textCon
  '#m2RowsPanel input[type=range]{width:92px;accent-color:#b66af4}',
  '#m2RowsPanel .m2-info{font-size:10px;color:#b4cddd;margin:6px 0}',
  '#m2RowsPanel .m2-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}',
- '#m2RowsPanel .m2-table{border-collapse:collapse;width:100%;min-width:680px;table-layout:fixed;font-size:10px;line-height:1.12}',
- '#m2RowsPanel .m2-table td,#m2RowsPanel .m2-table th{box-sizing:border-box;border:1px solid #345672;padding:1px!important;vertical-align:middle;text-align:center;font-size:10px!important;line-height:1.12!important;overflow:hidden}',
+ '#m2RowsPanel .m2-table{border-collapse:collapse;width:100%;min-width:0;table-layout:fixed;font-size:clamp(8px,2.2vw,11px)}',
+ '#m2RowsPanel .m2-table td,#m2RowsPanel .m2-table th{border:1px solid #345672;padding:2px 1px;vertical-align:middle;text-align:center}',
  '#m2RowsPanel .m2-table thead th{background:#17405b;color:white;line-height:1.15}',
  '#m2RowsPanel .m2-table thead th small{display:block;font-size:8px;font-weight:500}',
  '#m2RowsPanel .m2-table th:first-child{width:14%}',
- '#m2RowsPanel .m2-table thead th:nth-last-child(2){width:6%}',
+ '#m2RowsPanel .m2-table thead th:nth-last-child(2){width:5%}',
  '#m2RowsPanel .m2-table th:last-child{width:14%}',
- '#m2RowsPanel .m2-table tbody td{background:#071e32;height:48px!important;max-height:48px!important}',
+ '#m2RowsPanel .m2-table td{background:#071e32;height:46px}',
  '#m2RowsPanel .m2-table td.trail{background:#71551e}',
  '#m2RowsPanel .m2-table td.past{background:#41586e}',
  '#m2RowsPanel .m2-table td.latest{background:#ffd03e;color:#13253a}',
@@ -148,16 +150,15 @@ const style=document.createElement('style');style.id='m2RowsStyle';style.textCon
  '#m2RowsPanel .m2-draw button{position:absolute;top:1px;padding:0 3px;border:1px solid #648198;background:#1a3851;color:#e9f4fc;border-radius:3px;font-size:10px}',
  '#m2RowsPanel .m2-draw button[data-m2=order]{left:1px}',
  '#m2RowsPanel .m2-draw button[data-m2=showrow]{right:1px}',
- '#m2RowsPanel .m2-numbers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px 0;align-items:center;justify-items:center;font-size:10px;line-height:1.1}',
- '#m2RowsPanel .m2-number{display:inline-flex;align-items:center;justify-content:center;min-width:0;max-width:100%;margin:0;padding:1px 0;border-radius:3px;font-size:10px!important;font-weight:750;line-height:1.1;white-space:nowrap}',
+ '#m2RowsPanel .m2-number{display:inline-block;margin:1px;padding:1px;border-radius:4px;font-weight:750;white-space:nowrap}',
  '#m2RowsPanel .m2-number sup{font-size:7px;vertical-align:super;color:inherit}',
  '#m2RowsPanel .m2-number.winner-number{background:#12844f;color:white;border:1px solid #60f5a3}',
  '#m2RowsPanel .m2-number.mirror-number{box-shadow:inset 0 0 0 2px #ff5a61}',
  '#m2RowsPanel .m2-number.fort-number{outline:1px solid #55c0ff;outline-offset:-1px}',
- '#m2RowsPanel .m2-winning{background:#072238!important;width:6%!important;max-width:45px!important;overflow:hidden!important}',
- '#m2RowsPanel .m2-winning>span{display:inline-flex;background:#21ca72;color:#062b1b;border-radius:50%;width:23px;height:23px;min-width:23px;min-height:23px;max-width:23px;max-height:23px;line-height:23px;align-items:center;justify-content:center;font-weight:900;font-size:12px}',
+ '#m2RowsPanel .m2-winning{background:#072238!important;width:5%;max-width:36px;overflow:hidden}',
+ '#m2RowsPanel .m2-winning>span{display:inline-flex;background:#21ca72;color:#062b1b;border-radius:50%;width:20px;height:20px;min-width:20px;min-height:20px;max-width:20px;max-height:20px;align-items:center;justify-content:center;font-weight:900;font-size:11px}',
  '#m2RowsPanel .m2-winning small{display:block;font-size:8px}',
- '#m2RowsPanel .m2-date{background:#102b42!important;font-size:9px!important;white-space:nowrap;overflow:hidden}',
+ '#m2RowsPanel .m2-date{background:#102b42!important;font-size:clamp(7px,1.8vw,10px);overflow-wrap:anywhere}',
  '#m2RowsPanel .m2-table tfoot td{height:25px;background:#102b42;font-weight:800}'
 ].join('\n');document.head.appendChild(style);
 window.comboM2Render=markup;
