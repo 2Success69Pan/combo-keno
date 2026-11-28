@@ -189,6 +189,10 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-2{background:#19774b!important}
 #tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-3{background:#8e3176!important}
 #tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-4{background:#a72c39!important}
+/* Within a selected occupancy group, bright inner border = that column wins the NEXT actual draw. */
+#tableMatrixPanel .cm-panel:not(.cm-conc-mode) .cm-table tbody tr:not(.cm-empty) td.cm-occ-selected.cm-occ-next-win{
+ box-shadow:inset 0 0 0 3px #fffaa8, inset 0 0 0 5px rgba(0,0,0,.38),0 0 7px rgba(255,242,119,.65)!important;
+}
 @media(max-width:600px){#tableMatrixPanel .cm-occ-controls{margin-left:0;grid-template-columns:repeat(3,44px)}#tableMatrixPanel .cm-occ-controls .cm-occ-btn{padding:5px 2px}}
 /* Prevent browser scroll anchoring from fighting restored position during draw selection. */
 #tableDrawer,#tableDrawerBody .recentDraws{overflow-anchor:none}
@@ -479,14 +483,25 @@ function cmRender(updateTableOnly=false){
  }
 });
  const maxFreq=Math.max(1,...freq.slice(1)),rows=[];
+ // Use the next ACTUAL draw regardless of visual sort; never infer a future result.
+ const nextActualWinner=new Map();
+ for(let i=0;i<DRAWS.length-1;i++){
+  const from=DRAWS[i],to=DRAWS[i+1];
+  if(Number(to?.draw)!==Number(from?.draw)+1)continue;
+  const nextCol=drawColumn(to);
+  if(nextCol!==null)nextActualWinner.set(Number(from.draw),{col:nextCol,draw:Number(to.draw)});
+ }
  const heatColor=n=>'#75591f';
  const renderCell=(col,hit,last,trail,mark,draw,content=null,title='',occupancy=null,lateTie=false)=>{
   const cls=mark?'cm-mark':hit?(last?'cm-hit cm-picked':'cm-hit cm-history'):trail?'cm-trail':'';
   const selected=occupancy!==null&&cmOccupancySelected(occupancy);
-  const groupClass=(selected?' cm-occ-selected cm-occ-'+occupancy:'')+(lateTie?' cm-late-tie':'');
+  const nextWin=nextActualWinner.get(Number(draw));
+  const fromSelectedGroup=selected&&cmGroupFilter!==null&&cmGroupFilter!=='all'&&nextWin?.col===col;
+  const groupClass=(selected?' cm-occ-selected cm-occ-'+occupancy:'')+(fromSelectedGroup?' cm-occ-next-win':'')+(lateTie?' cm-late-tie':'');
   const data=occupancy===null?'':' data-cm-occupancy="'+occupancy+'"';
   const heat=trail?' style="--cm-heat:'+heatColor(col)+'"':'';
-  return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'"'+data+' class="'+cls+groupClass+'"'+heat+(title?' title="'+title+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';
+  const explained=fromSelectedGroup?(title?title+' · ':'')+'Из группы '+(occupancy===4?'4+':occupancy)+' вышел ст'+col+' в следующем тираже №'+nextWin.draw:title;
+  return '<td data-cm-draw="'+draw+'" data-cm-col="'+col+'"'+data+' class="'+cls+groupClass+'"'+heat+(explained?' title="'+explained+'"':'')+'>'+(content===null?(mark||hit?col:''):content)+'</td>';
  };
  all.forEach((d,idx)=>{
   const col=cmShownWinner(d),official=drawColumn(d),lateTies=cmConcentration&&cmTie?cmLateTies(d):new Set(),even=(d.balls||[]).filter(n=>Number(n)%2===0).length,sign=even===10?'=':even>10?'II':'I',normalCounts=!cmConcentration?comboColumnCounts(d):null,mirrors=tableMirrorPairs?getTableMirrorPairNumbers(d):new Set(),forts=cmFort?cmFortPairNumbers(d):new Set();
