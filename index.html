@@ -604,7 +604,13 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(b?.i
   return;
  }
  const action=b?.dataset.cmAction;if(action){
- if(action==='manual-check'&&!cmConcentration){cmManualCheckMode=!cmManualCheckMode;cmRender();return;}if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;cmManualCheckMode=false;if(!cmConcentration)cmConcSlot=0;}
+ if(action==='manual-check'&&!cmConcentration){
+  cmManualCheckMode=!cmManualCheckMode;
+  b.classList.toggle('active',cmManualCheckMode);
+  b.setAttribute('aria-pressed',String(cmManualCheckMode));
+  b.closest('.cm-panel')?.classList.toggle('cm-check-mode',cmManualCheckMode);
+  return;
+ }if(action==='close')cmOpen=false;if(action==='reverse')cmReverse=!cmReverse;if(action==='concentration'){cmConcentration=!cmConcentration;cmSelected=null;cmManualCheckMode=false;if(!cmConcentration)cmConcSlot=0;}
 if(action==='tie'&&cmConcentration)cmTie=!cmTie;
 if(action==='conc-slot'&&cmConcentration){const k=Number(b.dataset.cmSlot);if([1,2,3,4].includes(k)){cmConcSlot=cmConcSlot===k?0:k;cmSelected=null;}}
 if(action==='occ-group'&&!cmConcentration){const value=b.dataset.cmGroup==='all'?'all':Number(b.dataset.cmGroup);if(value==='all'||[0,1,2,3,4].includes(value))cmGroupFilter=cmGroupFilter===value?null:value;}if(action==='temp')cmTemperature=!cmTemperature;if(action==='numbers')cmNumbers=!cmNumbers;if(action==='sum')cmSum=!cmSum;if(action==='parity'){const mode=b.dataset.cmParity;if(['even','odd'].includes(mode))cmParity=cmParity===mode?'all':mode;}if(action==='mirror'){tableMirrorPairs=!tableMirrorPairs;renderTableDrawer();return;}if(action==='fort'){cmFort=!cmFort;cmSaveState();cmRender();return;}if(action==='row-numbers'){const id=Number(b.dataset.cmRow);if(cmDrawOrder.has(id)){cmDrawOrder.delete(id);cmIndividual.add(id)}else if(cmIndividual.has(id))cmIndividual.delete(id);else cmIndividual.add(id);}
